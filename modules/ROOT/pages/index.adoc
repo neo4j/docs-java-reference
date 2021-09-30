@@ -1,0 +1,19 @@
+:description: The Neo4j java reference for Neo4j version {neo4j-version}.
+
+[[java-reference]]
+= Java Reference
+
+[discrete]
+== Neo4j v{neo4j-version}
+
+ifndef::backend-pdf[]
+License: link:{common-license-page-uri}[Creative Commons 4.0]
+endif::[]
+
+ifdef::backend-pdf[]
+License: Creative Commons 4.0
+endif::[]
+
+
+The Neo4j java reference for Neo4j v{neo4j-version}.
+
