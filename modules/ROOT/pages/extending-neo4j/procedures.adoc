@@ -1,0 +1,171 @@
+:description: How to write, test, and deploy a user-defined procedure for Neo4j.
+
+:procedure-template-url: https://github.com/neo4j-examples/neo4j-procedure-template/
+
+
+[[extending-neo4j-procedures]]
+= User-defined procedures
+
+This describes how to write, test, and deploy a user-defined procedure for Neo4j.
+
+A _user-defined procedure_ is a mechanism that enables you to extend Neo4j by writing custom code, which can be invoked directly from Cypher.
+Procedures can take arguments, perform operations on the database, and return results.
+For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/custom-code.adoc[].
+
+
+[[call-procedure]]
+== Call a procedure
+
+To call a user-defined procedure, use a Cypher `CALL` clause.
+The procedure name must be fully qualified, so a procedure named `findDenseNodes` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+CALL org.neo4j.examples.findDenseNodes(1000)
+----
+
+A `CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
+Arguments can be supplied directly within the query or taken from the associated parameter set.
+For full details, see the documentation in xref:4.4-preview@cypher-manual:ROOT:clauses/call/index.adoc[Cypher Manual -> `CALL` procedure].
+
+
+[[user-defined-procedures]]
+== Create a procedure
+
+Make sure you have read and followed the preparatory setup instructions in xref:extending-neo4j/project-setup.adoc[].
+
+[TIP]
+====
+The example discussed below is available as link:{procedure-template-url}[a repository on GitHub^].
+To get started quickly you can fork the repository and work with the code as you follow along in the guide below.
+====
+
+1. Create integration tests.
+2. Define the procedure.
+
+
+== Integration tests
+
+The test dependencies include _Neo4j Harness_ and _JUnit_.
+These can be used to write integration tests for procedures.
+
+First, decide what the procedure should do, then write a test that proves that it does it right.
+Finally, write a procedure that passes the test.
+
+Below is a template for testing a procedure that accesses Neo4j's full-text indexes from Cypher.
+
+[source, java]
+----
+package example;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.neo4j.driver.v1.*;
+import org.neo4j.graphdb.factory.GraphDatabaseSettings;
+import org.neo4j.harness.junit.Neo4jRule;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.neo4j.driver.v1.Values.parameters;
+
+public class ManualFullTextIndexTest
+{
+    // This rule starts a Neo4j instance
+    @Rule
+    public Neo4jRule neo4j = new Neo4jRule()
+
+            // This is the Procedure to test
+            .withProcedure( FullTextIndex.class );
+
+    @Test
+    public void shouldAllowIndexingAndFindingANode() throws Throwable
+    {
+        // In a try-block, to make sure you close the driver after the test
+        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withoutEncryption().toConfig() ) )
+        {
+
+            // Given I've started Neo4j with the FullTextIndex procedure class
+            //       which my 'neo4j' rule above does.
+            Session session = driver.session();
+
+            // And given I have a node in the database
+            long nodeId = session.run( "CREATE (p:User {name:'Brookreson'}) RETURN id(p)" )
+                    .single()
+                    .get( 0 ).asLong();
+
+            // When I use the index procedure to index a node
+            session.run( "CALL example.index($id, ['name'])", parameters( "id", nodeId ) );
+
+            // Then I can search for that node with lucene query syntax
+            StatementResult result = session.run( "CALL example.search('User', 'name:Brook*')" );
+            assertThat( result.single().get( "nodeId" ).asLong(), equalTo( nodeId ) );
+        }
+    }
+}
+----
+
+
+== Define a procedure
+
+With the test in place, write a procedure procedure that fulfills the expectations of the test.
+The full example is available in the link:{procedure-template-url}[Neo4j Procedure Template^] repository.
+
+Particular things to note:
+
+* All procedures are annotated `@Procedure`.
+* The procedure annotation can take three optional arguments: `name`, `mode`, and `eager`.
+** `name` is used to specify a different name for the procedure than the default generated, which is `class.path.nameOfMethod`.
+   If `mode` is specified then `name` must be specified as well.
+** `mode` is used to declare the types of interactions that the procedure will perform.
+   A procedure will fail if it attempts to execute database operations that violates its mode.
+   The default `mode` is `READ`.
+   The following modes are available:
+*** `READ` This procedure will only perform read operations against the graph.
+*** `WRITE` This procedure will perform read and write operations against the graph.
+*** `SCHEMA` This procedure will perform operations against the schema, i.e. create and drop indexes and constraints.
+    A procedure with this mode is able to read graph data, but not write.
+*** `DBMS` This procedure will perform system operations such as user management and query management.
+    A procedure with this mode is not able to read or write graph data.
+** `eager` is a boolean setting defaulting to `false`.
+   If it is set to `true` then the Cypher planner will plan an extra `eager` operation before calling the procedure.
+   This is useful in cases where the procedure makes changes to the database in a way that could interact with the operations preceding the procedure.
+   For example:
++
+[source, cypher]
+----
+MATCH (n)
+WHERE n.key = 'value'
+WITH n
+CALL deleteNeighbours(n, 'FOLLOWS')`
+----
+This query could delete some of the nodes that would be matched by the Cypher query, and then the `n.key` lookup will fail.
+Marking this procedure as `eager` will prevent this from causing an error in Cypher code.
+However, it is still possible for the procedure to interfere with itself by trying to read entities it has previously deleted.
+It is the responsibility of the procedure author to handle that case.
+* The _context_ of the procedure, which is the same as each resource that the procedure wants to use, is annotated `@Context`.
+
+[NOTE]
+====
+The correct way to signal an error from within a procedure is to throw a `RuntimeException`.
+====
+
+
+[[injectable-resources]]
+== Injectable resources
+
+When writing procedures, some resources can be injected into the procedure from the database.
+To inject these, use the `@Context` annotation.
+The classes that can be injected are:
+
+* `Log`
+* `TerminationGuard`
+* `GraphDatabaseService`
+* `Transaction`
+//* `SecurityContext`
+//* `ProcedureTransaction`
+
+All of the above classes are considered safe and future-proof, and will not compromise the security of the database.
+There are also several classes that can be injected that are unsupported (restricted) and can be changed with little or no notice.
+Procedures written to use these restricted API's will not be loaded by default, and it will be necessary to use the `dbms.security.procedures.unrestricted` to load unsafe procedures.
+Read more about this config setting in xref:4.4-preview@operations-manual:ROOT:security/securing-extensions/index.adoc[Operations Manual -> Securing extensions].
+

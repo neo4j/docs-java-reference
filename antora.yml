@@ -12,3 +12,4 @@ asciidoc:
     neo4j-version: '4.4'
     neo4j-version-exact: '4.4.0'
     neo4j-buildnumber: '4.4'
+    java-driver-version: '4.4.0'

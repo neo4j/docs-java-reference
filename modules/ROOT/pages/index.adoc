@@ -1,5 +1,6 @@
 :description: The Neo4j java reference for Neo4j version {neo4j-version}.
 
+
 [[java-reference]]
 = Java Reference
 
@@ -15,5 +16,30 @@ License: Creative Commons 4.0
 endif::[]
 
 
-The Neo4j java reference for Neo4j v{neo4j-version}.
+The Java Reference for Neo4j v{neo4j-version}.
+
+The Java Reference contains information on advanced Java-centric usage of Neo4j.
+Among the topics covered are embedding Neo4j in your own software and writing extensions.
+
+The following topics are:
+
+* xref:extending-neo4j/index.adoc[] -- How to build unmanaged extensions and procedures.
+* xref:java-embedded/index.adoc[] -- Instructions on embedding Neo4j in an application.
+* xref:traversal-framework.adoc[] -- A walkthrough of the traversal framework. label:deprecated[]
+* xref:transaction-management.adoc[] -- Details on transaction semantics in Neo4j.
+* xref:jmx-metrics.adoc[] -- How to monitor Neo4j with JMX and a reference of available metrics.
+
+[IMPORTANT]
+====
+The xref:traversal-framework.adoc[traversal framework API] has been deprecated and will be replaced in the next major release of Neo4j.
+====
+
+[TIP]
+====
+You might want to keep the link:{neo4j-javadocs-base-uri}[Neo4j Javadocs (Neo4j Java API Documentation)^] handy while reading.
+====
+
+_Who should read this?_
+
+The Java Reference is written for the advanced Java developer who is extending Neo4j's functionality, or embedding Neo4j in their own software.
 

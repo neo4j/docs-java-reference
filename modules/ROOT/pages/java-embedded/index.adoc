@@ -1,0 +1,36 @@
+:description: How to use Neo4j embedded in Java applications.
+
+
+[[java-embedded]]
+= Using Neo4j embedded in Java applications
+
+This section describes how to use Neo4j embedded in Java applications.
+
+The following topics are:
+
+* xref:java-embedded/setup.adoc[]
+* xref:java-embedded/hello-world.adoc[]
+* xref:java-embedded/property-values.adoc[]
+* xref:java-embedded/indexes.adoc[]
+* xref:java-embedded/managing-resources.adoc[] -- Managing resources in long-running transactions.
+* xref:java-embedded/logging.adoc[]
+* xref:java-embedded/traversal.adoc[]
+* xref:java-embedded/entities.adoc[]
+* xref:java-embedded/graph-algorithms.adoc[]
+* xref:java-embedded/unique-nodes.adoc[] -- Getting or creating a unique node using Cypher and uniqueness constraints.
+* xref:java-embedded/bolt.adoc[] -- Accessing Neo4j embedded via the Bolt protocol.
+* xref:java-embedded/terminate.adoc[] -- How to terminate (abort) a long-running transaction from another thread.
+* xref:java-embedded/cypher-java.adoc[] -- How to use the Cypher query language with Java.
+* xref:java-embedded/query-parameters.adoc[]
+
+[WARNING]
+====
+When running your own code and Neo4j in the same JVM, there are a few things you should keep in mind:
+
+* Do not create or retain more objects than you strictly need to.
+  Large caches in particular tend to promote more objects to the old generation, thus increasing the need for expensive full garbage collections.
+* Do not use internal Neo4j APIs.
+  They are internal to Neo4j and subject to change without notice, which may break or change the behavior of your code.
+* Do not enable the `-XX:+TrustFinalNonStaticFields` JVM flag when running in embedded mode.
+====
+

@@ -1,0 +1,61 @@
+:description: Preferred means for extending Neo4j.
+
+
+[[neo4j-custom-code]]
+= Neo4j custom code
+
+_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing custom code, which can be invoked directly from Cypher.
+This is the preferred means for extending Neo4j.
+
+Examples of use cases for procedures and functions are:
+
+* To provide access to functionality that is not available in Cypher.
+* To provide access to third party systems.
+* To perform graph-global operations, such as counting connected components or finding dense nodes.
+* To express a procedural operation that is difficult to express declaratively with Cypher.
+
+Procedures and functions are written in Java and compiled into _jar_ files.
+They are deployed to the database by dropping that _jar_ file into the _plugins_ directory on each standalone or clustered server.
+For the location of the _plugins_ directory, refer to xref:4.4-preview@operations-manual:ROOT:configuration/file-locations/index.adoc[Operations Manual -> File locations].
+The database must be re-started on each server to pick up new procedures and functions.
+
+Procedures and functions can take arguments and return results.
+In addition, procedures can perform write operations on the database.
+
+[options="header", cols="2,3,2,2,3"]
+|===
+
+| Type
+| Description
+| Syntax
+| Read/Write
+| Cardinality
+
+| `Procedure`
+| For each row the procedure takes parameters and returns multiple results.
+| `+CALL abc(...)+`
+| Update allowed.
+| Changes cardinality similarly to a `MATCH` clause (0, 1, or many).
+
+| `Scalar function`
+| For each row the function takes parameters and returns a single result.
+| `+abc(...)+`
+| Read-only.
+| Maintains cardinality, one for one.
+
+| `Aggregating function`
+| Consumes many rows and produces an aggregated result.
+| `+WITH abc(...)+`
+| Read-only.
+| Reduces cardinality, many down to one.
+
+|===
+
+Neo4j also comes bundled with a number of _built-in_ procedures and functions.
+
+The available built-in procedures varies depending edition and mode, as described in xref:4.4-preview@operations-manual:ROOT:reference/procedures/index.adoc[Operations Manual -> Procedures].
+Running `SHOW PROCEDURES` will display the full list of procedures available in a particular database instance, including user-defined procedures.
+
+The built-in functions are described in xref:4.4-preview@cypher-manual:ROOT:functions/index.adoc[Cypher Manual -> Functions].
+Running `SHOW FUNCTIONS` will display the full list of all the functions available in a particular database instance, including user-defined functions.
+

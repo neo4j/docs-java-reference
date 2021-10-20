@@ -1,0 +1,192 @@
+:description: Query parameters.
+
+
+[[cypher-parameters-java]]
+= Query parameters
+
+Here are some examples for query parameters.
+The examples below illustrate how to use parameters when executing Cypher queries from Java.
+
+For more information on parameters see the xref:4.4-preview@cypher-manual:ROOT:index.adoc[Neo4j Cypher Manual].
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithParameterForNodeId]
+
+Node ID:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "id", 0 );
+
+String query =
+    "MATCH (n)" + "\n" +
+    "WHERE id(n) = $id" + "\n" +
+    "RETURN n.name";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithParameterForNodeObject]
+
+Node object:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "node", bobNode );
+
+String query =
+    "MATCH (n:Person)" + "\n" +
+    "WHERE n = $node" + "\n" +
+    "RETURN n.name";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithParameterForMultipleNodeIds]
+
+Multiple node IDs:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "ids", asList( 0, 1, 2 ) );
+
+String query =
+    "MATCH (n)" + "\n" +
+    "WHERE id(n) IN $ids" + "\n" +
+    "RETURN n.name";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithStringLiteralAsParameter]
+
+String literal:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "name", "Johan" );
+
+String query =
+    "MATCH (n:Person)" + "\n" +
+    "WHERE n.name = $name" + "\n" +
+    "RETURN n";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithParameterForSkipLimit]
+
+Numeric parameters for `SKIP` and `LIMIT`:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "s", 1 );
+params.put( "l", 1 );
+
+String query =
+    "MATCH (n:Person)" + "\n" +
+    "RETURN n.name" + "\n" +
+    "SKIP $s" + "\n" +
+    "LIMIT $l";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=exampleWithParameterRegularExpression]
+
+Regular expression:
+[source, java]
+----
+Map<String,Object> params = new HashMap<>();
+params.put( "regex", ".*h.*" );
+
+String query =
+    "MATCH (n:Person)" + "\n" +
+    "WHERE n.name =~ $regex" + "\n" +
+    "RETURN n.name";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=create_node_from_map]
+
+Create node with properties:
+[source, java]
+----
+Map<String,Object> props = new HashMap<>();
+props.put( "name", "Andy" );
+props.put( "position", "Developer" );
+
+Map<String,Object> params = new HashMap<>();
+params.put( "props", props );
+
+String query = "CREATE ($props)";
+
+transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=create_multiple_nodes_from_map]
+
+Create multiple nodes with properties:
+[source, java]
+----
+Map<String,Object> n1 = new HashMap<>();
+n1.put( "name", "Andy" );
+n1.put( "position", "Developer" );
+n1.put( "awesome", true );
+
+Map<String,Object> n2 = new HashMap<>();
+n2.put( "name", "Michael" );
+n2.put( "position", "Developer" );
+n2.put( "children", 3 );
+
+Map<String,Object> params = new HashMap<>();
+List<Map<String,Object>> maps = asList( n1, n2 );
+params.put( "props", maps );
+
+String query =
+    "UNWIND $props AS properties" + "\n" +
+    "CREATE (n:Person)" + "\n" +
+    "SET n = properties" + "\n" +
+    "RETURN n";
+
+Result result = transaction.execute( query, params );
+----
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
+//JavaExecutionEngineDocTest.java[tag=set_properties_on_a_node_from_a_map]
+
+Setting all properties on node:
+[source, java]
+----
+Map<String, Object> n1 = new HashMap<>();
+n1.put( "name", "Andy" );
+n1.put( "position", "Developer" );
+
+Map<String, Object> params = new HashMap<>();
+params.put( "props", n1 );
+
+String query =
+    "MATCH (n:Person)" + "\n" +
+    "WHERE n.name = 'Michaela'" + "\n" +
+    "SET n = $props";
+
+transaction.execute( query, params );
+----
+

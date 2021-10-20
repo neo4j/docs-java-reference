@@ -1,0 +1,112 @@
+:description: How to write, test and deploy a user-defined function for Neo4j.
+
+:org-neo4j-procedure-UserFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserFunction.html
+
+
+[[extending-neo4j-functions]]
+= User-defined functions
+
+This describes how to write, test and deploy a user-defined function for Neo4j.
+
+_User-defined functions_ are a simpler form of procedures that are read-only and always return a single value.
+Although they are not as powerful in capability, they are often easier to use and more efficient than procedures for many common tasks.
+For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/custom-code.adoc[].
+
+
+[[call-udf]]
+== Call a user-defined function
+
+User-defined functions are called in the same way as any other Cypher function.
+The function name must be fully qualified, so a function named `join` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+MATCH (p: Person) WHERE p.age = 36
+RETURN org.neo4j.examples.join(collect(p.names))
+----
+
+
+[[writing-udf]]
+== Create a function
+
+User-defined functions are created similarly to how procedures are created, but are instead annotated with `@UserFunction` and instead of returning a stream of values it returns a single value.
+
+See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
+
+For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs for `org.neo4j.procedure.UserFunction`^].
+
+[NOTE]
+====
+The correct way to signal an error from within a function is to throw a `RuntimeException`.
+====
+
+[source, java]
+----
+package example;
+
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.Procedure;
+import org.neo4j.procedure.UserFunction;
+
+public class Join
+{
+    @UserFunction
+    @Description("example.join(['s1','s2',...], delimiter) - join the given strings with the given delimiter.")
+    public String join(
+            @Name("strings") List<String> strings,
+            @Name(value = "delimiter", defaultValue = ",") String delimiter) {
+        if (strings == null || delimiter == null) {
+            return null;
+        }
+        return String.join(delimiter, strings);
+    }
+}
+----
+
+
+== Integration tests
+
+Tests for user-defined functions are created in the same way as those for procedures.
+
+Below is a template for testing a user-defined function that joins a list of strings.
+
+[source, java]
+----
+package example;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.neo4j.driver.v1.*;
+import org.neo4j.harness.junit.Neo4jRule;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+public class JoinTest
+{
+    // This rule starts a Neo4j instance
+    @Rule
+    public Neo4jRule neo4j = new Neo4jRule()
+
+            // This is the function to test
+            .withFunction( Join.class );
+
+    @Test
+    public void shouldAllowIndexingAndFindingANode() throws Throwable
+    {
+        // This is in a try-block, to make sure you close the driver after the test
+        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withEncryptionLevel( Config.EncryptionLevel.NONE ).toConfig() ) )
+        {
+            // Given
+            Session session = driver.session();
+
+            // When
+            String result = session.run( "RETURN example.join(['Hello', 'World']) AS result").single().get("result").asString();
+
+            // Then
+            assertThat( result, equalTo( "Hello,World" ) );
+        }
+    }
+}
+----
+

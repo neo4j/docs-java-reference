@@ -1,0 +1,59 @@
+:description: Properties for nodes and relationships.
+
+
+[[property-values-detailed]]
+= Property values
+
+This describes how both nodes and relationships can have properties.
+
+Properties are named values where the name is a string.
+Property values can be either a primitive or an array of one primitive type.
+For example `String`, `int` and `int[]` values are valid for properties.
+
+[NOTE]
+====
+`NULL` is *not a valid* property value.
+Setting a property to `NULL` is equivalent to deleting the property.
+====
+
+
+[[property-value-types]]
+.Property value types
+[options="header", cols="m,"]
+|===
+| Type                              | Description
+| boolean                           |
+| byte                              | 8-bit integer.
+| short                             | 16-bit integer.
+| int                               | 32-bit integer.
+| long                              | 64-bit integer.
+| float                             | 32-bit IEEE 754 floating-point number.
+| double                            | 64-bit IEEE 754 floating-point number.
+| char                              | 16-bit unsigned integers representing Unicode characters.
+| String                            | Sequence of Unicode characters.
+| org.neo4j.graphdb.spatial.Point   | A 2D or 3D point object in a given coordinate system.
+| java.time.LocalDate               | An instant capturing the date, but not the time, nor the timezone.
+| java.time.OffsetTime              | An instant capturing the time of day, and the timezone offset, but not the date.
+| java.time.LocalTime               | An instant capturing the time of day, but not the date, nor the timezone.
+| java.time.ZonedDateTime           | An instant capturing the date, the time, and the timezone.
+| java.time.LocalDateTime           | An instant capturing the date and the time, but not the timezone.
+| java.time.temporal.TemporalAmount | A temporal amount. This captures the difference in time between two instants.
+|===
+
+For further details on float/double values, see link:http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.2.3[Java Language Specification].
+
+Note that there are two cases where more than one Java type is mapped to a single Cypher type.
+When this happens, type information is lost.
+If these objects are returned from procedures, the original types cannot be recreated:
+
+* A Cypher `Duration` is created when either a `java.time.Duration` or a `java.time.Period` is provided.
+  If a `Duration` is returned, only the common interface `java.time.temporal.TemporalAmount` will remain.
+* A Cypher `DateTime` is created when a `java.time.OffsetDateTime` is provided.
+  If a `DateTime` is returned, it will be converted into a `java.time.ZonedDateTime`.
+
+[NOTE]
+====
+Strings that contain special characters can have inconsistent or non-deterministic ordering in Neo4j.
+For details, see xref:4.4-preview@cypher-manual:ROOT:syntax/values/index.adoc#property-types-sip-note[Cypher Manual -> Sorting of special characters].
+====
+

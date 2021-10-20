@@ -1,0 +1,132 @@
+:description: Prepare a project for extending Neo4j with user-defined procedures and functions.
+
+:procedure-template-version: 1.0.0-SNAPSHOT
+
+
+[[extending-neo4j-procedures-setup]]
+= Setting up a plugin project
+
+This section describes how to prepare a project for writing user-defined procedures and functions in Neo4j.
+The following shows the steps to create and deploy a new procedure.
+
+[TIP]
+====
+The example described in this section is available link:https://github.com/neo4j-examples/neo4j-procedure-template/tree/4.0[on GitHub (neo4j-examples/neo4j-procedure-template)^].
+====
+
+== Set up a project with Maven
+
+A project can be set up in any way that allows for compiling a procedure and producing a _jar_ file.
+
+Below are the main parts of the link:https://github.com/neo4j-examples/neo4j-procedure-template/blob/4.0/pom.xml[example configuration^], using the link:https://maven.apache.org/[Maven^] build system.
+
+.Excerpts from the Maven _pom.xml_ file
+[source, xml, subs="attributes, specialcharacters"]
+----
+<project
+xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <groupId>org.neo4j.example</groupId>
+  <artifactId>procedure-template</artifactId>
+  <version>{procedure-template-version}</version>
+
+  <packaging>jar</packaging>
+  <name>Neo4j Procedure Template</name>
+  <description>A template project for building a Neo4j Procedure</description>
+
+  <properties>
+    <neo4j.version>{neo4j-version-exact}</neo4j.version>
+  </properties>
+----
+
+== Build dependencies
+
+Add a dependency section that includes the procedure and function APIs, which procedures and functions use at runtime.
+
+The scope is set to `provided`, because once the procedure is deployed to a Neo4j instance, this dependency is provided by Neo4j.
+If non-Neo4j dependencies are added to the project, their scope should normally be `compile`.
+
+[source, xml]
+----
+<dependency>
+ <groupId>org.neo4j</groupId>
+ <artifactId>neo4j</artifactId>
+ <version>${neo4j.version}</version>
+ <scope>provided</scope>
+</dependency>
+----
+
+Add dependencies that are necessary for testing the procedure.
+
+**Neo4j Harness**, a utility that allows for starting a lightweight Neo4j instance.
+It is used to start Neo4j with a specific procedure or function deployed, which greatly simplifies testing.
+
+**Neo4j Java Driver**, used to send Cypher statements that call the procedure or function.
+
+**JUnit**, a common Java test framework.
+
+[source, xml, subs="attributes, specialcharacters"]
+----
+<dependency>
+ <groupId>org.neo4j.test</groupId>
+ <artifactId>neo4j-harness</artifactId>
+ <version>${neo4j.version}</version>
+ <scope>test</scope>
+</dependency>
+
+<dependency>
+ <groupId>org.neo4j.driver</groupId>
+ <artifactId>neo4j-java-driver</artifactId>
+ <version>{java-driver-version}</version>
+ <scope>test</scope>
+</dependency>
+
+<dependency>
+ <groupId>junit</groupId>
+ <artifactId>junit</artifactId>
+ <version>4.12</version>
+ <scope>test</scope>
+</dependency>
+----
+
+
+== Build steps
+
+The steps that Maven will go through to build the project.
+
+The goal is first to _compile_ the source, then to _package_ it in a _jar_ that can be deployed to a Neo4j instance.
+
+The link:https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade^] plugin is used to package the compiled procedure.
+It also includes all dependencies in the package, unless the dependency scope is set to _test_ or _provided_.
+
+Once the procedure has been deployed to the _plugins_ directory of each Neo4j instance and the instances have restarted, the procedure is available for use.
+
+[source, xml]
+----
+<build>
+<plugins>
+ <plugin>
+   <artifactId>maven-compiler-plugin</artifactId>
+   <configuration>
+     <source>11</source>
+     <target>11</target>
+   </configuration>
+ </plugin>
+ <plugin>
+   <artifactId>maven-shade-plugin</artifactId>
+   <executions>
+     <execution>
+       <phase>package</phase>
+       <goals>
+         <goal>shade</goal>
+       </goals>
+     </execution>
+   </executions>
+ </plugin>
+</plugins>
+</build>
+----
+

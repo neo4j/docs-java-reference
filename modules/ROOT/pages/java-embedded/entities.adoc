@@ -1,0 +1,79 @@
+:description: How to handle domain entities when using Neo4j.
+
+
+[[java-embedded-entities]]
+= Domain entities
+
+This describes one way to handle domain entities when using Neo4j.
+
+Entities can be wrapped around a node.
+The same approach can be used with relationships.
+
+[TIP]
+====
+The source code of the examples is found here:
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
+====
+
+First off, store the node and make it accessible inside the package:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//Person.java[tag=the-node]
+
+[source, java]
+----
+private final Node underlyingNode;
+
+Person( GraphDatabaseService databaseService, Transaction transaction, Node personNode )
+{
+    this.databaseService = databaseService;
+    this.transaction = transaction;
+    this.underlyingNode = personNode;
+}
+
+protected Node getUnderlyingNode()
+{
+    return underlyingNode;
+}
+----
+
+Delegate attributes to the node:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//Person.java[tag=delegate-to-the-node]
+
+[source, java]
+----
+public String getName()
+{
+    return (String)underlyingNode.getProperty( NAME );
+}
+----
+
+Make sure to override these methods:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//Person.java[tag=override]
+
+[source, java]
+----
+@Override
+public int hashCode()
+{
+    return underlyingNode.hashCode();
+}
+
+@Override
+public boolean equals( Object o )
+{
+    return o instanceof Person &&
+            underlyingNode.equals( ( (Person)o ).getUnderlyingNode() );
+}
+
+@Override
+public String toString()
+{
+    return "Person[" + getName() + "]";
+}
+----
+

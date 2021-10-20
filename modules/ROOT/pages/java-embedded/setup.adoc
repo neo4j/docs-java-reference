@@ -1,0 +1,342 @@
+:description: How to embed Neo4j in your Java application.
+
+:org-neo4j-dbms-DatabaseManagementService: {neo4j-javadocs-base-uri}/org/neo4j/dbms/api/DatabaseManagementService.html
+:org-neo4j-graphdb-GraphDatabaseService: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/GraphDatabaseService.html
+:com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/EnterpriseDatabaseManagementServiceBuilder.html
+:com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/ClusterDatabaseManagementServiceBuilder.html
+
+
+[[java-embedded-setup]]
+= Including Neo4j in your project
+
+This topic describes how to embed Neo4j in your Java application.
+
+After selecting the appropriate <<editions,edition>> for your platform, you can embed Neo4j in your Java application by including the Neo4j library jars in your build.
+The following sections show how to do this by either altering the build path directly or by using dependency management.
+
+
+== Adding Neo4j to the build path
+
+Get the Neo4j libraries from one of these sources:
+
+* Extract a link:https://neo4j.com/download/other-releases/#releases[Neo4j zip/tarball^], and use the _jar_ files found in the _lib/_ directory.
+* Use the _jar_ files available from link:http://search.maven.org/#search|ga|1|g%3A%22org.neo4j%22[Maven Central Repository^].
+
+Add the jar files to your project:
+
+JDK tools::
+ Append to `-classpath`
+Eclipse::
+ * Right-click on the project and then go _Build Path -> Configure Build Path_.
+   In the dialog, choose _Add External JARs_, browse to the Neo4j _lib/_ directory and select all of the jar files.
+ * Another option is to use link:http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/buildpath/ref-preferences-user-libraries.htm[User Libraries^].
+IntelliJ IDEA::
+ See link:http://www.jetbrains.com/help/idea/2016.1/configuring-project-and-global-libraries.html[Libraries, Global Libraries, and the Configure Library dialog^].
+NetBeans::
+ * Right-click on the _Libraries_ node of the project, choose _Add JAR/Folder_, browse to the Neo4j _lib/_ directory and select all of the jar files.
+ * You can also handle libraries from the project node, see link:http://netbeans.org/kb/docs/java/project-setup.html#projects-classpath[Managing a Project's Classpath^].
+
+
+[[editions]]
+== Editions
+
+The following table outlines the available editions and their names for use with dependency management tools.
+
+[TIP]
+====
+Follow the links in the table for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, Scala SBT!
+====
+
+.Neo4j editions
+[cols="<20,<30,<50", options="header"]
+|===
+
+| Neo4j Edition
+| Dependency
+| Description
+
+| Community
+| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
+| A high performance, fully ACID transactional graph database.
+
+| Enterprise
+| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j-enterprise%22[org.neo4j:neo4j-enterprise^]
+| Adding advanced monitoring, online backup, and clustering.
+
+|===
+
+Note that the listed dependencies do not contain the implementation, but pulls it in transitively.
+
+For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
+
+Javadocs can be downloaded packaged in jar files from Maven Central or read at link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
+
+
+== Adding Neo4j as a dependency
+
+You can either go with the top-level artifact from the table above or include the individual components directly.
+The examples included here use the top-level artifact approach.
+
+
+[NOTE]
+.[enterprise-edition]#Additional information for Enterprise Edition users.#
+====
+The examples below are only valid Neo4j Community Edition.
+
+To add Neo4j Enterprise Edition as a dependency, please get in contact with Neo4j Professional Services.
+
+See xref:4.4-preview@operations-manual:ROOT:introduction/index.adoc[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
+====
+
+
+=== Maven
+
+Add the dependency to your project along the lines of the snippet below.
+This is usually done in the _pom.xml_ file found in the root directory of the project.
+
+["source", "xml", "unnumbered", "2", subs="attributes, specialcharacters"]
+----
+<project>
+...
+ <dependencies>
+  <dependency>
+   <groupId>org.neo4j</groupId>
+   <artifactId>neo4j</artifactId>
+   <version>{neo4j-version-exact}</version>
+  </dependency>
+  ...
+ </dependencies>
+...
+</project>
+----
+
+Where the `artifactId` is found in the editions table.
+
+
+=== Eclipse and Maven
+
+For development in link:http://www.eclipse.org[Eclipse^], it is recommended to install the link:http://www.eclipse.org/m2e/[m2e plugin^] and let Maven manage the project build classpath instead, see above.
+This also adds the possibility to build your project both via the command line with Maven and have a working Eclipse setup for development.
+
+
+=== Ivy
+
+Make sure to resolve dependencies from Maven Central.
+You can use this configuration in your _ivysettings.xml_ file:
+
+[source,xml]
+----
+<ivysettings>
+  <settings defaultResolver="main"/>
+  <resolvers>
+    <chain name="main">
+      <filesystem name="local">
+        <artifact pattern="${ivy.settings.dir}/repository/[artifact]-[revision].[ext]" />
+      </filesystem>
+      <ibiblio name="maven_central" root="http://repo1.maven.org/maven2/" m2compatible="true"/>
+    </chain>
+  </resolvers>
+</ivysettings>
+----
+
+With that in place, add Neo4j by adding this to your 'ivy.xml' file:
+
+["source", "xml", "unnumbered", "2", subs="attributes, specialcharacters"]
+----
+..
+<dependencies>
+  ..
+  <dependency org="org.neo4j" name="neo4j" rev="{neo4j-version-exact}"/>
+  ..
+</dependencies>
+..
+----
+
+The `name` can be found in the editions table above.
+
+
+=== Gradle
+
+The example below shows an example Gradle build script for including the Neo4j libraries:
+
+["source","groovy","unnumbered","2",subs="attributes"]
+----
+def neo4jVersion = "{neo4j-version-exact}"
+apply plugin: 'java'
+repositories {
+   mavenCentral()
+}
+dependencies {
+   compile "org.neo4j:neo4j:$\{neo4jVersion}"
+}
+----
+
+The coordinates (`org.neo4j:neo4j` in the example) are found in the editions table above.
+
+
+[[tutorials-java-embedded-setup-startstop]]
+== Starting and stopping
+
+To start the embedded DBMS you instantiate a link:{org-neo4j-dbms-DatabaseManagementService}[`org.neo4j.dbms.DatabaseManagementService`^] and get the link:{org-neo4j-graphdb-GraphDatabaseService}[`org.neo4j.graphdb.GraphDatabaseService`^] as follows:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4j.java
+//EmbeddedNeo4j.java[tag=startDb]
+
+[source, java]
+----
+managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
+graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+registerShutdownHook( managementService );
+----
+
+
+If you are using the Enterprise Edition of Neo4j in embedded standalone mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
+
+If you are intending to operate embedded clusters, then you should use the link:{com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.ClusterDatabaseManagementServiceBuilder`^] with appropriate configuration.
+For maintainability purposes, you can define your embedded DBMS configuration in the xref:4.4-preview@operations-manual:ROOT:configuration/neo4j-conf/index.adoc[_neo4j.conf_] file as follows:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
+//EmbeddedNeo4jClusterUsingBuilder.java[tag=neo4jConf]
+
+[source, properties]
+----
+dbms.mode=CORE
+dbms.default_advertised_address=core01.example.com
+dbms.default_listen_address=0.0.0.0
+causal_clustering.discovery_type=LIST
+causal_clustering.initial_discovery_members=core01.example.com,core02.example.com,core03.example.com
+dbms.connector.bolt.enabled=true
+dbms.connector.http.enabled=true
+----
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingNeo4jConf.java
+//EmbeddedNeo4jClusterUsingNeo4jConf.java[tag=startCore]
+
+[source, java]
+----
+var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
+    .loadPropertiesFromFile( "/path/to/neo4j.conf" )
+    .build();
+----
+
+It is also possible to use the builder, and specify all the parameters programmatically:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
+//EmbeddedNeo4jClusterUsingBuilder.java[tag=startCore]
+
+[source, java]
+----
+var defaultAdvertised = new SocketAddress( "core01.example.com" );
+var defaultListen = new SocketAddress( "0.0.0.0" );
+
+var initialMembers = List.of(
+    new SocketAddress( "core01.example.com" ),
+    new SocketAddress( "core02.example.com" ),
+    new SocketAddress( "core03.example.com" )
+);
+
+var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
+    .setConfig( GraphDatabaseSettings.mode, CORE )
+    .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
+    .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
+    .setConfig( CausalClusteringSettings.discovery_type, DiscoveryType.LIST )
+    .setConfig( CausalClusteringSettings.initial_discovery_members, initialMembers )
+    .setConfig( BoltConnector.enabled, true )
+    .setConfig( HttpConnector.enabled, true )
+    .build();
+----
+
+It is important to carefully consider which services you want to enable, and on which ports and interfaces.
+If you do not require Bolt or HTTP then it can be better to leave those disabled.
+
+[NOTE]
+====
+The `DatabaseManagementService` and `GraphDatabaseService` instances can be shared among multiple threads.
+Note however, that you cannot create multiple services pointing to the same database.
+====
+
+To stop the database, call the `shutdown()` method:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4j.java
+//EmbeddedNeo4j.java[tag=shutdownServer]
+
+[source, java]
+----
+managementService.shutdown();
+----
+
+To make sure Neo4j is shut down properly, add a shutdown hook:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4j.java
+//EmbeddedNeo4j.java[tag=shutdownHook]
+
+[source, java]
+----
+private static void registerShutdownHook( final DatabaseManagementService managementService )
+{
+    // Registers a shutdown hook for the Neo4j instance so that it
+    // shuts down nicely when the VM exits (even if you "Ctrl-C" the
+    // running application).
+    Runtime.getRuntime().addShutdownHook( new Thread()
+    {
+        @Override
+        public void run()
+        {
+            managementService.shutdown();
+        }
+    } );
+}
+----
+
+
+[[tutorials-java-embedded-setup-config]]
+=== Starting an embedded database with configuration settings
+
+To start Neo4j with configuration settings, a Neo4j properties file can be loaded like this:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/StartWithConfigurationDocTest.java
+//StartWithConfigurationDocTest.java[tag=startDbWithConfig]
+
+[source, java]
+----
+DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( directory )
+    .loadPropertiesFromFile( pathToConfig + "neo4j.conf" ).build();
+GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+----
+
+Configuration settings can also be applied programmatically, like so:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/StartWithConfigurationDocTest.java
+//StartWithConfigurationDocTest.java[tag=startDbWithMapConfig]
+
+[source, java]
+----
+DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( directory)
+    .setConfig( GraphDatabaseSettings.pagecache_memory, "512M" )
+    .setConfig( GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds( 60 ) )
+    .setConfig( GraphDatabaseSettings.preallocate_logical_logs, true ).build();
+GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+----
+
+
+[[tutorials-java-embedded-setup-readonly]]
+=== Starting an embedded read-only instance
+
+If you want a _read-only view_ of the database, create an instance this way:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/ReadOnlyDocTest.java
+//ReadOnlyDocTest.java[tag=createReadOnlyInstance]
+
+[source, java]
+----
+managementService = new DatabaseManagementServiceBuilder( dir ).setConfig( GraphDatabaseSettings.read_only_database_default, true ).build();
+graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+----
+
+Obviously, the database has to already exist in this case.
+
+[NOTE]
+====
+Concurrent access to the same database files by multiple (read-only or write) instances is not supported.
+====
+

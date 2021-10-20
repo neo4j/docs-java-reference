@@ -1,0 +1,207 @@
+:description: Create, use, and drop indexes.
+
+
+[[java-embedded-new-index]]
+= Using indexes
+
+It is possible to create and use all the index types described in xref:4.4-preview@cypher-manual:ROOT:indexes-for-search-performance/index.adoc[Cypher Manual -> Indexes].
+
+This section demonstrates how to work with indexes with an example of a user database.
+For information about how to create an index on all `User` nodes that have a `username` property, see xref:4.4-preview@cypher-manual:ROOT:indexes-for-search-performance/index.adoc#administration-indexes-create-a-single-property-index-for-nodes[Cypher Manual -> Create a single-property index for nodes].
+
+[TIP]
+====
+The source code used in this example is found here:
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java[EmbeddedNeo4jWithIndexing.java^]
+====
+
+Begin with starting the database server:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=startDb]
+
+[source, java]
+----
+DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
+GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+----
+
+Then you can configure the database to index users by name.
+This only needs to be done once.
+However, note that schema changes and data changes are not allowed in the same transaction.
+Each transaction must either change the schema or the data, but not both.
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=createIndex]
+
+[source, java]
+----
+IndexDefinition usernamesIndex;
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Schema schema = tx.schema();
+    usernamesIndex = schema.indexFor( Label.label( "User" ) )  // <1>
+            .on( "username" )                                  // <2>
+            .withName( "usernames" )                           // <3>
+            .create();                                         // <4>
+    tx.commit();                                               // <5>
+}
+----
+<1> A single-property index is defined on a label in combination with a property name.
+    Start your index definition by specifying the node label.
+<2> Next, define the property that should be part of this index.
+    Index all nodes with the `User` label, that also have a `username` property.
+    This way, you can find `User` nodes by their `username` properties.
+<3> An index always has a name.
+    If you don't specify a name, one will be generated for you.
+<4> Calling `create` is necessary in order for the index definition to be created in the database.
+    This index is now created, but it still only exists in our current transaction.
+<5> Committing the transaction commits our new index to the database.
+    It will become available for use once it has finished populating itself with the existing data in our database.
+
+Indexes are populated asynchronously when they are first created.
+It is possible to use the core API to wait for index population to complete:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=wait]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Schema schema = tx.schema();
+    schema.awaitIndexOnline( usernamesIndex, 10, TimeUnit.SECONDS );
+}
+----
+
+It is also possible to query the progress of the index population:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=progress]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Schema schema = tx.schema();
+    System.out.println( String.format( "Percent complete: %1.0f%%",
+        schema.getIndexPopulationProgress( usernamesIndex ).getCompletedPercentage() ) );
+}
+----
+
+Now you can add the users:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=addUsers]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Label label = Label.label( "User" );
+
+    // Create some users
+    for ( int id = 0; id < 100; id++ )
+    {
+        Node userNode = tx.createNode( label );
+        userNode.setProperty( "username", "user" + id + "@neo4j.org" );
+    }
+    System.out.println( "Users created" );
+    tx.commit();
+}
+----
+
+[NOTE]
+====
+Please read xref:java-embedded/managing-resources.adoc[] on how to properly close `ResourceIterators` returned from index lookups.
+====
+
+And this is how to find a user by ID:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=findUsers]
+
+[source, java]
+----
+Label label = Label.label( "User" );
+int idToFind = 45;
+String nameToFind = "user" + idToFind + "@neo4j.org";
+try ( Transaction tx = graphDb.beginTx() )
+{
+    try ( ResourceIterator<Node> users =
+                  tx.findNodes( label, "username", nameToFind ) )
+    {
+        ArrayList<Node> userNodes = new ArrayList<>();
+        while ( users.hasNext() )
+        {
+            userNodes.add( users.next() );
+        }
+
+        for ( Node node : userNodes )
+        {
+            System.out.println(
+                    "The username of user " + idToFind + " is " + node.getProperty( "username" ) );
+        }
+    }
+}
+----
+
+When updating the name of a user, the index is updated as well:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=updateUsers]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Label label = Label.label( "User" );
+    int idToFind = 45;
+    String nameToFind = "user" + idToFind + "@neo4j.org";
+
+    for ( Node node : loop( tx.findNodes( label, "username", nameToFind ) ) )
+    {
+        node.setProperty( "username", "user" + (idToFind + 1) + "@neo4j.org" );
+    }
+    tx.commit();
+}
+----
+
+When deleting a user, it is automatically removed from the index:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=deleteUsers]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Label label = Label.label( "User" );
+    int idToFind = 46;
+    String nameToFind = "user" + idToFind + "@neo4j.org";
+
+    for ( Node node : loop( tx.findNodes( label, "username", nameToFind ) ) )
+    {
+        node.delete();
+    }
+    tx.commit();
+}
+----
+
+In case you change your data model, you can drop the index as well:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
+//EmbeddedNeo4jWithIndexing.java[tag=dropIndex]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    IndexDefinition usernamesIndex = tx.schema().getIndexByName( "usernames" ); // <1>
+    usernamesIndex.drop();
+    tx.commit();
+}
+----
+<1> You look up the index by the index name you gave it when you created it.
+    Index names are guaranteed to be unique, to ensure that you will not mistakenly find and drop the wrong index.
+

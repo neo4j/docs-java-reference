@@ -1,0 +1,333 @@
+:description: The traversal API.
+
+
+[role=deprecated]
+[[java-embedded-traversal]]
+= Traversal
+
+This describes traversing into another graph.
+
+For more information about traversals, see xref:traversal-framework.adoc[].
+
+[WARNING]
+====
+The traversal API described in this section has been deprecated and will be replaced in the next major release of Neo4j.
+====
+
+
+== The Matrix
+
+This is the first graph to traverse into:
+
+image::examples-matrix.svg[title="Matrix node space view"]
+
+[TIP]
+====
+The source code of this example is found here:
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java[NewMatrix.java]
+====
+
+Friends and friends of friends:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java
+//NewMatrix.java[tag=get-friends]
+
+[source, java]
+----
+private Traverser getFriends( Transaction transaction, final Node person )
+{
+    TraversalDescription td = transaction.traversalDescription()
+            .breadthFirst()
+            .relationships( RelTypes.KNOWS, Direction.OUTGOING )
+            .evaluator( Evaluators.excludeStartPosition() );
+    return td.traverse( person );
+}
+----
+
+You can perform the actual traversal and print the results:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java
+//NewMatrix.java[tag=friends-usage]
+
+[source, java]
+----
+int numberOfFriends = 0;
+String output = neoNode.getProperty( "name" ) + "'s friends:\n";
+Traverser friendsTraverser = getFriends( tx, neoNode );
+for ( Path friendPath : friendsTraverser )
+{
+    output += "At depth " + friendPath.length() + " => "
+              + friendPath.endNode()
+                      .getProperty( "name" ) + "\n";
+    numberOfFriends++;
+}
+output += "Number of friends found: " + numberOfFriends + "\n";
+----
+
+Which will give you the following output:
+
+[source, output, role="noheader"]
+----
+Thomas Anderson's friends:
+At depth 1 => Morpheus
+At depth 1 => Trinity
+At depth 2 => Cypher
+At depth 3 => Agent Smith
+Number of friends found: 4
+----
+
+Who coded the Matrix?
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java
+//NewMatrix.java[tag=find-hackers]
+
+[source, java]
+----
+private Traverser findHackers( Transaction transaction, final Node startNode )
+{
+    TraversalDescription td = transaction.traversalDescription()
+        .breadthFirst()
+        .relationships( RelTypes.CODED_BY, Direction.OUTGOING )
+        .relationships( RelTypes.KNOWS, Direction.OUTGOING )
+        .evaluator(Evaluators.includeWhereLastRelationshipTypeIs( RelTypes.CODED_BY ) );
+    return td.traverse( startNode );
+}
+----
+
+Print out the result:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java
+//NewMatrix.java[tag=find--hackers-usage]
+
+[source, java]
+----
+String output = "Hackers:\n";
+int numberOfHackers = 0;
+Traverser traverser = findHackers( tx, getNeoNode( tx ) );
+for ( Path hackerPath : traverser )
+{
+    output += "At depth " + hackerPath.length() + " => " + hackerPath.endNode().getProperty( "name" ) + "\n";
+    numberOfHackers++;
+}
+output += "Number of hackers found: " + numberOfHackers + "\n";
+----
+
+Now you know who coded the Matrix:
+
+[source, output, role="noheader"]
+----
+Hackers:
+At depth 4 => The Architect
+Number of hackers found: 1
+----
+
+
+=== Walking an ordered path
+
+This example shows how to use a path context holding a representation of a path.
+
+[TIP]
+====
+The source code of this example is found here:
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java[OrderedPath.java]
+====
+
+Create a toy graph:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
+//OrderedPath.java[tag=createGraph]
+
+[source, java]
+----
+Node A = tx.createNode();
+Node B = tx.createNode();
+Node C = tx.createNode();
+Node D = tx.createNode();
+
+A.createRelationshipTo( C, REL2 );
+C.createRelationshipTo( D, REL3 );
+A.createRelationshipTo( B, REL1 );
+B.createRelationshipTo( C, REL2 );
+----
+
+image::example-ordered-path.svg[role="middle"]
+
+Now, the order of relationships (`REL1` -> `REL2` -> `REL3`) is stored in an `ArrayList`.
+Upon traversal, the `Evaluator` can check against it to ensure that only paths are included and returned that have the predefined order of relationships:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
+//OrderedPath.java[tag=walkOrderedPath]
+
+[source, java]
+----
+final ArrayList<RelationshipType> orderedPathContext = new ArrayList<>();
+orderedPathContext.add( REL1 );
+orderedPathContext.add( withName( "REL2" ) );
+orderedPathContext.add( withName( "REL3" ) );
+TraversalDescription td = tx.traversalDescription()
+    .evaluator( new Evaluator()
+    {
+        @Override
+        public Evaluation evaluate( final Path path )
+        {
+            if ( path.length() == 0 )
+            {
+                return Evaluation.EXCLUDE_AND_CONTINUE;
+            }
+            RelationshipType expectedType = orderedPathContext.get( path.length() - 1 );
+            boolean isExpectedType = path.lastRelationship()
+                    .isType( expectedType );
+            boolean included = path.length() == orderedPathContext.size() && isExpectedType;
+            boolean continued = path.length() < orderedPathContext.size() && isExpectedType;
+            return Evaluation.of( included, continued );
+        }
+    } )
+    .uniqueness( Uniqueness.NODE_PATH ); //<1>
+----
+
+<1> Note that we set the uniqueness to `Uniqueness.NODE_PATH`, as you want to be able to revisit the same node during the traversal, but not the same path.
+
+Perform the traversal and print the result:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
+//OrderedPath.java[tag=printPath]
+
+[source, java]
+----
+Traverser traverser = td.traverse( tx.getNodeById( A.getId() ) );
+PathPrinter pathPrinter = new PathPrinter( "name" );
+for ( Path path : traverser )
+{
+    output += Paths.pathToString( path, pathPrinter );
+}
+----
+
+Which will output:
+
+[source, output, role="noheader"]
+----
+(A)--[REL1]-->(B)--[REL2]-->(C)--[REL3]-->(D)
+----
+
+In this case, a custom class is used to format the path output. This is how it is done:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
+//OrderedPath.java[tag=pathPrinter]
+
+[source, java]
+----
+static class PathPrinter implements Paths.PathDescriptor<Path>
+{
+    private final String nodePropertyKey;
+
+    public PathPrinter( String nodePropertyKey )
+    {
+        this.nodePropertyKey = nodePropertyKey;
+    }
+
+    @Override
+    public String nodeRepresentation( Path path, Node node )
+    {
+        return "(" + node.getProperty( nodePropertyKey, "" ) + ")";
+    }
+
+    @Override
+    public String relationshipRepresentation( Path path, Node from, Relationship relationship )
+    {
+        String prefix = "--", suffix = "--";
+        if ( from.equals( relationship.getEndNode() ) )
+        {
+            prefix = "<--";
+        }
+        else
+        {
+            suffix = "-->";
+        }
+        return prefix + "[" + relationship.getType().name() + "]" + suffix;
+    }
+}
+----
+
+
+[[examples-uniqueness-of-paths-in-traversals]]
+== Uniqueness of Paths in traversals
+ 
+This example is demonstrating the use of node uniqueness.
+Below an imaginary domain graph with Principals that own pets that are descendant to other pets.
+ 
+.Descendants example graph
+image:uniqueness-of-paths-in-traversals-graph.svg[role="middle"]
+ 
+In order to return all descendants of `Pet0` which have the relation `owns` to `Principal1` (`Pet1` and `Pet3`),
+the Uniqueness of the traversal needs to be set to `NODE_PATH` rather than the default `NODE_GLOBAL`.
+This way nodes can be traversed more that once, and paths that have different nodes but can have some nodes in common (like the start and end node) can be returned.
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/UniquenessOfPathsDocTest.java
+//UniquenessOfPathsDocTest.java[tag=traverser]
+
+[source, java]
+----
+Node dataTarget = data.get().get( "Principal1" );
+String output = "";
+int count = 0;
+try ( Transaction transaction = graphdb().beginTx() )
+{
+    start = transaction.getNodeById( start.getId() );
+    final Node target = transaction.getNodeById( dataTarget.getId() );
+    TraversalDescription td = transaction.traversalDescription()
+            .uniqueness( Uniqueness.NODE_PATH )
+            .evaluator( new Evaluator()
+    {
+        @Override
+        public Evaluation evaluate( Path path )
+        {
+            boolean endNodeIsTarget = path.endNode().equals( target );
+            return Evaluation.of( endNodeIsTarget, !endNodeIsTarget );
+        }
+    } );
+
+    Traverser results = td.traverse( start );
+}
+----
+
+This will return the following paths:
+ 
+[source, output, role="noheader"]
+----
+(2)-[descendant,2]->(0)<-[owns,5]-(1)
+(2)-[descendant,0]->(5)<-[owns,3]-(1)
+----
+
+In the default `path.toString()` implementation, `(1)--[knows,2]-->(4)` denotes a node with `ID=1` having a relationship with `ID=2` or type `knows` to a node with `ID=4`.
+
+Let's create a new `TraversalDescription` from the old one, having `NODE_GLOBAL` uniqueness to see the difference.
+
+[TIP]
+====
+The `TraversalDescription` object is immutable, so we have to use the new instance returned with the new uniqueness setting.
+====
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/UniquenessOfPathsDocTest.java
+//UniquenessOfPathsDocTest.java[tag=traverseNodeGlobal]
+
+[source, java]
+----
+TraversalDescription nodeGlobalTd = tx.traversalDescription().uniqueness( Uniqueness.NODE_PATH ).evaluator( new Evaluator()
+{
+    @Override
+    public Evaluation evaluate( Path path )
+    {
+        boolean endNodeIsTarget = path.endNode().equals( target );
+        return Evaluation.of( endNodeIsTarget, !endNodeIsTarget );
+    }
+} ).uniqueness( Uniqueness.NODE_GLOBAL );
+Traverser results = nodeGlobalTd.traverse( start );
+----
+
+Now only one path is returned:
+
+[source, output, role="noheader"]
+----
+(2)-[descendant,2]->(0)<-[owns,5]-(1)
+----
+

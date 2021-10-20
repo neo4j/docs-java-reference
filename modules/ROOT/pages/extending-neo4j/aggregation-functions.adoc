@@ -1,0 +1,136 @@
+:description: How to write, test and deploy a user-defined aggregation function for Neo4j.
+
+:org-neo4j-procedure-UserAggregationFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserAggregationFunction.html
+
+
+[[extending-neo4j-aggregation-functions]]
+= User-defined aggregation functions
+
+This describes how to write, test and deploy a user-defined aggregation function for Neo4j.
+
+_User-defined aggregation functions_ are functions that aggregate data and return a single result.
+For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/custom-code.adoc[].
+
+
+[[call-user-defined-aggregation-function]]
+== Call a aggregation function
+
+User-defined aggregation functions are called in the same way as any other Cypher aggregation function.
+The function name must be fully qualified, so a function named `longestString` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+MATCH (p: Person) WHERE p.age = 36
+RETURN org.neo4j.examples.longestString(p.name)
+----
+
+
+[[writing-user-defined-aggregation-function]]
+== Writing a user-defined aggregation function
+
+User-defined aggregation functions are annotated with `@UserAggregationFunction`.
+The annotated function must return an instance of an aggregator class.
+An aggregator class contains one method annotated with `@UserAggregationUpdate` and one method annotated with `@UserAggregationResult`.
+The method annotated with `@UserAggregationUpdate` will be called multiple times and enables the class to aggregate data.
+When the aggregation is done the method annotated with `@UserAggregationResult` is called once and the result of the aggregation will be returned.
+
+See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
+
+For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggregationFunction}[`org.neo4j.procedure.UserAggregationFunction`^].
+
+[NOTE]
+====
+The correct way to signal an error from within an aggregation function is to throw a `RuntimeException`.
+====
+
+[source, java]
+----
+package example;
+
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.UserAggregationFunction;
+import org.neo4j.procedure.UserAggregationResult;
+import org.neo4j.procedure.UserAggregationUpdate;
+
+public class LongestString
+{
+    @UserAggregationFunction
+    @Description( "org.neo4j.function.example.longestString(string) - aggregates the longest string found" )
+    public LongStringAggregator longestString()
+    {
+        return new LongStringAggregator();
+    }
+
+    public static class LongStringAggregator
+    {
+        private int longest;
+        private String longestString;
+
+        @UserAggregationUpdate
+        public void findLongest(
+                @Name( "string" ) String string )
+        {
+            if ( string != null && string.length() > longest)
+            {
+                longest = string.length();
+                longestString = string;
+            }
+        }
+
+        @UserAggregationResult
+        public String result()
+        {
+            return longestString;
+        }
+    }
+}
+----
+
+
+== Integration tests
+
+Tests for user-defined aggregation functions are created in the same way as those for normal user-defined functions.
+
+Below is a template for testing a user-defined aggregation function that finds the longest string.
+
+[source, java]
+----
+package example;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.neo4j.driver.v1.*;
+import org.neo4j.harness.junit.Neo4jRule;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+public class LongestStringTest
+{
+    // This rule starts a Neo4j instance
+    @Rule
+    public Neo4jRule neo4j = new Neo4jRule()
+
+            // This is the function to test
+            .withAggregationFunction( LongestString.class );
+
+    @Test
+    public void shouldAllowIndexingAndFindingANode() throws Throwable
+    {
+        // This is in a try-block, to make sure you close the driver after the test
+        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withEncryptionLevel( Config.EncryptionLevel.NONE ).toConfig() ) )
+        {
+            // Given
+            Session session = driver.session();
+
+            // When
+            String result = session.run( "UNWIND ["abc", "abcd", "ab"] AS string RETURN example.longestString(string) AS result").single().get("result").asString();
+
+            // Then
+            assertThat( result, equalTo( "abcd" ) );
+        }
+    }
+}
+----
+

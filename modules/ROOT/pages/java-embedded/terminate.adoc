@@ -1,0 +1,98 @@
+:description: How to terminate (abort) a long-running transaction from another thread.
+
+
+[[java-embedded-tx-terminate]]
+= Terminate a transaction
+
+The describes how to terminate (abort) a long-running transaction from another thread.
+
+[TIP]
+====
+The source code for the examples can be found here:
+https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java[TerminateTransactions.java^]
+====
+
+First, start the database server:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
+//TerminateTransactions.java[tag=startDb]
+
+[source, java]
+----
+DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
+GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
+----
+
+Then start creating an infinite binary tree of nodes in the database, as an example of a long-running transaction:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
+//TerminateTransactions.java[tag=mkTree]
+
+[source, java]
+----
+RelationshipType relType = RelationshipType.withName( "CHILD" );
+Queue<Node> nodes = new LinkedList<>();
+int depth = 1;
+
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Node rootNode = tx.createNode();
+    nodes.add( rootNode );
+
+    for (; true; depth++) {
+        int nodesToExpand = nodes.size();
+        for (int i = 0; i < nodesToExpand; ++i) {
+            Node parent = nodes.remove();
+
+            Node left = tx.createNode();
+            Node right = tx.createNode();
+
+            parent.createRelationshipTo( left, relType );
+            parent.createRelationshipTo( right, relType );
+
+            nodes.add( left );
+            nodes.add( right );
+        }
+    }
+}
+catch ( TransactionTerminatedException ignored )
+{
+    return String.format( "Created tree up to depth %s in 1 sec", depth );
+}
+----
+
+After waiting for some time, you decide to terminate the transaction.
+This is done from a separate thread:
+
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
+//TerminateTransactions.java[tag=terminateTx]
+
+[source, java]
+----
+tx.terminate();
+----
+
+Running this will execute the long-running transaction for about one second and prints the maximum depth of the tree that was created before the transaction was terminated.
+No changes are actually made to the data -- because the transaction has been terminated, the end result is as if no operations were performed.
+
+This is an example output:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
+//return String.format( "Created tree up to depth %s in 1 sec", depth );
+
+[source, output, role="noheader"]
+----
+Created tree up to depth 18 in 1 sec
+----
+
+Finally, the database can be shut down again:
+
+//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
+//TerminateTransactions.java[tag=shutdownDb]
+
+[source, java]
+----
+managementService.shutdown();
+----
+
