@@ -24,6 +24,16 @@ In Maven this would be achieved by adding the following lines to the pom file:
 ["source", "xml", "unnumbered", "2", subs="attributes, specialcharacters"]
 ----
 <dependency>
+    <groupId>org.neo4j.3rdparty.javax.ws.rs</groupId>
+    <artifactId>jsr311-api</artifactId>
+    <version>1.1.2.r612</version>
+    <scope>provided</scope>
+</dependency>
+----
+
+["source", "xml", "unnumbered", "2", subs="attributes, specialcharacters"]
+----
+<dependency>
     <groupId>org.neo4j</groupId>
     <artifactId>neo4j</artifactId>
     <version>{neo4j-version-exact}</version>
@@ -33,7 +43,7 @@ In Maven this would be achieved by adding the following lines to the pom file:
 
 Now you are ready to write your extension.
 
-In your code, you will interact with the database using `DatabaseManagementService`, which you can access by using the `@Context` annotation.
+In your code, you will interact with the database using `GraphDatabaseService`, which you can access by using the `@Context` annotation.
 The following example serves as a template which you can base your extension on:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java
@@ -44,11 +54,11 @@ The following example serves as a template which you can base your extension on:
 @Path( "/helloworld" )
 public class HelloWorldResource
 {
-    private final DatabaseManagementService dbms;
+    private final GraphDatabaseService database;
 
-    public HelloWorldResource( @Context DatabaseManagementService dbms )
+    public HelloWorldResource( @Context GraphDatabaseService database )
     {
-        this.dbms = dbms;
+        this.database = database;
     }
 
     @GET
@@ -114,15 +124,15 @@ For example, the following unmanaged extension streams an array of a person's co
 @Path("/colleagues")
 public class ColleaguesResource
 {
-    private DatabaseManagementService dbms;
+    private GraphDatabaseService graphDb;
     private final ObjectMapper objectMapper;
 
     private static final RelationshipType ACTED_IN = RelationshipType.withName( "ACTED_IN" );
     private static final Label PERSON = Label.label( "Person" );
 
-    public ColleaguesResource( @Context DatabaseManagementService dbms )
+    public ColleaguesResource( @Context GraphDatabaseService graphDb )
     {
-        this.dbms = dbms;
+        this.graphDb = graphDb;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -140,17 +150,16 @@ public class ColleaguesResource
                 jg.writeFieldName( "colleagues" );
                 jg.writeStartArray();
 
-                final GraphDatabaseService graphDb = dbms.database( "neo4j" );
                 try ( Transaction tx = graphDb.beginTx();
-                      ResourceIterator<Node> persons = tx.findNodes( PERSON, "name", personName ) )
+                      ResourceIterator<Node> persons = graphDb.findNodes( PERSON, "name", personName ) )
                 {
                     while ( persons.hasNext() )
                     {
                         Node person = persons.next();
-                        for ( Relationship actedIn : person.getRelationships( OUTGOING, ACTED_IN ) )
+                        for ( Relationship actedIn : person.getRelationships( ACTED_IN, OUTGOING ) )
                         {
                             Node endNode = actedIn.getEndNode();
-                            for ( Relationship colleagueActedIn : endNode.getRelationships( INCOMING, ACTED_IN ) )
+                            for ( Relationship colleagueActedIn : endNode.getRelationships( ACTED_IN, INCOMING ) )
                             {
                                 Node colleague = colleagueActedIn.getStartNode();
                                 if ( !colleague.equals( person ) )
@@ -160,7 +169,7 @@ public class ColleaguesResource
                             }
                         }
                     }
-                    tx.commit();
+                    tx.success();
                 }
 
                 jg.writeEndArray();
@@ -243,11 +252,11 @@ For example, the following unmanaged extension retrieves a person's colleagues u
 public class ColleaguesCypherExecutionResource
 {
     private final ObjectMapper objectMapper;
-    private DatabaseManagementService dbms;
+    private GraphDatabaseService graphDb;
 
-    public ColleaguesCypherExecutionResource( @Context DatabaseManagementService dbms )
+    public ColleaguesCypherExecutionResource( @Context GraphDatabaseService graphDb )
     {
-        this.dbms = dbms;
+        this.graphDb = graphDb;
         this.objectMapper = new ObjectMapper();
     }
 
@@ -267,16 +276,15 @@ public class ColleaguesCypherExecutionResource
                 jg.writeFieldName( "colleagues" );
                 jg.writeStartArray();
 
-                final GraphDatabaseService graphDb = dbms.database( "neo4j" );
                 try ( Transaction tx = graphDb.beginTx();
-                      Result result = tx.execute( colleaguesQuery(), params ) )
+                      Result result = graphDb.execute( colleaguesQuery(), params ) )
                 {
                     while ( result.hasNext() )
                     {
                         Map<String,Object> row = result.next();
                         jg.writeString( ((Node) row.get( "colleague" )).getProperty( "name" ).toString() );
                     }
-                    tx.commit();
+                    tx.success();
                 }
 
                 jg.writeEndArray();
@@ -359,24 +367,45 @@ public static class MyUnmanagedExtension
 public void testMyExtension() throws Exception
 {
     // Given
-    HTTP.Response response = HTTP.GET( HTTP.GET( neo4j.httpURI().resolve( "myExtension" ).toString() ).location() );
+    try ( ServerControls server = getServerBuilder()
+            .withExtension( "/myExtension", MyUnmanagedExtension.class )
+            .newServer() )
+    {
+        // When
+        HTTP.Response response = HTTP.GET(
+                HTTP.GET( server.httpURI().resolve( "myExtension" ).toString() ).location() );
 
-    // Then
-    assertEquals( 200, response.status() );
+        // Then
+        assertEquals( 200, response.status() );
+    }
 }
 
 @Test
-public void testMyExtensionWithFunctionFixture()
+public void testMyExtensionWithFunctionFixture() throws Exception
 {
-    final GraphDatabaseService graphDatabaseService = neo4j.defaultDatabaseService();
-    try ( Transaction transaction = graphDatabaseService.beginTx() )
+    // Given
+    try ( ServerControls server = getServerBuilder()
+            .withExtension( "/myExtension", MyUnmanagedExtension.class )
+            .withFixture( new Function<GraphDatabaseService, Void>()
+            {
+                @Override
+                public Void apply( GraphDatabaseService graphDatabaseService ) throws RuntimeException
+                {
+                    try ( Transaction tx = graphDatabaseService.beginTx() )
+                    {
+                        graphDatabaseService.createNode( Label.label( "User" ) );
+                        tx.success();
+                    }
+                    return null;
+                }
+            } )
+            .newServer() )
     {
-        // Given
-        Result result = transaction.execute( "MATCH (n:User) return n" );
+        // When
+        Result result = server.graph().execute( "MATCH (n:User) return n" );
 
         // Then
         assertEquals( 1, count( result ) );
-        transaction.commit();
     }
 }
 ----
@@ -397,18 +426,24 @@ If you are using the JUnit test framework, there is a JUnit rule available as we
 @Rule
 public Neo4jRule neo4j = new Neo4jRule()
         .withFixture( "CREATE (admin:Admin)" )
-        .withFixture( graphDatabaseService ->
+        .withConfig( LegacySslPolicyConfig.certificates_directory.name(),
+                getRelativePath( getSharedTestTemporaryFolder(), LegacySslPolicyConfig.certificates_directory ) )
+        .withFixture( new Function<GraphDatabaseService, Void>()
         {
-            try (Transaction tx = graphDatabaseService.beginTx())
+            @Override
+            public Void apply( GraphDatabaseService graphDatabaseService ) throws RuntimeException
             {
-                tx.createNode( Label.label( "Admin" ) );
-                tx.commit();
+                try (Transaction tx = graphDatabaseService.beginTx())
+                {
+                    graphDatabaseService.createNode( Label.label( "Admin" ) );
+                    tx.success();
+                }
+                return null;
             }
-            return null;
         } );
 
 @Test
-public void shouldWorkWithServer()
+public void shouldWorkWithServer() throws Exception
 {
     // Given
     URI serverURI = neo4j.httpURI();
@@ -420,9 +455,9 @@ public void shouldWorkWithServer()
     assertEquals(200, response.status());
 
     // and we have access to underlying GraphDatabaseService
-    try (Transaction tx = neo4j.defaultDatabaseService().beginTx()) {
-        assertEquals( 2, count(tx.findNodes( Label.label( "Admin" ) ) ));
-        tx.commit();
+    try (Transaction tx = neo4j.getGraphDatabaseService().beginTx()) {
+        assertEquals( 2, count(neo4j.getGraphDatabaseService().findNodes( Label.label( "Admin" ) ) ));
+        tx.success();
     }
 }
 ----
