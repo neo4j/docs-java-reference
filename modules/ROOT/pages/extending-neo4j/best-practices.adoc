@@ -5,7 +5,7 @@
 = Best practices
 
 It is also important to consider any security implications of deploying custom code.
-Refer to the xref:4.4-preview@operations-manual:ROOT:security/securing-extensions/index.adoc[Operations Manual -> Securing Extensions] for details on best practices for securing user-defined procedures and functions.
+Refer to the xref:4.3@operations-manual:ROOT:security/securing-extensions/index.adoc[Operations Manual -> Securing Extensions] for details on best practices for securing user-defined procedures and functions.
 
 Since you will be running custom-built code and Neo4j in the same JVM, there are a few things you should keep in mind:
 
