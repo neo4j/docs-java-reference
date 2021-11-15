@@ -19,7 +19,7 @@ Writing extensions requires the user to be familiar with Java or other JVM progr
 //The following topics are:
 //
 //How to develop and deploy user-defined procedures and functions.
-//How to develop and deploy custom authentication and authorization plugins.
+//How to develop and deploy a customized authentication and authorization plugins.
 //How to customize the analyzer used in a full-text index.
 //How to build extensions for the Neo4j HTTP server.
 //How to configure the Neo4j server for remote debugging sessions.
