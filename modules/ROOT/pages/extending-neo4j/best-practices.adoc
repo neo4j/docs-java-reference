@@ -4,10 +4,10 @@
 [[best-practices]]
 = Best practices
 
-It is also important to consider any security implications of deploying custom code.
+It is also important to consider any security implications of deploying customized code.
 Refer to the xref:5.0@operations-manual:ROOT:security/securing-extensions/index.adoc[Operations Manual -> Securing Extensions] for details on best practices for securing user-defined procedures and functions.
 
-Since you will be running custom-built code and Neo4j in the same JVM, there are a few things you should keep in mind:
+Since you will be running customized-built code and Neo4j in the same JVM, there are a few things you should keep in mind:
 
 * Do not create or retain more objects than you strictly need to.
   Large caches in particular tend to promote more objects to the old generation, thus increasing the need for expensive full garbage collections.

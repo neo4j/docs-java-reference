@@ -2,7 +2,7 @@
 
 * xref:extending-neo4j/index.adoc[]
 ** xref:extending-neo4j/best-practices.adoc[]
-** xref:extending-neo4j/custom-code.adoc[]
+** xref:extending-neo4j/customized-code.adoc[]
 ** xref:extending-neo4j/project-setup.adoc[]
 ** xref:extending-neo4j/values-and-types.adoc[]
 ** xref:extending-neo4j/procedures.adoc[]

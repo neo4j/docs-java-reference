@@ -209,7 +209,8 @@ Which will output:
 (A)--[REL1]-->(B)--[REL2]-->(C)--[REL3]-->(D)
 ----
 
-In this case, a custom class is used to format the path output. This is how it is done:
+In this case, a customized class is used to format the path output.
+This is how it is done:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
 //OrderedPath.java[tag=pathPrinter]
