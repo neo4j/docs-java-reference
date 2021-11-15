@@ -21,7 +21,7 @@ This section provides an overview of the concepts of the traversal framework, an
 The Neo4j Traversal framework Java API is a callback-based, lazily-executed way of specifying desired movements through a graph in Java.
 Some traversal examples are collected under xref:java-embedded/traversal.adoc[].
 
-You can also use the xref:4.4-preview@cypher-manual:ROOT:index.adoc[Cypher query language] as a powerful declarative way to query the graph.
+You can also use the xref:5.0@cypher-manual:ROOT:index.adoc[Cypher query language] as a powerful declarative way to query the graph.
 
 
 [[traversal-concepts]]
