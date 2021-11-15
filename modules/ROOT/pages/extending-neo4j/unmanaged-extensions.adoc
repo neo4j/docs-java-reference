@@ -65,7 +65,7 @@ public class HelloWorldResource
 The full source code is found here:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java[HelloWorldResource.java^]
 
-Having built your code, the resulting jar file (and any custom dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
+Having built your code, the resulting jar file (and any customized dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
 You also need to tell Neo4j where to look for the extension by adding some configuration in _neo4j.conf_:
 
 [source]
@@ -337,7 +337,7 @@ You can access this toolkit by adding the following test dependency to your proj
 </dependency>
 --------
 
-The test toolkit provides a mechanism to start a Neo4j instance with custom configuration and with extensions of your choice.
+The test toolkit provides a mechanism to start a Neo4j instance with a customized configuration and with extensions of your choice.
 It also provides mechanisms to specify data fixtures to include when starting Neo4j, as you can see in the example below:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/neo4j-harness-enterprise-test/src/test/java/org/neo4j/harness/enterprise/doc/ExtensionTestingDocIT.java

@@ -26,7 +26,7 @@ Once a full-text index has been created, it remembers the analyzer in its index-
 
 It is possible to extend the available analyzers in Neo4j, by implementing an `AnalyzerProvider`.
 The `AnalyzerProvider` acts as a factory, which builds the concrete Lucene `Analyzer` instance used by the index.
-The following example creates a custom analyzer:
+The following example creates a customized analyzer:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/AnalyzerProviderExample.java
 //AnalyzerProviderExample.java[tag=customAnalyzerProvider]
@@ -58,11 +58,11 @@ public class CustomAnalyzerProvider extends AnalyzerProvider // <1>
     }
 }
 ----
-<1> The custom analyzer provider class must be `public`, and it must extend the `org.neo4j.graphdb.schema.AnalyzerProvider` class.
-<2> The custom analyzer provider class must additionally have a `public` constructor that takes no arguments.
+<1> The `CustomAnalyzerProvider` class must be `public`, and it must extend the `org.neo4j.graphdb.schema.AnalyzerProvider` class.
+<2> The `CustomAnalyzerProvider` class must additionally have a `public` constructor that takes no arguments.
     Without this constructor, the new analyzer provider will not be loaded by Neo4j.
     There will be no warnings logged when an analyzer provider is ignored for this reason, so take care.
-<3> The constructor must then call its super-constructor, and give the name of the custom analyzer provider as an argument.
+<3> The constructor must then call its super-constructor, and give the name of the `custom-analyzer` provider as an argument.
     This is the name that will be used to refer to this analyzer provider, when configuring indexes.
 <4> Lastly, the `createAnalyzer` method must be implemented.
     This method creates and returns the concrete `Analyzer` instance, that the indexes will use.
@@ -70,7 +70,7 @@ public class CustomAnalyzerProvider extends AnalyzerProvider // <1>
 <5> In this example, we are creating instances of Lucene's `CustomAnalyzer`.
     We can, however, create and return anything that extends the `org.apache.lucene.analysis.Analyzer` class.
 
-Follow the guide in xref:extending-neo4j/project-setup.adoc[], to learn how to package the custom `AnalyzerProvider` in a JAR file that can be integrated into Neo4j.
+Follow the guide in xref:extending-neo4j/project-setup.adoc[], to learn how to package the customized `AnalyzerProvider` in a JAR file that can be integrated into Neo4j.
 
 The analyzer providers are picked up by Neo4j via service loading.
 This means that in addition to having implemented the class above, we must also add the fully qualified class name to a service file, and put that file on the class path.
