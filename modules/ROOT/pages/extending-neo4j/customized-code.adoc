@@ -1,10 +1,10 @@
 :description: Preferred means for extending Neo4j.
 
 
-[[neo4j-custom-code]]
-= Neo4j custom code
+[[neo4j-customized-code]]
+= Neo4j customized code
 
-_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing custom code, which can be invoked directly from Cypher.
+_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
 This is the preferred means for extending Neo4j.
 
 Examples of use cases for procedures and functions are:

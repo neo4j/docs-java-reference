@@ -9,7 +9,7 @@
 This describes how to write, test and deploy a user-defined aggregation function for Neo4j.
 
 _User-defined aggregation functions_ are functions that aggregate data and return a single result.
-For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/custom-code.adoc[].
+For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
 
 
 [[call-user-defined-aggregation-function]]
