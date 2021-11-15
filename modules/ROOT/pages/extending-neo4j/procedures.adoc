@@ -136,7 +136,7 @@ Particular things to note:
 MATCH (n)
 WHERE n.key = 'value'
 WITH n
-CALL deleteNeighbours(n, 'FOLLOWS')`
+CALL deleteNeighbours(n, 'FOLLOWS')
 ----
 This query could delete some of the nodes that would be matched by the Cypher query, and then the `n.key` lookup will fail.
 Marking this procedure as `eager` will prevent this from causing an error in Cypher code.
