@@ -99,6 +99,11 @@ The steps that Maven will go through to build the project.
 
 The goal is first to _compile_ the source, then to _package_ it in a _jar_ that can be deployed to a Neo4j instance.
 
+[NOTE]
+====
+Procedures and functions require at least Java 8, so the version `1.8` should be defined as the source and target version in the configuration for the Maven compiler plugin.
+====
+
 The link:https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade^] plugin is used to package the compiled procedure.
 It also includes all dependencies in the package, unless the dependency scope is set to _test_ or _provided_.
 
@@ -110,9 +115,10 @@ Once the procedure has been deployed to the _plugins_ directory of each Neo4j in
 <plugins>
  <plugin>
    <artifactId>maven-compiler-plugin</artifactId>
+   <version>3.1</version>
    <configuration>
-     <source>11</source>
-     <target>11</target>
+     <source>1.8</source>
+     <target>1.8</target>
    </configuration>
  </plugin>
  <plugin>
