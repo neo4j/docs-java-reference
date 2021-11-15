@@ -8,9 +8,9 @@
 
 This describes how to write, test, and deploy a user-defined procedure for Neo4j.
 
-A _user-defined procedure_ is a mechanism that enables you to extend Neo4j by writing custom code, which can be invoked directly from Cypher.
+A _user-defined procedure_ is a mechanism that enables you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
 Procedures can take arguments, perform operations on the database, and return results.
-For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/custom-code.adoc[].
+For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
 
 
 [[call-procedure]]

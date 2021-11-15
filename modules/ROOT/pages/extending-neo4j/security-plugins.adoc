@@ -1,18 +1,18 @@
-:description: Extending Neo4j with custom-built authentication and authorization plugins.
+:description: Extending Neo4j with customized-built authentication and authorization plugins.
 
 
 [role=enterprise-edition]
 [[extending-neo4j-security-plugins]]
 = Authentication and authorization plugins
 
-This describes Neo4j support for custom-built authentication and authorization plugins.
+This describes Neo4j support for customized-built authentication and authorization plugins.
 
 Neo4j provides authentication and authorization plugin interfaces to support real-world deployment scenarios
 not covered by native users or the built-in configuration-based LDAP connector.
 
 The SPI (Service Provider Interface) lives in the `com.neo4j.server.security.enterprise.auth.plugin.spi` package.
 
-Custom-built plugins have access to the xref:4.3@operations-manual:ROOT:configuration/file-locations/index.adoc[_<neo4j-home>_] directory in case you want to load any custom settings from a file located there.
+Customized-built plugins have access to the xref:4.3@operations-manual:ROOT:configuration/file-locations/index.adoc[_<neo4j-home>_] directory in case you want to load any customized settings from a file located there.
 Plugins can also write to the security event log.
 
 
@@ -93,7 +93,7 @@ public AuthInfo authenticateAndAuthorize( AuthToken authToken )
 Neo4j provides an extendable platform as some user deployment scenarios may not be easily configured through standard LDAP connector.
 One known complexity is integrating with LDAP user directory where groups have users as a member and the not other way around.
 
-The example below first searches for a group that the user is member of, and then maps that group to the Neo4j role by calling the custom-built `getNeo4jRoleForGroupId` method:
+The example below first searches for a group that the user is member of, and then maps that group to the Neo4j role by calling the customized-built `getNeo4jRoleForGroupId` method:
 
 [source, java]
 ----
