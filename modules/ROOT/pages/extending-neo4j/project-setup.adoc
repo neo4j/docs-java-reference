@@ -11,7 +11,7 @@ The following shows the steps to create and deploy a new procedure.
 
 [TIP]
 ====
-The example described in this section is available link:https://github.com/neo4j-examples/neo4j-procedure-template/tree/4.0[on GitHub (neo4j-examples/neo4j-procedure-template)^].
+The example described in this section is available link:https://github.com/neo4j-examples/neo4j-procedure-template/tree/3.5[on GitHub (neo4j-examples/neo4j-procedure-template)^].
 ====
 
 == Set up a project with Maven
