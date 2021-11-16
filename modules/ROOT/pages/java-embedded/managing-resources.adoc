@@ -14,8 +14,8 @@ This is either achieved by exhausting the iterator or by explicitly calling its 
 Below is an example of how to work with a `ResourceIterator`.
 As you do not exhaust the iterator, you can close it explicitly using the `close()` method.
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
-//EmbeddedNeo4jWithIndexing.java[tag=resourceIterator]
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithNewIndexing.java
+//EmbeddedNeo4jWithNewIndexing.java[tag=resourceIterator]
 
 [source, java]
 ----
@@ -23,7 +23,7 @@ Label label = Label.label( "User" );
 int idToFind = 45;
 String nameToFind = "user" + idToFind + "@neo4j.org";
 try ( Transaction tx = graphDb.beginTx();
-      ResourceIterator<Node> users = tx.findNodes( label, "username", nameToFind ) )
+      ResourceIterator<Node> users = graphDb.findNodes( label, "username", nameToFind ) )
 {
     Node firstUserNode;
     if ( users.hasNext() )
@@ -31,7 +31,6 @@ try ( Transaction tx = graphDb.beginTx();
         firstUserNode = users.next();
     }
     users.close();
-    // ... Do stuff with the firstUserNode we found ...
 }
 ----
 
