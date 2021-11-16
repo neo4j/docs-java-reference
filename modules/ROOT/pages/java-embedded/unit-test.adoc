@@ -1,0 +1,119 @@
+:description: Unit testing.
+
+
+[[java-embedded-unit-test]]
+= Unit test
+
+[WARNING]
+====
+The testing methods described in this section rely on internal artifacts and APIs, and are deprecated.
+New methods for testing will be provided in Neo4j 4.0.
+====
+
+Please use `it-test-support` to access Neo4j testing facilities.
+They are available for download at link:https://search.maven.org/search?q=g:org.neo4j.community%20AND%20a:it-test-support[Maven Central `it-test-support`^].
+
+The basic pattern of unit testing with Neo4j is illustrated by the following example.
+
+.Basic unit testing
+=====
+
+[NOTE]
+====
+For the full source code of this example see link:https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/Neo4jBasicDocTest.java[`Neo4jBasicDocTest.java`^].
+====
+
+Using Maven as a dependency manager you would typically add this dependency together with JUnit and Hamcrest like so:
+
+[source, xml]
+----
+<project>
+...
+ <dependencies>
+  <dependency>
+   <groupId>org.neo4j.community</groupId>
+   <artifactId>it-test-support</artifactId>
+   <version>3.5.30</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>junit</groupId>
+   <artifactId>junit</artifactId>
+   <version>4.12</version>
+   <scope>test</scope>
+  </dependency>
+  <dependency>
+   <groupId>org.hamcrest</groupId>
+   <artifactId>hamcrest-all</artifactId>
+   <version>1.3</version>
+   <scope>test</scope>
+  </dependency>
+  ...
+ </dependencies>
+...
+</project>
+----
+
+With that in place, you are ready to code some unit tests.
+
+Before each test, create a fresh database:
+
+[source, java]
+----
+@Before
+public void prepareTestDatabase()
+{
+    graphDb = new TestGraphDatabaseFactory().newImpermanentDatabase( testDirectory.directory() );
+}
+----
+
+After the test has executed, the database should be shut down:
+
+[source, java]
+----
+@After
+public void destroyTestDatabase()
+{
+    graphDb.shutdown();
+}
+----
+
+During a test, create nodes and check to see that they are there, while enclosing write operations in a transaction.
+
+[source, java]
+----
+Node n;
+try ( Transaction tx = graphDb.beginTx() )
+{
+    n = graphDb.createNode();
+    n.setProperty( "name", "Nancy" );
+    tx.success();
+}
+
+// The node should have a valid id
+assertThat( n.getId(), is( greaterThan( -1L ) ) );
+
+// Retrieve a node by using the id of the created node. The id's and
+// property should match.
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Node foundNode = graphDb.getNodeById( n.getId() );
+    assertThat( foundNode.getId(), is( n.getId() ) );
+    assertThat( (String) foundNode.getProperty( "name" ), is( "Nancy" ) );
+}
+----
+
+If you want to set configuration parameters at database creation, it is done like this:
+
+[source, java]
+----
+GraphDatabaseService db = new TestGraphDatabaseFactory()
+    .newImpermanentDatabaseBuilder()
+    .setConfig( GraphDatabaseSettings.pagecache_memory, "512M" )
+    .setConfig( GraphDatabaseSettings.string_block_size, "60" )
+    .setConfig( GraphDatabaseSettings.array_block_size, "300" )
+    .newGraphDatabase();
+----
+
+=====
+

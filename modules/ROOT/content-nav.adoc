@@ -20,6 +20,7 @@
 ** xref:java-embedded/explicit-indexes.adoc[]
 ** xref:java-embedded/managing-resources.adoc[]
 ** xref:java-embedded/logging.adoc[]
+** xref:java-embedded/unit-test.adoc[]
 ** xref:java-embedded/traversal.adoc[]
 ** xref:java-embedded/entities.adoc[]
 ** xref:java-embedded/graph-algorithms.adoc[]
