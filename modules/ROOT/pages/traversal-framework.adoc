@@ -3,18 +3,8 @@
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 
 
-[role=deprecated]
 [[traversal]]
 = The traversal framework
-
-[IMPORTANT]
-====
-The traversal API described in this section has been deprecated and will be replaced by a new version of the API in the next major release of Neo4j.
-This new version will be available in a future release of Neo4j 4.x, alongside the current version.
-The current version, as detailed below, will be removed in Neo4j 5.0.
-
-For a detailed example on how to use the traversal framework, refer to link:https://neo4j.com/docs/java-reference/3.5/tutorial-traversal/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
-====
 
 This section provides an overview of the concepts of the traversal framework, and a detailed description of the Neo4j traversal framework Java API.
 
