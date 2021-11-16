@@ -12,22 +12,20 @@ The same approach can be used with relationships.
 [TIP]
 ====
 The source code of the examples is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[`Person.java`^]
 ====
 
 First off, store the node and make it accessible inside the package:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
 //Person.java[tag=the-node]
 
 [source, java]
 ----
 private final Node underlyingNode;
 
-Person( GraphDatabaseService databaseService, Transaction transaction, Node personNode )
+Person( Node personNode )
 {
-    this.databaseService = databaseService;
-    this.transaction = transaction;
     this.underlyingNode = personNode;
 }
 
@@ -39,7 +37,7 @@ protected Node getUnderlyingNode()
 
 Delegate attributes to the node:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
 //Person.java[tag=delegate-to-the-node]
 
 [source, java]
@@ -52,7 +50,7 @@ public String getName()
 
 Make sure to override these methods:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java
 //Person.java[tag=override]
 
 [source, java]
