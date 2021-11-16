@@ -1,0 +1,38 @@
+:description: How to access the Neo4j management beans that are included in the JmxUtils class.
+
+:org-neo4j-jmx-JmxUtils: {neo4j-javadocs-base-uri}/org/neo4j/jmx/JmxUtils.html
+
+
+[[java-embedded-management-attribute]]
+[role=deprecated]
+= Reading a management attribute
+
+This topic describes how to access the Neo4j management beans that are included in the link:{org-neo4j-jmx-JmxUtils}[`org.neo4j.jmx.JmxUtils`^] class.
+
+The JmxUtils class includes methods to access Neo4j management beans.
+The common JMX service can be used as well, but from your code you probably rather want to use the approach outlined below.
+
+[NOTE]
+====
+The source code of the example is found here: link:https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/JmxDocTest.java[`JmxDocTest.java`^]
+====
+
+
+This example shows how to get the start time of a database:
+
+[source, java]
+----
+private static Date getStartTimeFromManagementBean(
+        GraphDatabaseService graphDbService )
+{
+    ObjectName objectName = JmxUtils.getObjectName( graphDbService, "Kernel" );
+    Date date = JmxUtils.getAttribute( objectName, "KernelStartTime" );
+    return date;
+}
+----
+
+Depending on which Neo4j edition you are using different sets of management beans are available.
+
+* For all editions, see the link:https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/jmx/package-summary.html[`org.neo4j.jmx`^] package.
+* For the Enterprise Edition, see the link:https://neo4j.com/docs/java-reference/3.5/javadocs/org/neo4j/management/package-summary.html[`org.neo4j.management`^] package as well.
+

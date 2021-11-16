@@ -24,6 +24,7 @@
 ** xref:java-embedded/traversal.adoc[]
 ** xref:java-embedded/entities.adoc[]
 ** xref:java-embedded/graph-algorithms.adoc[]
+** xref:java-embedded/management-attribute.adoc[]
 ** xref:java-embedded/unique-nodes.adoc[]
 ** xref:java-embedded/bolt.adoc[]
 ** xref:java-embedded/terminate.adoc[]
