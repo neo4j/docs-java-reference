@@ -17,6 +17,7 @@
 ** xref:java-embedded/hello-world.adoc[]
 ** xref:java-embedded/property-values.adoc[]
 ** xref:java-embedded/indexes.adoc[]
+** xref:java-embedded/explicit-indexes.adoc[]
 ** xref:java-embedded/managing-resources.adoc[]
 ** xref:java-embedded/logging.adoc[]
 ** xref:java-embedded/traversal.adoc[]
