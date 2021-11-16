@@ -12,12 +12,12 @@ For details on the graph algorithm usage, see the link:{org-neo4j-graphalgo-grap
 [TIP]
 ====
 The source code used in the example is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java[PathFindingDocTest.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java[`PathFindingDocTest.java`^]
 ====
 
 Calculating the shortest path (least number of relationships) between two nodes:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
 //PathFindingDocTest.java[tag=shortestPathUsage]
 
 [source, java]
@@ -42,7 +42,7 @@ Iterable<Path> paths = finder.findAllPaths( startNode, endNode );
 
 Using link:https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm[Dijkstra's algorithm^] to calculate cheapest path between node A and B where each relationship can have a weight (i.e. cost) and the path(s) with least cost are found.
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
 //PathFindingDocTest.java[tag=dijkstraUsage]
 
 [source, java]
@@ -61,7 +61,7 @@ This is the example graph:
 
 image::graphalgo-astar.svg[alt="A* algorithm example graph"]
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java
 //PathFindingDocTest.java[tag=astarUsage]
 
 [source, java]
@@ -73,13 +73,18 @@ Relationship relAB = createRelationship( nodeA, nodeC, "length", 2d );
 Relationship relBC = createRelationship( nodeC, nodeB, "length", 3d );
 Relationship relAC = createRelationship( nodeA, nodeB, "length", 10d );
 
-EstimateEvaluator<Double> estimateEvaluator = ( node, goal ) ->
+EstimateEvaluator<Double> estimateEvaluator = new EstimateEvaluator<Double>()
 {
-    double dx = (Double) node.getProperty( "x" ) - (Double) goal.getProperty( "x" );
-    double dy = (Double) node.getProperty( "y" ) - (Double) goal.getProperty( "y" );
-    return Math.sqrt( Math.pow( dx, 2 ) + Math.pow( dy, 2 ) );
+    @Override
+    public Double getCost( final Node node, final Node goal )
+    {
+        double dx = (Double) node.getProperty( "x" ) - (Double) goal.getProperty( "x" );
+        double dy = (Double) node.getProperty( "y" ) - (Double) goal.getProperty( "y" );
+        double result = Math.sqrt( Math.pow( dx, 2 ) + Math.pow( dy, 2 ) );
+        return result;
+    }
 };
-PathFinder<WeightedPath> astar = GraphAlgoFactory.aStar( new BasicEvaluationContext( tx, graphDb ),
+PathFinder<WeightedPath> astar = GraphAlgoFactory.aStar(
         PathExpanders.allTypesAndDirections(),
         CommonEvaluators.doubleCostEvaluator( "length" ), estimateEvaluator );
 WeightedPath path = astar.findSinglePath( nodeA, nodeB );
