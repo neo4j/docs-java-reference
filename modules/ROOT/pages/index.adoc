@@ -30,11 +30,6 @@ The following topics are:
 * xref:jmx-metrics.adoc[] -- How to monitor Neo4j with JMX and a reference of available metrics.
 * xref:indexing.adoc[] -- Explicit indexing operations. label:deprecated[]
 
-[IMPORTANT]
-====
-The xref:traversal-framework.adoc[traversal framework API] has been deprecated and will be replaced in the next major release of Neo4j.
-====
-
 [TIP]
 ====
 You might want to keep the link:{neo4j-javadocs-base-uri}[Neo4j Javadocs (Neo4j Java API Documentation)^] handy while reading.
