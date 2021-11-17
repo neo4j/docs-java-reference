@@ -1,0 +1,7 @@
+:description: Explicit indexing.
+
+
+[role=deprecated]
+= Explicit indexing
+
+

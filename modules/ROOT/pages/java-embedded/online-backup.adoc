@@ -1,0 +1,20 @@
+:description: This topic describes how to backup your data, full or subsequently incremental, from a JVM-based program.
+
+
+:org-neo4j-backup-OnlineBackup: {neo4j-javadocs-base-uri}/org/neo4j/backup/OnlineBackup.html
+
+[role=deprecated]
+= Online Backup from Java
+
+In order to programmatically backup your data, full or subsequently incremental, from a JVM-based program you need to write Java code like the following:
+
+[source, java]
+----
+OnlineBackup backup = OnlineBackup.from( "127.0.0.1" );
+backup.backup( backupPath );
+assertTrue( "Should be consistent", backup.isConsistent() );
+backup.backup( backupPath );
+----
+
+For more information, please see the Javadocs for link:{org-neo4j-backup-OnlineBackup}[`org.neo4j.backup.OnlineBackup`^].
+

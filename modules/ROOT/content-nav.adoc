@@ -30,9 +30,12 @@
 ** xref:java-embedded/terminate.adoc[]
 ** xref:java-embedded/cypher-java.adoc[]
 ** xref:java-embedded/query-parameters.adoc[]
+** xref:java-embedded/online-backup.adoc[]
 
 * xref:traversal-framework.adoc[]
 
 * xref:transaction-management.adoc[]
 
 * xref:jmx-metrics.adoc[]
+
+* xref:indexing.adoc[]
