@@ -6,7 +6,8 @@
 
 This describes how to ensure uniqueness of a property when creating nodes.
 
-Getting or creating a unique node using Cypher and uniqueness constraints.
+[[java-embedded-uniqueness-contraints]]
+== Getting or creating a unique node using Cypher and uniqueness constraints.
 
 For an overview of unique nodes, see xref:transaction-management.adoc#transactions-unique-nodes[Transaction management -> Creating unique nodes].
 
@@ -18,25 +19,24 @@ link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-
 
 Create a unique constraint:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
 //GetOrCreateDocIT.java[tag=prepareConstraint]
 
 [source, java]
 ----
 try ( Transaction tx = graphdb.beginTx() )
 {
-    tx.schema()
-        .constraintFor( Label.label( "User" ) )
-        .assertPropertyIsUnique( "name" )
-        .withName( "usernames" )
-        .create();
-    tx.commit();
+    graphdb.schema()
+            .constraintFor( Label.label( "User" ) )
+            .assertPropertyIsUnique( "name" )
+            .create();
+    tx.success();
 }
 ----
 
 Use `MERGE` to create a unique node:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
 //GetOrCreateDocIT.java[tag=getOrCreateWithCypher]
 
 [source, java]
@@ -48,19 +48,126 @@ try ( Transaction tx = graphDb.beginTx() )
     String queryString = "MERGE (n:User {name: $name}) RETURN n";
     Map<String, Object> parameters = new HashMap<>();
     parameters.put( "name", username );
-    resultIterator = tx.execute( queryString, parameters ).columnAs( "n" );
+    resultIterator = graphDb.execute( queryString, parameters ).columnAs( "n" );
     result = resultIterator.next();
-    tx.commit();
+    tx.success();
     return result;
 }
 ----
 
-The `MERGE` clause will either take a read-lock on the matching node already exists, or it will take a write-lock and ensure that the current transaction is the only one creating the node.
 
-It is technically possible to use a "lock node" or a "lock property" but this should be avoided if possible.
-Using the "lock node" pattern is both difficult to do correctly, and it has worse performance characteristics since it always involves a write-lock.
+[[java-embedded-uniqueness-contraints-explicit-index]]
+[role=deprecated]
+==  Getting or creating a unique node using an explicit index
 
-One might also be tempted to use Java synchronization for pessimistic locking, but this is dangerous.
+[NOTE]
+====
+While this is a working solution, please consider using the preferred solution at <<java-embedded-uniqueness-contraints>> instead.
+====
+
+By using link:{neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/Index.html#putIfAbsent-T-java.lang.String-java.lang.Object-[`put-if-absent`^] functionality, entity uniqueness can be guaranteed using an index.
+
+Here the index acts as the lock and will only lock the smallest part needed to guarantee uniqueness across threads and transactions.
+To get the more high-level get-or-create functionality make use of link:{neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/UniqueFactory.html[`org.neo4j.graphdb.index.UniqueFactory`^] as seen in the example below.
+
+Create a factory for unique nodes at application start:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//GetOrCreateDocIT.java[tag=prepareUniqueFactory]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    UniqueFactory.UniqueNodeFactory result = new UniqueFactory.UniqueNodeFactory( graphDb, "users" )
+    {
+        @Override
+        protected void initialize( Node created, Map<String, Object> properties )
+        {
+            created.addLabel( Label.label( "User" ) );
+            created.setProperty( "name", properties.get( "name" ) );
+        }
+    };
+    tx.success();
+    return result;
+}
+----
+
+Use the unique node factory to get or create a node:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//GetOrCreateDocIT.java[tag=getOrCreateWithFactory]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Node node = factory.getOrCreate( "name", username );
+    tx.success();
+    return node;
+}
+----
+
+
+[[java-embedded-uniqueness-contraints-pessimistic-locking]]
+[role=deprecated]
+== Pessimistic locking for node creation
+
+[NOTE]
+====
+While this is a working solution, please consider using the preferred solution at <<java-embedded-uniqueness-contraints>> instead.
+====
+
+One might be tempted to use Java synchronization for pessimistic locking, but this is dangerous.
 By mixing locks in Neo4j and in the Java runtime, it is possible to produce deadlocks that are not detectable by Neo4j.
 As long as all locking is done by Neo4j, all deadlocks will be detected and avoided.
+Also, a solution using manual synchronization does not ensure uniqueness in an HA environment.
+
+This example uses a single "lock node" for locking. We create it only as a place to put locks, nothing else.
+
+Create a lock node at application start:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//GetOrCreateDocIT.java[tag=prepareLockNode]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    final Node lockNode = graphDb.createNode();
+    tx.success();
+    return lockNode;
+}
+----
+
+Use the lock node to ensure nodes are not created concurrently:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java
+//GetOrCreateDocIT.java[tag=pessimisticLocking]
+
+[source, java]
+----
+try ( Transaction tx = graphDb.beginTx() )
+{
+    Index<Node> usersIndex = graphDb.index().forNodes( "users" );
+    Node userNode = usersIndex.get( "name", username ).getSingle();
+    if ( userNode != null )
+    {
+        return userNode;
+    }
+
+    tx.acquireWriteLock( lockNode );
+    userNode = usersIndex.get( "name", username ).getSingle();
+    if ( userNode == null )
+    {
+        userNode = graphDb.createNode( Label.label( "User" ) );
+        usersIndex.add( userNode, "name", username );
+        userNode.setProperty( "name", username );
+    }
+    tx.success();
+    return userNode;
+}
+----
+
+Note that finishing the transaction will release the lock on the lock node.
 
