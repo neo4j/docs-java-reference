@@ -14,31 +14,30 @@ link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/cypher/cy
 
 First, you can add some data:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=addData]
 
 [source, java]
 ----
-DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( databaseDirectory ).build();
-GraphDatabaseService db = managementService.database( DEFAULT_DATABASE_NAME );
+GraphDatabaseService db = new GraphDatabaseFactory().newEmbeddedDatabase( databaseDirectory );
 
 try ( Transaction tx = db.beginTx())
 {
-    Node myNode = tx.createNode();
+    Node myNode = db.createNode();
     myNode.setProperty( "name", "my node" );
-    tx.commit();
+    tx.success();
 }
 ----
 
 Execute a query:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=execute]
 
 [source, java]
 ----
-try ( Transaction tx = db.beginTx();
-      Result result = tx.execute( "MATCH (n {name: 'my node'}) RETURN n, n.name" ) )
+try ( Transaction ignored = db.beginTx();
+      Result result = db.execute( "MATCH (n {name: 'my node'}) RETURN n, n.name" ) )
 {
     while ( result.hasNext() )
     {
@@ -73,7 +72,7 @@ This will make sure that the result is closed at the end of the statement.
 
 You can also get a list of the columns in the result like this:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=columns]
 
 [source, java]
@@ -91,13 +90,16 @@ This gives you:
 Use the following to fetch the result items from a single column.
 In this case, you will have to read the property from the node, and not from the result:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=items]
 
 [source, java]
 ----
 Iterator<Node> n_column = result.columnAs( "n" );
-n_column.forEachRemaining( node -> nodeResult = node + ": " + node.getProperty( "name" ) );
+for ( Node node : Iterators.asIterable( n_column ) )
+{
+    nodeResult = node + ": " + node.getProperty( "name" );
+}
 ----
 
 In this case, there is only one node in the result:
