@@ -50,9 +50,13 @@ https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examp
 
 [source, java]
 ----
-DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( DB_PATH )
-    .setConfig( BoltConnector.enabled, true )
-    .setConfig( BoltConnector.listen_address, new SocketAddress( "localhost", 7687 ) )
-    .build();
+GraphDatabaseSettings.BoltConnector bolt = GraphDatabaseSettings.boltConnector( "0" );
+
+GraphDatabaseService graphDb = new GraphDatabaseFactory()
+        .newEmbeddedDatabaseBuilder( DB_PATH )
+        .setConfig( bolt.type, "BOLT" )
+        .setConfig( bolt.enabled, "true" )
+        .setConfig( bolt.address, "localhost:7687" )
+        .newGraphDatabase();
 ----
 
