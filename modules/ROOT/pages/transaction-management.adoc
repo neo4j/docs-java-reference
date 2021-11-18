@@ -3,7 +3,7 @@
 :org-neo4j-graphdb-event-TransactionEventListener: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/event/TransactionEventListener.html
 :org-neo4j-graphdb-event-TransactionData: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/event/TransactionData.html
 :org-neo4j-dbms-api-DatabaseManagementService: {neo4j-javadocs-base-uri}/org/neo4j/dbms/api/DatabaseManagementService.html
-
+:org-neo4j-helpers-TransactionTemplate: {neo4j-javadocs-base-uri}/org/neo4j/helpers/TransactionTemplate.html
 
 [[transaction-management]]
 = Transaction management
@@ -208,14 +208,42 @@ When dealing with deadlocks in code, there are several issues you may want to ad
 
 Below is an example that shows how this can be implemented.
 
+.Handling deadlocks using TransactionTemplate
+======
+If you do not want to write all the code yourself, there is a class called link:{org-neo4j-helpers-TransactionTemplate}[`org.neo4j.helpers.TransactionTemplate`^] that will help you achieve what is needed.
+Below is an example of how to create, customize, and use this template for retries in transactions.
+
+First, define the base template:
+
+[source, java]
+----
+TransactionTemplate template = new TransactionTemplate(  ).retries( 5 ).backoff( 3, TimeUnit.SECONDS );
+----
+
+Next, specify the database to use and a function to execute:
+
+[source, java]
+----
+Object result = template.with(graphDatabaseService).execute( transaction -> {
+    Object result1 = null;
+    return result1;
+} );
+----
+
+The operations that could lead to a deadlock should go into the `apply` method.
+
+The `TransactionTemplate` uses a fluent API for configuration, and you can choose whether to set everything at once, or (as in the example) provide some details just before using it.
+The template enables setting a predicate for what exceptions to retry on, and also allows for monitoring of events that take place.
+======
+
 
 [[transactions-deadlocks-loop]]
 .Handling deadlocks using a retry loop
-====
+======
 
 This example shows how to use a retry loop for handling deadlocks:
 
-//https://github.com/neo4j/neo4j-documentation/blob/dev/kernel/src/test/java/examples/DeadlockDocTest.java
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/kernel/src/test/java/examples/DeadlockDocTest.java
 //DeadlockDocTest.java[tag=retry]
 
 [source, java, role="nocopy"]
@@ -225,10 +253,10 @@ int RETRIES = 5;
 int BACKOFF = 3000;
 for ( int i = 0; i < RETRIES; i++ )
 {
-    try ( Transaction tx = databaseService.beginTx() )
+    try ( Transaction tx = graphDatabaseService.beginTx() )
     {
         Object result = doStuff(tx);
-        tx.commit();
+        tx.success();
         return result;
     }
     catch ( Throwable ex )
@@ -264,12 +292,16 @@ else if ( txEx instanceof Error )
 {
     throw ((Error) txEx);
 }
-else
+else if ( txEx instanceof RuntimeException )
 {
     throw ((RuntimeException) txEx);
 }
+else
+{
+    throw new TransactionFailureException( "Failed", txEx );
+}
 ----
-====
+======
 
 [[transactions-delete]]
 == Delete semantics
@@ -315,107 +347,24 @@ See xref:java-embedded/unique-nodes.adoc[] for more information.
 [[transactions-events]]
 == Transaction events
 
-A link:{org-neo4j-graphdb-event-TransactionEventListener}[`neo4j.org.graphdb.event.TransactionEventListener`^] can be registered to receive Neo4j database transaction events.
-Once it has been registered at a link:{org-neo4j-dbms-api-DatabaseManagementService}[`org.neo4j.dbms.api.DatabaseManagementService`^] instance, it receives transaction events for the database with which it was registered.
-Listeners get notified about transactions that have performed any write operation, and that will be committed.
-If `Transaction#commit()` has not been called, or the transaction was rolled back with `Transaction#rollback()`, it will be rolled back and no events are sent to the listener.
+A transaction event handler can be registered to receive Neo4j transaction events.
+Once it has been registered at a `GraphDatabaseService` instance it receives events for transactions before they are committed.
+Handlers get notified about transactions that have performed any write operation, and that will be committed.
+If `Transaction#success()` has not been called or the transaction has been marked as failed `Transaction#failure()` it will be rolled back, and no events are sent to the Handler.
 
-Before a transaction is committed, the listeners's `beforeCommit` method is called with the entire diff of modifications made in the transaction.
+Before a transaction is committed the Handler’s `beforeCommit` method is called with the entire diff of modifications made in the transaction.
 At this point the transaction is still running, so changes can still be made.
 The method may also throw an exception, which will prevent the transaction from being committed.
-If the transaction is rolled back, a call to the listener's `afterRollback` method will follow.
+If the transaction is rolled back, a call to the handler’s `afterRollback` method will follow.
 
-[CAUTION]
+[NOTE]
 ====
-The order in which listeners are executed is undefined -- there is no guarantee that changes made by one listener will be seen by other listeners.
+The order in which handlers are executed is undefined -- there is no guarantee that changes made by one handler will be seen by other handlers.
 ====
 
-If `beforeCommit` is successfully executed in all registered listeners, the transaction is committed and the `afterCommit` method is called with the same transaction data.
+If `beforeCommit` is successfully executed in all registered handlers the transaction is committed and the `afterCommit` method is called with the same transaction data.
 This call also includes the object returned from `beforeCommit`.
 
-In `afterCommit` the transaction has been closed, and access to anything outside link:{org-neo4j-graphdb-event-TransactionData}[`org.neo4j.graphdb.event.TransactionData`^] requires a new transaction to be opened.
-A link:{org-neo4j-graphdb-event-TransactionEventListener}[`neo4j.org.graphdb.event.TransactionEventListener`^] gets notified about transactions that have any changes accessible via link:{org-neo4j-graphdb-event-TransactionData}[`org.neo4j.graphdb.event.TransactionData`^].
-Some indexing and schema changes will not trigger these events.
-
-The following example shows how to register a listener for a specific database, and perform basic operations on top of the transaction change set.
-
-[TIP]
-====
-The full source code used for the code snippet can be found at link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TransactionEventListenerExample.java[TransactionEventListenerExample.java^].
-====
-
-.TransactionEventListener
-====
-
-Register a transaction event listener and inspect the change set:
-
-//https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TransactionEventListenerExample.java
-//TransactionEventListenerExample.java[tag=TransactionEventListener]
-
-[source, java, role="nocopy"]
-----
-public static void main( String[] args ) throws IOException
-{
-    FileUtils.deleteDirectory( HOME_DIRECTORY );
-    var managementService = new DatabaseManagementServiceBuilder( HOME_DIRECTORY ).build();
-    var database = managementService.database( DEFAULT_DATABASE_NAME );
-
-    var countingListener = new CountingTransactionEventListener();
-    managementService.registerTransactionEventListener( DEFAULT_DATABASE_NAME, countingListener );
-
-    var connectionType = RelationshipType.withName( "CONNECTS" );
-    try ( var transaction = database.beginTx() )
-    {
-        var startNode = transaction.createNode();
-        var endNode = transaction.createNode();
-        startNode.createRelationshipTo( endNode, connectionType );
-        transaction.commit();
-    }
-}
-
-private static class CountingTransactionEventListener implements TransactionEventListener<CreatedEntitiesCounter>
-{
-    @Override
-    public CreatedEntitiesCounter beforeCommit( TransactionData data, Transaction transaction, GraphDatabaseService databaseService ) throws Exception
-    {
-        return new CreatedEntitiesCounter( size( data.createdNodes() ), size( data.createdRelationships() ) );
-    }
-
-    @Override
-    public void afterCommit( TransactionData data, CreatedEntitiesCounter entitiesCounter, GraphDatabaseService databaseService )
-    {
-        System.out.println( "Number of created nodes: " + entitiesCounter.getCreatedNodes() );
-        System.out.println( "Number of created relationships: " + entitiesCounter.getCreatedRelationships() );
-    }
-
-    @Override
-    public void afterRollback( TransactionData data, CreatedEntitiesCounter state, GraphDatabaseService databaseService )
-    {
-    }
-}
-
-private static class CreatedEntitiesCounter
-{
-    private final long createdNodes;
-    private final long createdRelationships;
-
-    public CreatedEntitiesCounter( long createdNodes, long createdRelationships )
-    {
-        this.createdNodes = createdNodes;
-        this.createdRelationships = createdRelationships;
-    }
-
-    public long getCreatedNodes()
-    {
-        return createdNodes;
-    }
-
-    public long getCreatedRelationships()
-    {
-        return createdRelationships;
-    }
-}
-----
-====
-
+In `afterCommit` the transaction has been closed and access to anything outside `TransactionData` requires a new transaction to be opened.
+A `TransactionEventHandler` gets notified about transactions that have any changes accessible via `TransactionData` so some indexing and schema changes will not be triggering these events.
 
