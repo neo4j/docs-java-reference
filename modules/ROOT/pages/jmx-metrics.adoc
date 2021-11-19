@@ -1,148 +1,43 @@
-:description: Monitoring Neo4j DBMS metrics with JMX.
-
+:description: Monitor Neo4j metrics with JMX.
 
 [[jmx-metrics]]
 = JMX metrics
 
-This topic describes how to access JMX for Neo4j DBMS to monitor metrics.
-
 Neo4j provides different levels of monitoring facilities in order to supply a continuous overview of the system's health.
 For a description of the monitoring options, see xref:3.5@operations-manual:ROOT:monitoring/index.adoc[Neo4j Operations Manual -> Monitoring].
-Many of the metrics are exposed through link:https://www.oracle.com/java/technologies/javase/javamanagement.html[JMX^].
+Many of the metrics are exposed through link:http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html[JMX^].
 
-[NOTE]
+[WARNING]
 ====
-Please note that the available JMX MBeans and their names have been updated in Neo4j 4.0.
-Beans that duplicate metrics or monitoring options, described in xref:3.5@operations-manual:ROOT:monitoring/index.adoc[Neo4j Operations Manual -> Monitoring], have been removed.
+Please note that the available JMX MBeans and their names will be updated in Neo4j version 4.0.
+Beans that duplicate metrics or monitoring options, described in xref:3.5@operations-manual:ROOT:monitoring/index.adoc[Neo4j Operations Manual -> Monitoring], will be removed.
 ====
-
 
 [[jmx-remote]]
 == Adjusting remote JMX access to Neo4j
 
-Per default, the Neo4j Enterprise Server edition does not allow remote JMX connections.
-To enable this feature, you need to enable JMX Remote Management and also configure JMX for secure remote access, in the xref:3.5@operations-manual:ROOT:configuration/neo4j-conf/index.adoc[_conf/neo4j.conf_ file].
+Per default, the Neo4j Enterprise Server edition does not allow remote JMX connections, since the relevant options in the _conf/neo4j.conf_ configuration file are commented out.
+To enable this feature, you have to remove the `#` characters from the various `com.sun.management.jmxremote` options there.
 
+When commented in, the default values are set up to enable remote JMX connections with certain roles, refer to the _conf/jmx.password_, _conf/jmx.access_, and _conf/neo4j.conf_ files for details.
 
-[[enable-jmx-remote]]
-=== Enable JMX Remote Management
+Make sure that _conf/jmx.password_ has the correct file permissions.
+The owner of the file has to be the user that will run the service, and the permissions should be read only for that user.
+On Unix systems, this is `0600`.
 
-Add the following lines to the _conf/neo4j.conf_ file to enable JMX Remote Management.
-If you run into issues with automatic host name discovery, you can uncomment the following configuration line:
+On Windows, follow the tutorial link:https://docs.oracle.com/javase/8/docs/technotes/guides/management/security-windows.html[security on windows^] to set the correct permissions.
+If you are running the service under the Local System Account, the user that owns the file and has access to it should be SYSTEM.
 
-`+dbms.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME+`
+With this setup, you should be able to connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with the username `monitor` and the password `Neo4j`.
 
-[source, properties]
-----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.port=3637
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.authenticate=true
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.ssl=false
+Note that it is possible that you have to update the permissions and/or ownership of the _conf/jmx.password_ and _conf/jmx.access_ files -- refer to the relevant section in _conf/neo4j.conf_ for details.
 
-# Some systems cannot discover host name automatically, and need this line configured:
-# dbms.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME
-----
-
-[IMPORTANT]
+[WARNING]
 ====
-Although SSL for JMX Remote Management is disabled throughout this document, to configure it based on your requirements you can follow the instructions in the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^].
+For maximum security, please adjust at least the password settings in _conf/jmx.password_ for a production installation.
 ====
 
-
-[[configure-password-authentication]]
-=== Configure password authentication
-
-Password authentication is enabled by default in JMX Remote Management.
-You can find information about setting up authentication with LDAP and file-based approach in the following sections.
-
-Please refer to the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^] for more options, including configuration steps for SSL client authentication.
-
-
-[[ldap]]
-==== LDAP authentication
-
-You can configure your JAAS login configuration based on your infrastructure and save it in the _conf/jmx.ldap_ configuration file.
-
-[source, properties]
-----
-Neo4jJMXConfig {
-    com.sun.security.auth.module.LdapLoginModule REQUIRED
-    userProvider="ldap://127.0.0.1:10389/ou=users,dc=example,dc=net"
-    authIdentity="uid={USERNAME},ou=users,dc=example,dc=net"
-    userFilter="(&(samaccountname={USERNAME})(objectClass=inetOrgPerson))"
-    useSSL=false
-    debug=false
-    authzIdentity=monitorRole;
-};
-----
-
-`userProvider`::
-Defines which LDAP server to connect and the node to perform the search against user entries.
-
-`authIdentity`::
-Defines the distinguished name of the user to authenticate to the LDAP server.
-Note that the token `+{USERNAME}+` is replaced with the provided user name during authentication.
-
-`userFilter`::
-Defines the search filter to be used while locating the user.
-Note that the token `+{USERNAME}+` is replaced with the provided user name during the search.
-
-`useSSL`::
-Defines whether to enable SSL for the underlying LDAP connection.
-
-`debug`::
-Defines whether to output debug info about the authentication session.
-
-`authzIdentity`::
-Specifies which access role an authenticated user will be granted.
-
-[NOTE]
-====
-The above configuration is provided as an example and needs to be updated based on your infrastructure.
-====
-
-After finishing your JAAS configuration, configure JMX to use it by adding the following configuration items into _conf/neo4j.conf_ file:
-
-[source, properties]
-----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.login.config=Neo4jJMXConfig
-dbms.jvm.additional=-Djava.security.auth.login.config=/absolute/path/to/conf/jmx.ldap
-----
-
-With this setup, you can connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with a valid username and password defined in your LDAP directory.
-
-
-[[file]]
-==== File-based authentication
-
-[IMPORTANT]
-====
-The file-based password authentication stores the password in clear-text and is intended only for development use.
-====
-
-You can set your password for JMX remote access and save it in the _conf/jmx.password_ configuration file.
-Please note that on Unix-based systems, the _jmx.password_ file needs to be owned by the user that will run the server, and have permissions set to `0600`.
-
-[source, properties]
-----
-monitorRole password_to_be_changed
-----
-
-Next, configure access level and save it in _conf/jmx.access_ configuration file.
-
-[source, properties]
-----
-monitorRole readonly
-----
-
-Finally, configure JMX to use the completed password and access files by adding the following configuration items into _conf/neo4j.conf_ file:
-
-[source, properties]
-----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.password.file=/absolute/path/to/conf/jmx.password
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.access.file=/absolute/path/to/conf/jmx.access
-----
-
-With this setup, you can connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with the username `monitor`, and the password `password_to_be_changed`.
+For more details, see: link:https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html[management agent^].
 
 
 [[jmx-connect-jconsole]]
@@ -165,13 +60,823 @@ $JAVA_HOME/bin/jconsole
 Connect to the process running your Neo4j database instance:
 
 .Connecting JConsole to the Neo4j Java process
-image::jconsole_connect1.png[alt="Connecting with JConsole", width=300]
+image::jconsole_connect.png[alt="Connecting with JConsole"]
 
-Now, beside the MBeans exposed by the JVM, you will see be default `neo4j.metrics` section in the MBeans tab.
+Now, beside the MBeans exposed by the JVM, you will see an `org.neo4j` section in the MBeans tab.
 Under that, you will have access to all the monitoring information exposed by Neo4j.
 
-For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html#GUID-805517EC-2D33-4D61-81D8-4D0FA770D1B8[the JMX documention^].
+For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:http://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html[the JMX documention^].
 
 .Neo4j MBeans View
-image::jconsole_beans1.png[alt="Neo4j MBeans view", width=600]
+image::jconsole_beans.png[alt="Neo4j MBeans view"]
+
+
+[[jmx-connect-programmatic]]
+== How to connect to the JMX monitoring programmatically
+
+In order to programmatically connect to the Neo4j JMX server, there are some convenience methods in the Neo4j Management component to help you find out the most commonly used monitoring attributes of Neo4j.
+See xref:java-embedded/management-attribute.adoc[] for an example.
+
+Once you have access to this information, you can use it to for instance expose the values to link:http://en.wikipedia.org/wiki/Simple_Network_Management_Protocol[SNMP^] or other monitoring systems.
+
+
+[[jmx-mxbeans]]
+== Reference of supported JMX MBeans
+
+Below is a complete reference of Neo4j JMX management beans in two parts.
+First part shows all beans available in Neo4j Enterprise Edition when the instance is part of a Causal Cluster.
+The <<ha-mxbeans, second part>> shows the management beans that are uniquely available when running in High Availability mode.
+
+[NOTE]
+====
+For additional information on the primitive datatypes (`int`, `long` etc.) used in the JMX attributes, please see xref:3.5@getting-started:ROOT:graphdb-concepts.adoc#graphdb-properties[Getting Started -> Introduction: Properties].
+====
+
+[[cc-mxbeans]]
+=== JMX MBeans available on instances in a Causal Cluster
+
+The following JMX management beans are available on instances that are part of a Causal Cluster.
+One JMX Bean not included here is for the current configuration of the Neo4j instance.
+For configuration details, see xref:3.5@operations-manual:ROOT:reference/configuration-settings/index.adoc[Neo4j Operations Manual -> Configuration settings].
+
+
+[[jmx-list]]
+.MBeans exposed by Neo4j
+[options="header", cols="40,60"]
+|===
+
+| Name
+| Description
+
+| <<jmx-causal-clustering,Causal Clustering>>
+| Information about an instance participating in a causal cluster.
+
+| <<jmx-diagnostics,Diagnostics>>
+| Diagnostics provided by Neo4j.
+
+| <<jmx-index-sampler,Index sampler>>
+| Handle index sampling.
+
+| <<jmx-kernel,Kernel>>
+| Information about the Neo4j kernel.
+
+| <<jmx-locking,Locking>>
+| Information about the Neo4j lock status.
+
+| <<jmx-memory-mapping,Memory Mapping>>
+| The status of Neo4j memory mapping.
+
+| <<jmx-page-cache,Page cache>>
+a|
+Information about the Neo4j page cache.
+All numbers are counts and sums since the Neo4j instance was started.
+
+| <<jmx-primitive-count,Primitive count>>
+| Estimates of the numbers of different kinds of Neo4j primitives.
+
+| <<jmx-reports,Reports>>
+| Reports operations.
+
+| <<jmx-store-file-sizes,Store file sizes>>
+| This bean is deprecated, use StoreSize bean instead; Information about the sizes of the different parts of the Neo4j graph store.
+
+| <<jmx-store-sizes,Store sizes>>
+| Information about the disk space used by different parts of the Neo4j graph store.
+
+| <<jmx-transactions,Transactions>>
+| Information about the Neo4j transaction manager.
+
+|===
+
+
+[[jmx-causal-clustering]]
+.MBean Causal Clustering (org.neo4j.management.CausalClustering) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about an instance participating in a causal cluster.
+
+| RaftLogSize
+| The total amount of disk space used by the raft log, in bytes.
+| long
+| yes
+| no
+
+| ReplicatedStateSize
+| The total amount of disk space used by the replicated states, in bytes.
+| long
+| yes
+| no
+
+| Role
+| The current role this member has in the cluster.
+| String
+| yes
+| no
+
+|===
+
+
+[[jmx-diagnostics]]
+.MBean Diagnostics (org.neo4j.management.Diagnostics) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Diagnostics provided by Neo4j.
+
+| DiagnosticsProviders
+| A list of the ids for the registered diagnostics providers.
+| List (java.util.List)
+| yes
+| no
+
+|===
+
+.MBean Diagnostics (org.neo4j.management.Diagnostics) Operations
+[options="header", cols="23m,37,20m,20m"]
+|===
+
+| Name
+| Description
+| ReturnType
+| Signature
+
+| dumpAll
+| Dump diagnostics information to JMX.
+| String
+| (no parameters)
+
+| dumpToLog
+| Dump diagnostics information to the log.
+| void
+| (no parameters)
+
+| dumpToLog
+| Dump diagnostics information to the log.
+| void
+| java.lang.String
+
+| extract
+| Operation exposed for management.
+| String
+| java.lang.String
+
+|===
+
+
+[[jmx-index-sampler]]
+.MBean Index sampler (org.neo4j.management.IndexSamplingManager) Operations
+[options="header", cols="23m,37,20m,20m"]
+|===
+
+| Name
+| Description
+| ReturnType
+| Signature
+
+| triggerIndexSampling
+| Trigger index sampling.
+| void
+| java.lang.String,java.lang.String,boolean
+
+|===
+
+
+[[jmx-kernel]]
+.MBean Kernel (org.neo4j.jmx.Kernel) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the Neo4j kernel.
+
+| DatabaseName
+| The name of the mounted database.
+| String
+| yes
+| no
+
+| KernelStartTime
+| The time from which this Neo4j instance was in operational mode.
+| Date (java.util.Date)
+| yes
+| no
+
+| KernelVersion
+| The version of Neo4j.
+| String
+| yes
+| no
+
+| MBeanQuery
+| An ObjectName that can be used as a query for getting all management beans for this Neo4j instance.
+| javax.management.ObjectName
+| yes
+| no
+
+| ReadOnly
+| Whether this is a read only instance.
+| boolean
+| yes
+| no
+
+| StoreCreationDate
+| The time when this Neo4j graph store was created.
+| Date (java.util.Date)
+| yes
+| no
+
+| StoreId
+| An identifier that, together with store creation time, uniquely identifies this Neo4j graph store.
+| String
+| yes
+| no
+
+| StoreLogVersion
+| The current version of the Neo4j store logical log.
+| long
+| yes
+| no
+
+|===
+
+
+[[jmx-locking]]
+.MBean Locking (org.neo4j.management.LockManager) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the Neo4j lock status.
+
+| Locks
+| Information about all locks held by Neo4j.
+| java.util.List<org.neo4j.kernel.info.LockInfo> as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| yes
+| no
+
+| NumberOfAvertedDeadlocks
+| The number of lock sequences that would have lead to a deadlock situation that Neo4j has detected and averted (by throwing DeadlockDetectedException).
+| long
+| yes
+| no
+
+|===
+
+.MBean Locking (org.neo4j.management.LockManager) Operations
+[options="header", cols="23m,37,20m,20m"]
+|===
+
+| Name
+| Description
+| ReturnType
+| Signature
+
+| getContendedLocks
+| getContendedLocks
+| java.util.List<org.neo4j.kernel.info.LockInfo> as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| long
+
+|===
+
+
+[[jmx-memory-mapping]]
+.MBean Memory Mapping (org.neo4j.management.MemoryMapping) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| The status of Neo4j memory mapping.
+
+| MemoryPools
+| Get information about each pool of memory mapped regions from store files with memory mapping enabled.
+| link:{neo4j-javadoc-base-uri}/org/neo4j/management/WindowPoolInfo.html[org.neo4j.management.WindowPoolInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| yes
+| no
+
+|===
+
+
+[[jmx-page-cache]]
+.MBean Page cache (org.neo4j.management.PageCache) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the Neo4j page cache. All numbers are counts and sums since the Neo4j instance was started.
+
+| BytesRead
+| Number of bytes read from durable storage.
+| long
+| yes
+| no
+
+| BytesWritten
+| Number of bytes written to durable storage.
+| long
+| yes
+| no
+
+| EvictionExceptions
+a|
+Number of exceptions caught during page eviction.
+This number should be zero, or at least not growing, in a healthy database.
+Otherwise it could indicate drive failure, storage space, or permission problems.
+| long
+| yes
+| no
+
+| Evictions
+a|
+Number of page evictions.
+How many pages have been removed from memory to make room for other pages.
+| long
+| yes
+| no
+
+| Faults
+a|
+Number of page faults.
+How often requested data was not found in memory and had to be loaded.
+| long
+| yes
+| no
+
+| FileMappings
+| Number of files that have been mapped into the page cache.
+| long
+| yes
+| no
+
+| FileUnmappings
+| Number of files that have been unmapped from the page cache.
+| long
+| yes
+| no
+
+| Flushes
+a|
+Number of page flushes.
+How many dirty pages have been written to durable storage.
+| long
+| yes
+| no
+
+| HitRatio
+| Ratio of hits to the total number of lookups in the page cache.
+| double
+| yes
+| no
+
+| Hits
+a|
+Number of page hits.
+How often requested data was found in memory.
+| long
+| yes
+| no
+
+| Pins
+a|
+Number of page pins.
+How many pages have been accessed (monitoring must be enabled separately).
+| long
+| yes
+| no
+
+| Unpins
+a|
+Number of page unpins.
+How many pages have been accessed and are not accessed anymore (monitoring must be enabled separately).
+| long
+| yes
+| no
+
+| UsageRatio
+a|
+The percentage of used pages.
+Will return `NaN` if it cannot be determined.
+| double
+| yes
+| no
+
+|===
+
+
+[[jmx-primitive-count]]
+.MBean Primitive count (org.neo4j.jmx.Primitives) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Estimates of the numbers of different kinds of Neo4j primitives.
+
+| NumberOfNodeIdsInUse
+| An estimation of the number of nodes used in this Neo4j instance.
+| long
+| yes
+| no
+
+| NumberOfPropertyIdsInUse
+| An estimation of the number of properties used in this Neo4j instance.
+| long
+| yes
+| no
+
+| NumberOfRelationshipIdsInUse
+| An estimation of the number of relationships used in this Neo4j instance.
+| long
+| yes
+| no
+
+| NumberOfRelationshipTypeIdsInUse
+| The number of relationship types used in this Neo4j instance.
+| long
+| yes
+| no
+
+|===
+
+
+[[jmx-reports]]
+.MBean Reports (org.neo4j.dbms.diagnostics.jmx.Reports) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Reports operations.
+
+| EnvironmentVariables
+| Returns a map if the current environment variables.
+| String
+| yes
+| no
+
+|===
+
+.MBean Reports (org.neo4j.dbms.diagnostics.jmx.Reports) Operations
+[options="header", cols="23m,37,20m,20m"]
+|===
+
+| Name
+| Description
+| ReturnType
+| Signature
+
+| listTransactions
+| List all active transactions.
+| String
+| (no parameters)
+
+|===
+
+
+[[jmx-store-file-sizes]]
+.MBean Store file sizes (org.neo4j.jmx.StoreFile) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| This bean is deprecated, use StoreSize bean instead; Information about the sizes of the different parts of the Neo4j graph store.
+
+| ArrayStoreSize
+| The amount of disk space used to store array properties, in bytes.
+| long
+| yes
+| no
+
+| LogicalLogSize
+| The amount of disk space used by the current Neo4j logical log, in bytes.
+| long
+| yes
+| no
+
+| NodeStoreSize
+| The amount of disk space used to store nodes, in bytes.
+| long
+| yes
+| no
+
+| PropertyStoreSize
+| The amount of disk space used to store properties (excluding string values and array values), in bytes.
+| long
+| yes
+| no
+
+| RelationshipStoreSize
+| The amount of disk space used to store relationships, in bytes.
+| long
+| yes
+| no
+
+| StringStoreSize
+| The amount of disk space used to store string properties, in bytes.
+| long
+| yes
+| no
+
+| TotalStoreSize
+| The total disk space used by this Neo4j instance, in bytes.
+| long
+| yes
+| no
+
+|===
+
+
+[[jmx-store-sizes]]
+.MBean Store sizes (org.neo4j.jmx.StoreSize) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the disk space used by different parts of the Neo4j graph store.
+
+| ArrayStoreSize
+| Disk space used to store array properties, in bytes.
+| long
+| yes
+| no
+
+| CountStoreSize
+| Disk space used to store counters, in bytes.
+| long
+| yes
+| no
+
+| IndexStoreSize
+| Disk space used to store all indices, in bytes.
+| long
+| yes
+| no
+
+| LabelStoreSize
+| Disk space used to store labels, in bytes.
+| long
+| yes
+| no
+
+| NodeStoreSize
+| Disk space used to store nodes, in bytes.
+| long
+| yes
+| no
+
+| PropertyStoreSize
+| Disk space used to store properties (excluding string values and array values), in bytes.
+| long
+| yes
+| no
+
+| RelationshipStoreSize
+| Disk space used to store relationships, in bytes.
+| long
+| yes
+| no
+
+| SchemaStoreSize
+| Disk space used to store schemas (index and constrain declarations), in bytes.
+| long
+| yes
+| no
+
+| StringStoreSize
+| Disk space used to store string properties, in bytes.
+| long
+| yes
+| no
+
+| TotalStoreSize
+| Disk space used by whole store, in bytes.
+| long
+| yes
+| no
+
+| TransactionLogsSize
+| Disk space used by the transaction logs, in bytes.
+| long
+| yes
+| no
+
+|===
+
+
+[[jmx-transactions]]
+.MBean Transactions (org.neo4j.management.TransactionManager) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the Neo4j transaction manager.
+
+| LastCommittedTxId
+| The ID of the latest committed transaction.
+| long
+| yes
+| no
+
+| NumberOfCommittedTransactions
+| The total number of committed transactions.
+| long
+| yes
+| no
+
+| NumberOfOpenedTransactions
+| The total number started transactions.
+| long
+| yes
+| no
+
+| NumberOfOpenTransactions
+| The number of currently open transactions.
+| long
+| yes
+| no
+
+| NumberOfRolledBackTransactions
+| The total number of rolled back transactions.
+| long
+| yes
+| no
+
+| PeakNumberOfConcurrentTransactions
+| The highest number of transactions ever opened concurrently.
+| long
+| yes
+| no
+
+|===
+
+
+[[ha-mxbeans]]
+=== High Availability JMX MBeans
+
+The following JMX management beans are unique to instances that are part of a High Availability cluster.
+
+.MBeans exposed by Neo4j in High Availability mode
+[options="header", cols="40,60"]
+|===
+| Name
+| Description
+
+| <<jmx-branched-store,Branched Store>>
+| Information about the branched stores present in this HA cluster member.
+
+| <<jmx-high-availability,High Availability>>
+|Information about an instance participating in a HA cluster.
+
+|===
+
+
+[[jmx-branched-store]]
+.MBean Branched Store (org.neo4j.management.BranchedStore) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about the branched stores present in this HA cluster member.
+
+| BranchedStores
+| A list of the branched stores.
+| link:{neo4j-javadoc-base-uri}/org/neo4j/management/BranchedStoreInfo.html[org.neo4j.management.BranchedStoreInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| yes
+| no
+
+|===
+
+
+[[jmx-high-availability]]
+.MBean High Availability (org.neo4j.management.HighAvailability) Attributes
+[options="header", cols="20m,36,20m,7,7"]
+|===
+
+| Name
+| Description
+| Type
+| Read
+| Write
+
+5.1+^e| Information about an instance participating in a HA cluster.
+
+| Alive
+| Whether this instance is alive or not.
+| boolean
+| yes
+| no
+
+| Available
+| Whether this instance is available or not.
+| boolean
+| yes
+| no
+
+| InstanceId
+| The identifier used to identify this server in the HA cluster.
+| String
+| yes
+| no
+
+| InstancesInCluster
+| Information about all instances in this cluster.
+| link:{neo4j-javadoc-base-uri}/org/neo4j/management/ClusterMemberInfo.html[org.neo4j.management.ClusterMemberInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| yes
+| no
+
+| LastCommittedTxId
+| The latest transaction id present in this instance's store.
+| long
+| yes
+| no
+
+| LastUpdateTime
+| The time when the data on this instance was last updated from the master.
+| String
+| yes
+| no
+
+| Role
+| The role this instance has in the cluster.
+| String
+| yes
+| no
+
+|===
+
+.MBean High Availability (org.neo4j.management.HighAvailability) Operations
+[options="header", cols="23m,37,20m,20m"]
+|===
+
+| Name
+| Description
+| ReturnType
+| Signature
+
+| update
+| (If this is a follower) Update the database on this instance with the latest transactions from the leader.
+| String
+| (no parameters)
+
+|===
 
