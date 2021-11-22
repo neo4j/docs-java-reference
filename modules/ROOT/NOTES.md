@@ -14,6 +14,8 @@ server-debugging/                                               -> extending-neo
 traversal/                      -> traversal-framework/
 
 java-embedded/include-neo4j/    -> java-embedded/setup/
+
+3.5/tutorial-traversal/         -> traversal-framework/
 ```
 
 
