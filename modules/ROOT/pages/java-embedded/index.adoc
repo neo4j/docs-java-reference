@@ -12,16 +12,20 @@ The following topics are:
 * xref:java-embedded/hello-world.adoc[]
 * xref:java-embedded/property-values.adoc[]
 * xref:java-embedded/indexes.adoc[]
+* xref:java-embedded/explicit-indexes.adoc[] -- label:deprecated[]
 * xref:java-embedded/managing-resources.adoc[] -- Managing resources in long-running transactions.
 * xref:java-embedded/logging.adoc[]
+* xref:java-embedded/unit-test.adoc[] -- label:deprecated[]
 * xref:java-embedded/traversal.adoc[]
 * xref:java-embedded/entities.adoc[]
 * xref:java-embedded/graph-algorithms.adoc[]
+* xref:java-embedded/management-attribute.adoc[] -- label:deprecated[]
 * xref:java-embedded/unique-nodes.adoc[] -- Getting or creating a unique node using Cypher and uniqueness constraints.
 * xref:java-embedded/bolt.adoc[] -- Accessing Neo4j embedded via the Bolt protocol.
 * xref:java-embedded/terminate.adoc[] -- How to terminate (abort) a long-running transaction from another thread.
 * xref:java-embedded/cypher-java.adoc[] -- How to use the Cypher query language with Java.
 * xref:java-embedded/query-parameters.adoc[]
+* xref:java-embedded/online-backup.adoc[] -- label:deprecated[]
 
 [WARNING]
 ====
