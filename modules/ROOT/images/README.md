@@ -69,3 +69,8 @@ Images.
 
 ![](uniqueness-of-paths-in-traversals-graph.svg)
 
+
+`explicit_indxing_add_graph.svg`
+
+![](explicit_indexing_add_graph.svg)
+

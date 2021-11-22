@@ -1,7 +1,736 @@
 :description: Explicit indexing.
 
+:org-neo4j-graphdb-index-package-summary: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/package-summary.html
+:org-neo4j-graphdb-Node: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Node.html
+:org-neo4j-graphdb-Relationship: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Relationship.html
+:org-neo4j-graphdb-index-Index: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/Index.html
+:org-neo4j-graphdb-index-Index-delete: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/Index.html#delete--
+:org-neo4j-graphdb-index-Index-remove: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/Index.html#remove-T-java.lang.String-java.lang.Object-
+:org-neo4j-graphdb-index-ReadableIndex-get: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/ReadableIndex.html#get-java.lang.String-java.lang.Object-
+:org-neo4j-graphdb-index-ReadableIndex-query: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/ReadableIndex.html#query-java.lang.Object-
+:org-neo4j-graphdb-index-IndexHits: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/IndexHits.html
+:org-neo4j-graphdb-index-IndexHits-getSingle: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/IndexHits.html#getSingle--
+:org-neo4j-graphdb-index-IndexHits-close: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/IndexHits.html#close--
+:org-neo4j-graphdb-index-IndexHits-currentScore: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/IndexHits.html#currentScore--
+:org-neo4j-graphdb-index-RelationshipIndex: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/index/RelationshipIndex.html
+:org-neo4j-index-lucene-ValueContext: {neo4j-javadocs-base-uri}/org/neo4j/index/lucene/ValueContext.html
+:org-neo4j-index-lucene-QueryContext: {neo4j-javadocs-base-uri}/org/neo4j/index/lucene/QueryContext.html
 
 [role=deprecated]
 = Explicit indexing
 
+[WARNING]
+====
+Explicit indexing in Neo4j is deprecated, and will be removed in the next major release.
+Consider configuring indexes to support full-text search instead.
+See xref:3.5@cypher-manual:ROOT:schema/index/index.adoc#schema-index-fulltext-search[Cypher Manual -> Indexes to support full-text search].
+====
+
+[NOTE]
+====
+The functionality described here has been removed in **Neo4j 4.0**.
+====
+
+Explicit indexing operations are part of the link:{org-neo4j-graphdb-index-package-summary}[Neo4j index API^].
+
+Each index is tied to a unique, user-specified name (for example "first_name" or "books") and can index either link:{org-neo4j-graphdb-Node}[`org.neo4j.graphdb.Node`^] or link:{org-neo4j-graphdb-Relationship}[`org.neo4j.graphdb.Relationship`^].
+
+The default index implementation is provided by the `neo4j-lucene-index` component, which is included in the standard Neo4j download.
+It can also be downloaded separately from link:https://repo1.maven.org/maven2/org/neo4j/neo4j-lucene-index/[https://repo1.maven.org/maven2/org/neo4j/neo4j-lucene-index/^].
+For Maven users, the `neo4j-lucene-index` component has the coordinates `org.neo4j:neo4j-lucene-index` and should be used with the same version of `org.neo4j:neo4j-kernel`.
+Different versions of the index and kernel components are not compatible in the general case.
+Both components are included transitively by the `org.neo4j:neo4j:pom` artifact, which makes it possible to keep the versions in sync.
+
+.Transactions
+[NOTE]
+====
+All modifying index operations must be performed inside a transaction, as with any modifying operation in Neo4j.
+====
+
+[[indexing-create]]
+== Create
+
+An index is created if it does not exist when you ask for it.
+Unless you give it a custom configuration, it will be created with default configuration and backend.
+
+To set the stage for our examples, we can create some indexes to begin with:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=createIndexes]
+
+[source, java, indent=0]
+----
+IndexManager index = graphDb.index();
+Index<Node> actors = index.forNodes( "actors" );
+Index<Node> movies = index.forNodes( "movies" );
+RelationshipIndex roles = index.forRelationships( "roles" );
+----
+
+This will create two node indexes and one relationship index with default configuration.
+See <<indexing-relationships>> for more information specific to relationship indexes.
+
+See <<indexing-create-advanced>> for how to create _full-text_ indexes.
+
+You can also check if an index exists like this:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=checkIfExists]
+
+[source, java, indent=0]
+----
+IndexManager index = graphDb.index();
+boolean indexExists = index.existsForNodes( "actors" );
+----
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-delete]]
+== Delete
+
+Indexes can be deleted.
+When deleting, the entire contents of the index will be removed as well as its associated configuration.
+An index can be created with the same name at a later point in time.
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=delete]
+
+[source, java, indent=0]
+----
+IndexManager index = graphDb.index();
+Index<Node> actors = index.forNodes( "actors" );
+actors.delete();
+----
+
+Note that the actual deletion of the index is made during the commit of _the surrounding transaction_.
+Calls made to such an index instance after link:{org-neo4j-graphdb-index-Index-delete}[`delete()`^] has been called are invalid inside that transaction as well as outside (if the transaction is successful), but will become valid again if the transaction is rolled back.
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-add]]
+== Add
+
+Each index supports associating any number of key-value pairs with any number of entities (nodes or relationships), where each association between entity and key-value pair is performed individually.
+To begin with, we can add a few nodes to the indexes:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=createNodes]
+
+[source, java, indent=0]
+----
+// Actors
+Node reeves = graphDb.createNode();
+reeves.setProperty( "name", "Keanu Reeves" );
+actors.add( reeves, "name", reeves.getProperty( "name" ) );
+Node bellucci = graphDb.createNode();
+bellucci.setProperty( "name", "Monica Bellucci" );
+actors.add( bellucci, "name", bellucci.getProperty( "name" ) );
+// multiple values for a field, in this case for search only
+// and not stored as a property.
+actors.add( bellucci, "name", "La Bellucci" );
+// Movies
+Node theMatrix = graphDb.createNode();
+theMatrix.setProperty( "title", "The Matrix" );
+theMatrix.setProperty( "year", 1999 );
+movies.add( theMatrix, "title", theMatrix.getProperty( "title" ) );
+movies.add( theMatrix, "year", theMatrix.getProperty( "year" ) );
+Node theMatrixReloaded = graphDb.createNode();
+theMatrixReloaded.setProperty( "title", "The Matrix Reloaded" );
+theMatrixReloaded.setProperty( "year", 2003 );
+movies.add( theMatrixReloaded, "title", theMatrixReloaded.getProperty( "title" ) );
+movies.add( theMatrixReloaded, "year", 2003 );
+Node malena = graphDb.createNode();
+malena.setProperty( "title", "Malèna" );
+malena.setProperty( "year", 2000 );
+movies.add( malena, "title", malena.getProperty( "title" ) );
+movies.add( malena, "year", malena.getProperty( "year" ) );
+----
+
+Note that there can be multiple values associated with the same entity and key.
+
+Next up, we will create relationships and index them as well:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=createRelationships]
+
+[source, java, indent=0]
+----
+// we need a relationship type
+RelationshipType ACTS_IN = RelationshipType.withName( "ACTS_IN" );
+// create relationships
+Relationship role1 = reeves.createRelationshipTo( theMatrix, ACTS_IN );
+role1.setProperty( "name", "Neo" );
+roles.add( role1, "name", role1.getProperty( "name" ) );
+Relationship role2 = reeves.createRelationshipTo( theMatrixReloaded, ACTS_IN );
+role2.setProperty( "name", "Neo" );
+roles.add( role2, "name", role2.getProperty( "name" ) );
+Relationship role3 = bellucci.createRelationshipTo( theMatrixReloaded, ACTS_IN );
+role3.setProperty( "name", "Persephone" );
+roles.add( role3, "name", role3.getProperty( "name" ) );
+Relationship role4 = bellucci.createRelationshipTo( malena, ACTS_IN );
+role4.setProperty( "name", "Malèna Scordia" );
+roles.add( role4, "name", role4.getProperty( "name" ) );
+----
+
+After these operations, our example graph looks like this:
+
+image::explicit_indexing_add_graph.svg[alt="Movie and Actor graph."]
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^]
+====
+
+
+[[indexing-remove]]
+== Remove
+
+Removing (link:{org-neo4j-graphdb-index-Index-remove}[`remove()`^]) from an index is similar to adding, but can be done by supplying one of the following combinations of arguments:
+
+* entity
+* entity, key
+* entity, key, value
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=removeNodeFromIndex]
+
+[source, java, indent=0]
+----
+// completely remove bellucci from the actors index
+actors.remove( bellucci );
+// remove any "name" entry of bellucci from the actors index
+actors.remove( bellucci, "name" );
+// remove the "name" -> "La Bellucci" entry of bellucci
+actors.remove( bellucci, "name", "La Bellucci" );
+----
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-update]]
+== Update
+
+[IMPORTANT]
+====
+To update an index entry, the old one must be removed and a new one added.
+For details on removing index entries, see <<indexing-remove>>.
+====
+
+Remember that a node or relationship can be associated with any number of key-value pairs in an index.
+This means that you can index a node or relationship with many key-value pairs that have the same key.
+In the case where a property value changes and you would like to update the index, it is not enough to just index the new value -- you will have to remove the old value as well.
+
+Here is a code example that demonstrates how it is done:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=update]
+
+[source, java, indent=0]
+----
+// create a node with a property
+// so we have something to update later on
+Node fishburn = graphDb.createNode();
+fishburn.setProperty( "name", "Fishburn" );
+// index it
+actors.add( fishburn, "name", fishburn.getProperty( "name" ) );
+// update the index entry
+// when the property value changes
+actors.remove( fishburn, "name", fishburn.getProperty( "name" ) );
+fishburn.setProperty( "name", "Laurence Fishburn" );
+actors.add( fishburn, "name", fishburn.getProperty( "name" ) );
+----
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-search]]
+== Search
+
+An index can be searched in two ways, link:{org-neo4j-graphdb-index-ReadableIndex-get}[`get`^] and link:{org-neo4j-graphdb-index-ReadableIndex-query}[`query`^].
+The `get` method will return exact matches to the given key-value pair, whereas `query` exposes querying capabilities directly from the backend used by the index.
+For example the link:https://lucene.apache.org/core/5_4_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html#package_description[Lucene query syntax^] can be used directly with the default indexing backend.
+
+
+[[indexing-search-get]]
+=== Get
+
+This is how to search for a single exact match:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=getSingleNode]
+
+[source, java, indent=0]
+----
+IndexHits<Node> hits = actors.get( "name", "Keanu Reeves" );
+Node reeves = hits.getSingle();
+----
+
+link:{org-neo4j-graphdb-index-IndexHits}[`org.neo4j.graphdb.index.IndexHits`^] is an `Iterable` with some additional useful methods.
+For example link:{org-neo4j-graphdb-index-IndexHits-getSingle}[`getSingle()`^] returns the first and only item from the result iterator, or `null` if there is no hit.
+
+Here is how to get a single relationship by exact matching and retrieve its start and end nodes:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=getSingleRelationship]
+
+[source, java, indent=0]
+----
+Relationship persephone = roles.get( "name", "Persephone" ).getSingle();
+Node actor = persephone.getStartNode();
+Node movie = persephone.getEndNode();
+----
+
+Finally, you can iterate over all exact matches from a relationship index:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=getRelationships]
+
+[source, java, indent=0]
+----
+for ( Relationship role : roles.get( "name", "Neo" ) )
+{
+    // this will give us Reeves twice
+    Node reeves = role.getStartNode();
+}
+----
+
+[IMPORTANT]
+====
+In case you do not iterate through all the hits, link:{org-neo4j-graphdb-index-IndexHits-close}[`IndexHits.close()`^] must be called explicitly.
+====
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+[[indexing-search-query]]
+=== Query
+
+There are two query methods, one which uses a key-value signature where the value represents a query for values with the given key only.
+The other method is more generic and supports querying for more than one key-value pair in the same query.
+
+Here is an example using the key-query option:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=actorsQuery]
+
+[source, java, indent=0]
+----
+for ( Node actor : actors.query( "name", "*e*" ) )
+{
+    // This will return Reeves and Bellucci
+}
+----
+
+In the following example the query uses multiple keys:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=matrixQuery]
+
+[source, java, indent=0]
+----
+for ( Node movie : movies.query( "title:*Matrix* AND year:1999" ) )
+{
+    // This will return "The Matrix" from 1999 only.
+}
+----
+
+[NOTE]
+====
+Beginning a wildcard search with `"*"` or `"?"` is discouraged by Lucene, but will nevertheless work.
+====
+
+[CAUTION]
+====
+You cannot have _any whitespace_ in the search term with this syntax.
+See <<indexing-lucene-query-objects>> for how to do that.
+====
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-relationships]]
+== Relationship indexes
+
+An index for relationships is just like an index for nodes, extended by providing support to constrain a search to relationships with a specific start and/or end node.
+These extra methods reside in the link:{org-neo4j-graphdb-index-RelationshipIndex}[`org.neo4j.graphdb.index.RelationshipIndex`^] interface which extends link:{org-neo4j-graphdb-index-Index}[`org.neo4j.graphdb.index.Index<Relationship>`^].
+
+Example of querying a relationship index:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=queryForRelationships]
+
+[source, java, indent=0]
+----
+// find relationships filtering on start node
+// using exact matches
+IndexHits<Relationship> reevesAsNeoHits;
+reevesAsNeoHits = roles.get( "name", "Neo", reeves, null );
+Relationship reevesAsNeo = reevesAsNeoHits.iterator().next();
+reevesAsNeoHits.close();
+// find relationships filtering on end node
+// using a query
+IndexHits<Relationship> matrixNeoHits;
+matrixNeoHits = roles.query( "name", "*eo", null, theMatrix );
+Relationship matrixNeo = matrixNeoHits.iterator().next();
+matrixNeoHits.close();
+----
+
+And here is an example for the special case of searching for a specific relationship type:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=queryForRelationshipType]
+
+[source, java, indent=0]
+----
+// find relationships filtering on end node
+// using a relationship type.
+// this is how to add it to the index:
+roles.add( reevesAsNeo, "type", reevesAsNeo.getType().name() );
+// Note that to use a compound query, we can't combine committed
+// and uncommitted index entries, so we'll commit before querying:
+tx.success();
+tx.close();
+
+// and now we can search for it:
+try ( Transaction tx = graphDb.beginTx() )
+{
+    IndexHits<Relationship> typeHits = roles.query( "type:ACTS_IN AND name:Neo", null, theMatrix );
+    Relationship typeNeo = typeHits.iterator().next();
+    typeHits.close();
+----
+
+Such an index can be useful if your domain has nodes with a very large number of relationships between them, since it reduces the search time for a relationship between two nodes.
+A good example where this approach pays dividends is in time series data, where we have readings represented as a relationship per occurrence.
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-scores]]
+== Scores
+
+The `IndexHits` interface exposes scoring (link:{org-neo4j-graphdb-index-IndexHits-currentScore}[`org.neo4j.graphdb.index.IndexHits.currentScore()`^]) so that the index can communicate scores for the hits.
+
+[NOTE]
+====
+The result is not sorted by the score unless you explicitly specify that.
+See <<indexing-lucene-sort>> for how to sort by score.
+====
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=queryWithScore]
+
+[source, java, indent=0]
+----
+IndexHits<Node> hits = movies.query( "title", "The*" );
+for ( Node movie : hits )
+{
+    System.out.println( movie.getProperty( "title" ) + " " + hits.currentScore() );
+}
+----
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-create-advanced]]
+== Configuration and full-text indexes
+
+At the time of creation extra configuration can be specified to control the behavior of the index and which backend to use.
+For example to create a Lucene full-text index:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=fulltext]
+
+[source, java, indent=0]
+----
+IndexManager index = graphDb.index();
+Index<Node> fulltextMovies = index.forNodes( "movies-fulltext",
+        MapUtil.stringMap( IndexManager.PROVIDER, "lucene", "type", "fulltext" ) );
+fulltextMovies.add( theMatrix, "title", "The Matrix" );
+fulltextMovies.add( theMatrixReloaded, "title", "The Matrix Reloaded" );
+// search in the full-text index
+Node found = fulltextMovies.query( "title", "reloAdEd" ).getSingle();
+----
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+Here is an example of how to create an exact index which is case insensitive:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/org/neo4j/index/impl/lucene/explicit/TestLuceneIndex.java
+//TestLuceneIndex.java[tag=exact-case-insensitive]
+
+[source, java, indent=0]
+----
+Index<Node> index = graphDb.index().forNodes( "exact-case-insensitive",
+        MapUtil.stringMap( "type", "exact", "to_lower_case", "true" ) );
+Node node = graphDb.createNode();
+index.add( node, "name", "Thomas Anderson" );
+assertContains( index.query( "name", "\"Thomas Anderson\"" ), node );
+assertContains( index.query( "name", "\"thoMas ANDerson\"" ), node );
+----
+
+[TIP]
+====
+In order to search for tokenized words, the `query` method has to be used.
+The `get` method will only match the full string value, not the tokens.
+====
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/org/neo4j/index/impl/lucene/explicit/TestLuceneIndex.java[`TestLuceneIndex.java`^].
+====
+
+The configuration of the index is persisted once the index has been created.
+The `provider` configuration key is interpreted by Neo4j, but any other configuration is passed onto the backend index (e.g. Lucene) to interpret.
+
+.Lucene indexing configuration parameters
+[options="header", cols="<20m,<30,<50"]
+|===
+
+| Parameter
+| Possible values
+| Effect
+
+| type
+| `exact`, `fulltext`.
+a|
+`exact` is the default and uses a Lucene  link:https://lucene.apache.org/core/5_4_0/analyzers-common/org/apache/lucene/analysis/core/KeywordAnalyzer.html[keyword analyzer^].
+`fulltext` uses a white-space tokenizer in its analyzer.
+
+| to_lower_case
+| `true`, `false`.
+a|
+This parameter goes together with `type`: `fulltext` and converts values to lower case during both additions and querying, making the index case insensitive.
+Defaults to `true`.
+
+| analyzer
+| The full class name of an link:https://lucene.apache.org/core/5_4_0/core/org/apache/lucene/analysis/Analyzer.html[Analyzer^].
+a|
+Overrides the `type` so that a custom analyzer can be used.
+[NOTE]
+====
+`to_lower_case` still affects lowercasing of string queries.
+====
+If the custom analyzer uppercases the indexed tokens, string queries will not match as expected.
+
+|===
+
+
+[[indexing-lucene-extras]]
+== Extra features for Lucene indexes
+
+
+[[indexing-lucene-numeric-ranges]]
+=== Numeric ranges
+
+Lucene supports smart indexing of numbers, querying for ranges and sorting such results, and so does its backend for Neo4j.
+To mark a value so that it is indexed as a numeric value, we can make use of the link:{org-neo4j-index-lucene-ValueContext}[`org.neo4j.index.lucene.ValueContext`^] class, like this:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=numericRange]
+
+[source, java, indent=0]
+----
+movies.add( theMatrix, "year-numeric", new ValueContext( 1999 ).indexNumeric() );
+movies.add( theMatrixReloaded, "year-numeric", new ValueContext( 2003 ).indexNumeric() );
+movies.add( malena, "year-numeric", new ValueContext( 2000 ).indexNumeric() );
+
+int from = 1997;
+int to = 1999;
+hits = movies.query( QueryContext.numericRange( "year-numeric", from, to ) );
+----
+
+[NOTE]
+====
+The same type must be used for indexing and querying.
+That is, you cannot index a value as a Long and then query the index using an Integer.
+====
+
+By giving `null` as from/to argument, an open ended query is created.
+In the following example we are doing that, and have added sorting to the query as well:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=sortedNumericRange]
+
+[source, java, indent=0]
+----
+hits = movies.query(
+        QueryContext.numericRange( "year-numeric", from, null )
+                .sortNumeric( "year-numeric", false ) );
+----
+
+From/to in the ranges defaults to be _inclusive_, but you can change this behavior by using two extra parameters:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=exclusiveRange]
+
+[source, java, indent=0]
+----
+movies.add( theMatrix, "score", new ValueContext( 8.7 ).indexNumeric() );
+movies.add( theMatrixReloaded, "score", new ValueContext( 7.1 ).indexNumeric() );
+movies.add( malena, "score", new ValueContext( 7.4 ).indexNumeric() );
+
+// include 8.0, exclude 9.0
+hits = movies.query( QueryContext.numericRange( "score", 8.0, 9.0, true, false ) );
+----
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-lucene-sort]]
+=== Sorting
+
+Lucene performs sorting very well, and that is also exposed in the index backend, through the link:{org-neo4j-index-lucene-QueryContext}[`org.neo4j.index.lucene.QueryContext`^] class:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=sortedResult]
+
+[source, java, indent=0]
+----
+hits = movies.query( "title", new QueryContext( "*" ).sort( "title" ) );
+for ( Node hit : hits )
+{
+    // all movies with a title in the index, ordered by title
+}
+// or
+hits = movies.query( new QueryContext( "title:*" ).sort( "year", "title" ) );
+for ( Node hit : hits )
+{
+    // all movies with a title in the index, ordered by year, then title
+}
+----
+
+You can sort the results by relevance (score) like this:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=queryWithRelevance]
+
+[source, java, indent=0]
+----
+hits = movies.query( "title", new QueryContext( "The*" ).sortByScore() );
+for ( Node movie : hits )
+{
+    // hits sorted by relevance (score)
+}
+----
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-lucene-query-objects]]
+=== Querying with Lucene query objects
+
+Instead of passing in Lucene query syntax queries, you can instantiate such queries programmatically and pass in as argument, for example:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=termQuery]
+
+[source, java, indent=0]
+----
+Node actor = actors.query( new TermQuery( new Term( "name", "Keanu Reeves" ) ) ).getSingle();
+----
+
+[NOTE]
+====
+The link:https://lucene.apache.org/core/5_4_0/core/org/apache/lucene/search/TermQuery.html[`TermQuery`^] is basically the same thing as using the `get` method on the index.
+====
+
+This is how to perform _wildcard_ searches using Lucene query objects:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=wildcardTermQuery]
+
+[source, java, indent=0]
+----
+hits = movies.query( new WildcardQuery( new Term( "title", "The Matrix*" ) ) );
+for ( Node movie : hits )
+{
+    System.out.println( movie.getProperty( "title" ) );
+}
+----
+
+Note that this allows for whitespace in the search string.
+
+[NOTE]
+====
+The source code for the examples can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-lucene-compound]]
+=== Compound queries
+
+Lucene supports querying for multiple terms in the same query, like so:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=compoundQueries]
+
+[source, java, indent=0]
+----
+hits = movies.query( "title:*Matrix* AND year:1999" );
+----
+
+[CAUTION]
+====
+Compound queries cannot search across committed index entries and those who have not got committed yet at the same time.
+====
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
+
+
+[[indexing-lucene-default-operator]]
+=== Default operator
+
+The default operator (that is whether `AND` or `OR` is used in between different terms) in a query is `OR`.
+Changing that behavior is also done via the link:{org-neo4j-index-lucene-QueryContext}[`org.neo4j.index.lucene.QueryContext`^] class:
+
+//https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java
+//ImdbDocTest.java[tag=defaultOperator]
+
+[source, java, indent=0]
+----
+QueryContext query = new QueryContext( "title:*Matrix* year:1999" )
+        .defaultOperator( Operator.AND );
+hits = movies.query( query );
+----
+
+[NOTE]
+====
+The source code for the example can be found here, link:https://github.com/neo4j/neo4j-documentation/blob/3.5/lucene/src/test/java/examples/ImdbDocTest.java[`ImdbDocTest.java`^].
+====
 
