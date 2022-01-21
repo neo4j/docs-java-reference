@@ -107,7 +107,7 @@ public class ManualFullTextIndexTest
 
 == Define a procedure
 
-With the test in place, write a procedure procedure that fulfills the expectations of the test.
+With the test in place, write a procedure that fulfills the expectations of the test.
 The full example is available in the link:{procedure-template-url}[Neo4j Procedure Template^] repository.
 
 Particular things to note:
