@@ -13,7 +13,7 @@ The traversal API described in this section has been deprecated and will be repl
 This new version will be available in a future release of Neo4j 4.x, alongside the current version.
 The current version, as detailed below, will be removed in Neo4j 5.0.
 
-For a detailed example on how to use the traversal framework, refer to link:https://neo4j.com/docs/java-reference/3.5/tutorial-traversal/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
+For a detailed example on how to use the traversal framework, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
 ====
 
 This section provides an overview of the concepts of the traversal framework, and a detailed description of the Neo4j traversal framework Java API.
@@ -44,7 +44,7 @@ image::graphdb-traversal-description.svg[role="middle"]
 [IMPORTANT]
 ====
 The traversal framework is no longer supported.
-For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/tutorial-traversal/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
+For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
 ====
 
 The traversal framework consists of a few main interfaces in addition to `Node` and `Relationship`: `TraversalDescription`, `Evaluator`, `Traverser` and `Uniqueness` are the main ones.
@@ -204,6 +204,6 @@ For a user of the traversal API it is easier to implement the PathExpander/Relat
 [IMPORTANT]
 ====
 The traversal framework is no longer supported.
-For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/tutorial-traversal/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
+For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
 ====
 
