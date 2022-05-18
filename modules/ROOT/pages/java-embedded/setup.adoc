@@ -85,7 +85,7 @@ The examples below are only valid Neo4j Community Edition.
 
 To add Neo4j Enterprise Edition as a dependency, please get in contact with link:https://neo4j.com/contact-us/[Neo4j Professional Services^].
 
-See xref:5.0@operations-manual:ROOT:introduction/index.adoc[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
+See xref:4.4@operations-manual:ROOT:introduction/index.adoc[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
 ====
 
 
