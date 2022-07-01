@@ -3,18 +3,8 @@
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 
 
-[role=deprecated]
 [[traversal]]
 = The traversal framework
-
-[IMPORTANT]
-====
-The traversal API described in this section has been deprecated and will be replaced by a new version of the API in the next major release of Neo4j.
-This new version will be available in a future release of Neo4j 4.x, alongside the current version.
-The current version, as detailed below, will be removed in Neo4j 5.0.
-
-For a detailed example on how to use the traversal framework, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
-====
 
 This section provides an overview of the concepts of the traversal framework, and a detailed description of the Neo4j traversal framework Java API.
 
@@ -41,15 +31,9 @@ image::graphdb-traversal-description.svg[role="middle"]
 [[traversal-java-api]]
 == Traversal framework Java API
 
-[IMPORTANT]
-====
-The traversal framework is no longer supported.
-For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
-====
-
 The traversal framework consists of a few main interfaces in addition to `Node` and `Relationship`: `TraversalDescription`, `Evaluator`, `Traverser` and `Uniqueness` are the main ones.
 The `Path` interface also has a special purpose in traversals, since it is used to represent a position in the graph when evaluating that position.
-Furthermore the `PathExpander` (replacing `RelationshipExpander` and `Expander`) interface is central to traversals, but users of the API rarely need to implement it.
+Furthermore, the `PathExpander` (replacing `RelationshipExpander` and `Expander`) interface is central to traversals, but users of the API rarely need to implement it.
 There are also a set of interfaces for advanced use, when explicit control over the traversal order is required: `BranchSelector`, `BranchOrderingPolicy` and `TraversalBranch`.
 
 
@@ -201,9 +185,170 @@ For a user of the traversal API it is easier to implement the PathExpander/Relat
 [[examples-how-to-use-the-traversal-framework]]
 === How to use the Traversal framework
 
-[IMPORTANT]
+A link:{org-neo4j-graphdb-traversal-TraversalDescription}[`org.neo4j.graphdb.traversal.TraversalDescription`^] is built using a fluent interface and such a description can then spawn several link:{org-neo4j-graphdb-traversal-Traverser}[`org.neo4j.graphdb.traversal.Traverser`^] objects.
+
+image::traversal_framework_example.svg[role="middle"]
+
+[NOTE]
 ====
-The traversal framework is no longer supported.
-For a detailed example on how to use it, refer to link:https://neo4j.com/docs/java-reference/3.5/traversal-framework/#examples-how-to-use-the-traversal-framework[The Neo4j Java Developer Reference v3.5^].
+The source code for the examples can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
 ====
 
+With the definition of the RelationshipTypes as:
+
+[source, java]
+----
+private enum Rels implements RelationshipType
+{
+    LIKES, KNOWS
+}
+----
+
+The graph can be traversed with for example the following traverser, starting at the node with the `name = 'Joe'`:
+
+[source, java]
+----
+for ( Path position : db.traversalDescription()
+        .depthFirst()
+        .relationships( Rels.KNOWS )
+        .relationships( Rels.LIKES, Direction.INCOMING )
+        .evaluator( Evaluators.toDepth( 5 ) )
+        .traverse( node ) )
+{
+    output += position + "\n";
+}
+----
+
+The traversal will output:
+
+[source, output, role="noheader"]
+----
+(0)
+(0)<-[LIKES,1]-(5)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)<-[KNOWS,5]-(6)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)-[KNOWS,2]->(2)
+----
+
+Since a `TraversalDescription` is immutable it is also useful to create template descriptions which holds common settings shared by different traversals.
+For example, start with this traverser:
+
+[source, java]
+----
+friendsTraversal = db.traversalDescription()
+        .depthFirst()
+        .relationships( Rels.KNOWS )
+        .uniqueness( Uniqueness.RELATIONSHIP_GLOBAL );
+----
+
+
+This traverser would yield the following output (starting from the node with the `name = 'Joe'`):
+
+[source, java]
+----
+(0)
+(0)-[KNOWS,0]->(2)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,6]-(5)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,5]-(6)
+----
+
+Create a new traverser from it, restricting depth to three:
+
+[source, java]
+----
+for ( Path path : friendsTraversal
+        .evaluator( Evaluators.toDepth( 3 ) )
+        .traverse( node ) )
+{
+    output += path + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+(0)
+(0)-[KNOWS,0]->(2)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+----
+
+
+Or how about from depth two to four?
+That is done like this:
+
+[source, java]
+----
+for ( Path path : friendsTraversal
+        .evaluator( Evaluators.fromDepth( 2 ) )
+        .evaluator( Evaluators.toDepth( 4 ) )
+        .traverse( node ) )
+{
+    output += path + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
+----
+
+For various useful evaluators, see the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
+
+If you are not interested in the Paths, but the Nodes you can transform the traverser into an iterable of nodes like this:
+
+[source, java]
+----
+for ( Node currentNode : friendsTraversal
+        .traverse( node )
+        .nodes() )
+{
+    output += currentNode.getProperty( "name" ) + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+Joe
+Sara
+Peter
+Dirk
+Lars
+Lisa
+Ed
+----
+
+Relationships are fine as well, here is an example how to get them:
+
+[source, java]
+----
+for ( Relationship relationship : friendsTraversal
+        .traverse( node )
+        .relationships() )
+{
+    output += relationship.getType().name() + "\n";
+}
+----
+
+
+[source, output, role="noheader"]
+----
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+----

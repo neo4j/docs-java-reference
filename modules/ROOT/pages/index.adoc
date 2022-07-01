@@ -25,14 +25,9 @@ The following topics are:
 
 * xref:extending-neo4j/index.adoc[] -- How to build unmanaged extensions and procedures.
 * xref:java-embedded/index.adoc[] -- Instructions on embedding Neo4j in an application.
-* xref:traversal-framework.adoc[] -- A walkthrough of the traversal framework. label:deprecated[]
+* xref:traversal-framework.adoc[] -- A walkthrough of the traversal framework.
 * xref:transaction-management.adoc[] -- Details on transaction semantics in Neo4j.
 * xref:jmx-metrics.adoc[] -- How to monitor Neo4j with JMX and a reference of available metrics.
-
-[IMPORTANT]
-====
-The xref:traversal-framework.adoc[traversal framework API] has been deprecated and will be replaced in the next major release of Neo4j.
-====
 
 [TIP]
 ====

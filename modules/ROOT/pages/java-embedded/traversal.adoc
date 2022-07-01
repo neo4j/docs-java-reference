@@ -1,19 +1,12 @@
 :description: The traversal API.
 
 
-[role=deprecated]
 [[java-embedded-traversal]]
 = Traversal
 
 This describes traversing into another graph.
 
 For more information about traversals, see xref:traversal-framework.adoc[].
-
-[WARNING]
-====
-The traversal API described in this section has been deprecated and will be replaced in the next major release of Neo4j.
-====
-
 
 == The Matrix
 
