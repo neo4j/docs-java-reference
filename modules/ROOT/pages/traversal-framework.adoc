@@ -13,6 +13,20 @@ Some traversal examples are collected under xref:java-embedded/traversal.adoc[].
 
 You can also use the xref:5.0@cypher-manual:ROOT:index.adoc[Cypher query language] as a powerful declarative way to query the graph.
 
+== When to use the Traversal Framework
+The Traversal Framework offers a powerful approach to traversing the graph. Being able to dynamically make custom choices at each step
+of the traversal makes it more expressive than Cypher and potentially more performant. The Traversal Framework also gives access to the full
+power of the programming language to express these decisions.
+
+[WARNING]
+====
+It is generally recommended to use Cypher wherever possible, but when using the Traversal Framework the following should be kept in mind:
+
+Cypher uses memory tracking which allows a query to be aborted if it occupies too much memory,
+but mixing in Traversal API via a function you may run out of memory if your Traversal uses a lot of memory.
+
+Do not reuse objects fetched during a Traversal in another transaction.
+====
 
 [[traversal-concepts]]
 == Main concepts
