@@ -11,12 +11,9 @@ This section provides an overview of the concepts of the traversal framework, an
 The Neo4j Traversal framework Java API is a callback-based, lazily-executed way of specifying desired movements through a graph in Java.
 Some traversal examples are collected under xref:java-embedded/traversal.adoc[].
 
-You can also use the xref:5.0@cypher-manual:ROOT:index.adoc[Cypher query language] as a powerful declarative way to query the graph.
-
-== When to use the Traversal Framework
-The Traversal Framework offers a powerful approach to traversing the graph. Being able to dynamically make custom choices at each step
-of the traversal makes it more expressive than Cypher and potentially more performant. The Traversal Framework also gives access to the full
-power of the programming language to express these decisions.
+Although the traversal framework is less readable and more complex than the xref:5.0@cypher-manual:ROOT:index.adoc[Cypher query language], it
+offers a powerful approach to traversing the graph. Being able to dynamically make custom choices at each step
+of the traversal makes it more expressive and potentially more performant than Cypher.
 
 [WARNING]
 ====
@@ -27,6 +24,15 @@ but mixing in Traversal API via a function you may run out of memory if your Tra
 
 Do not reuse objects fetched during a Traversal in another transaction.
 ====
+
+== When to use the Traversal Framework instead of Cypher
+* The Traversal Framework allows to use any desired java library to express the traversal.
+* The Traversal Framework allows customized pruning while traversing a path, which can improve the performance of a traversal.
+See <<traversal-java-api-evaluator, Evaluator>> for more information.
+* In Cypher it's not possible to specify in which order paths are expanded (e.g. depth-first).
+The Traversal Framework permits to specify the <<traversal-java-api-branchselector,order of traversing paths>>.
+* In Cypher relationships are only traversed once (`RELATIONSHIP_GLOBAL` uniqueness).
+The Traversal Framework permits to specify the <<traversal-java-api-uniqueness, uniqueness constraints of the path traversed>>.
 
 [[traversal-concepts]]
 == Main concepts
@@ -85,6 +91,24 @@ More than one evaluator can be added.
 Evaluators will be called for all positions the traverser encounters, even for the start node.
 ====
 
+==== Built-in Evaluators
+
+The Framework also provides various built in evaluators such as:
+
+* `Evaluators.all()`: Includes and continues on all nodes.
+* `Evaluators.atDepth(int)`: Includes only paths at the given depth and prunes everything else.
+* `Evaluators.toDepth(int)`: Includes paths up to the given depth and prunes everything deeper than that.
+* `Evaluators.fromDepth(int)`: Includes paths from the given depth, ignoring those before and never prunes anything.
+* `Evaluators.includingDepths(int, int)`: Includes only the paths equal to and between the 2 given depths.
+* `Evaluators.lastRelationshipTypeIs(Evalutation, Evaluation, RelationshipType...)`: Allows the choice of which evaluation to take based on
+whether the last relationship matches one of the given ones.
+* `Evaluators.includeWhereLastRelationshipTypeIs(RelationshipType...)`: Only returns paths in which the final relationship matches the given ones.
+* `Evaluators.endNodeIs(Evaluation, Evaluation, Node...)`: Allows the choice of which evaluation to take based on
+whether the last node matches one of the given nodes.
+* `Evaluators.includeIfContainsAll(Node...)`: Returns a path if all given nodes are contained within it.
+* `Evaluators.includeIfAcceptedByAny(PathEvaluator)`: Returns a path if any of the given evaluators include the current path.
+* `Evaluators.endNodeIsAtDepth(int, Node...)`: Returns a path if one of the given nodes is at the given depth.
+
 [[traversal-java-api-traverser]]
 === Traverser
 
@@ -92,6 +116,17 @@ The `Traverser` object is the result of invoking `traverse()` of a `TraversalDes
 It represents a traversal positioned in the graph, and a specification of the format of the result.
 The actual traversal is performed lazily each time the `next()`-method of the iterator of the `Traverser` is invoked.
 
+==== Example
+Here is an example of a Traversal with default values (Uniqueness: NODE_GLOBAL, Expander: BOTH, Branch Ordering: PREORDER_DEPTH_FIRST):
+[source, java]
+----
+TraversalDescription td;
+try ( Transaction tx = graphDb.beginTx() ) {
+     td = tx.traversalDescription();
+}
+
+td.traverse( startNode );
+----
 
 [[traversal-java-api-uniqueness]]
 === Uniqueness
@@ -115,17 +150,17 @@ This uniqueness level does however have a cap on how much memory it may consume 
 The size of this collection can be specified by providing a number as the second argument to the TraversalDescription.uniqueness()-method along with the uniqueness level.
 * `RELATIONSHIP_RECENT` uniqueness: Works like `NODE_RECENT` uniqueness, but with relationships instead of nodes.
 
+==== Example
+Here is an example of a traversal using a predefined Uniqueness constraint:
+----
+TraversalDescription td;
+try ( Transaction tx = graphDb.beginTx() ) {
+     td = tx.traversalDescription();
+            .uniqueness( Uniqueness.RELATIONSHIP_GLOBAL )
+}
 
-==== Depth first / Breadth first
-
-These are convenience methods for setting preorder link:https://en.wikipedia.org/wiki/Depth-first_search[depth-first^] / link:https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first^] `BranchSelector` | `ordering` policies.
-The same result can be achieved by calling the `order` method with ordering policies from `BranchOrderingPolicies`, or to write your own `BranchSelector` / `BranchOrderingPolicy` and pass in.
-
-
-[[traversal-java-api-order]]
-=== Order - how to move through branches?
-
-This is a more generic version of depthFirst/ breadthFirst methods in that it enables an arbitrary `BranchOrderingPolicy` to be injected into the description.
+td.traverse( startNode );
+----
 
 
 [[traversal-java-api-branchselector]]
@@ -133,7 +168,8 @@ This is a more generic version of depthFirst/ breadthFirst methods in that it en
 
 A `BranchSelector` / `BranchOrderingPolicy` is used for selecting which branch of the traversal to attempt next.
 This is used for implementing traversal orderings.
-The traversal framework provides a few basic ordering implementations:
+
+The traversal framework provides a few basic ordering implementations based on the link:https://en.wikipedia.org/wiki/Depth-first_search[depth-first^] and link:https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first^] algorithms:
 
 * `BranchOrderingPolicies.PREORDER_DEPTH_FIRST`: Traversing depth first, visiting each node before visiting its child nodes.
 * `BranchOrderingPolicies.POSTORDER_DEPTH_FIRST`: Traversing depth first, visiting each node after visiting its child nodes.
@@ -151,18 +187,59 @@ Therefore it is supplied to the `TraversalDescription` through a `BranchOrdering
 A user of the Traversal framework rarely needs to implement his own `BranchSelector` or `BranchOrderingPolicy`, it is provided to let graph algorithm implementors provide their own traversal orders.
 The Neo4j Graph Algorithms package contains for example a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in BestFirst search algorithms such as A* and Dijkstra.
 
+==== Example
+Given the following graph, these are the results of the branch ordering policies without any extra filter:
+
+image::traversal_order_example_graph.png[align="center", role="middle", width=200]
+
+[cols="1,1"]
+|===
+|Ordering policy |Order of the nodes in traversal
+
+|`BranchOrderingPolicies.PREORDER_DEPTH_FIRST`
+|a, b, d, c, e,
+
+|`BranchOrderingPolicies.POSTORDER_DEPTH_FIRST`
+|d, b, e, c, a
+
+|`BranchOrderingPolicies.PREORDER_BREADTH_FIRST`
+|a, b, c, d, e
+
+|`BranchOrderingPolicies.POSTORDER_BREADTH_FIRST`
+|d, e, b, c, a
+|===
 
 ==== BranchOrderingPolicy
 
-A factory for creating ``BranchSelector``s to decide in what order branches are returned (where a branch's position is represented as a `Path` from the start node to the current node).
-Common policies are depth-first and breadth-first and that is why there are convenience methods for those.
-For example, calling `TraversalDescription#depthFirst()` is equivalent to:
+A BranchOrderingPolicy is a factory for creating ``BranchSelector``s to decide in what order branches are returned
+(where a branch's position is represented as a `Path` from the start node to the current node).
+
+Depth-first and breadth-first are common policies and can be accessed by the convenience methods by breadthFirst() / depthFirst().
+
+===== Example
+[source, java, role="nocopy"]
+----
+TraversalDescription td;
+try ( Transaction tx = graphDb.beginTx() ) {
+     td = tx.traversalDescription();
+            .depthFirst()
+}
+
+td.traverse( startNode );
+----
+
+These are equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
 [source, java, role="nocopy"]
 ----
-description.order( BranchOrderingPolicies.PREORDER_DEPTH_FIRST );
-----
+TraversalDescription td;
+try ( Transaction tx = graphDb.beginTx() ) {
+     td = tx.traversalDescription();
+            .order( BranchOrderingPolicies.PREORDER_BREADTH_FIRST )
+}
 
+td.traverse( startNode );
+----
 
 ==== TraversalBranch
 
