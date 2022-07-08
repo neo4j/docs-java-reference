@@ -329,7 +329,7 @@ Here's an example of setting a customized relationship expander, which only expa
 ----
 TraversalDescription td = transaction.traversalDescription()
     .expand(PathExpanders.forTypeAndDirection( RelationshipType.withName( "A" ), Direction.OUTGOING ));
-td.traverse(start);
+td.traverse(startNode);
 ----
 
 ==== PathExpanderBuilder
@@ -357,8 +357,6 @@ TraversalDescription td = transaction.traversalDescription()
     .expand(PathExpanderBuilder.empty()
                                .add(RelationshipType.withName("E1"))
                                .build());
-return td.traverse(start);
-
 td.traverse(startNode);
 ----
 
@@ -407,15 +405,20 @@ Using the custom PathExpander and setting the initial state:
 ----
 TraversalDescription td = transaction.traversalDescription()
         .expand( new MaxWeightPathExpander(5.0), InitialBranchState.DOUBLE_ZERO );
-td.traverse(start);
+td.traverse(startNode);
 ----
 
 == The Bidirectional Traversal Framework
 
-A bidirectional traversal consists of two traversals starting from different nodes, which will return a path if both traversals collide.
+A bidirectional traversal consists of two traversals starting from different nodes, which will return the paths where both traversals collide.
 
 The Bidirectional Traversal Framework allows the description of such a traversal with the `BidirectionalTraversalDescription`.
 
+[NOTE]
+====
+The Uniqueness should always be set manually when using the `BidirectionalTraversalDescription` as the default of `Uniqueness.NODE_GLOBAL`
+will result in no paths being returned as the two sides will never be able to collide.
+====
 
 [source, java, role="nocopy"]
 ----
@@ -426,6 +429,44 @@ BidirectionalTraversalDescription td = transaction
                                .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
 td.traverse(startNode, endNode);
 ----
+
+=== Collision Evaluator
+The `CollisionEvaluator` takes a `PathEvaluator`
+
+=== Side Selector
+In a bidirectional traversal the traverser alternates which side (start or end) to move further on for each step.
+It is possible to change how this works by implementing the SideSelectorPolicy interface, which contains a function for
+determining which side to traverse the next step from.
+
+* `Direction.OUTGOING` -- The traverser coming from the start node.
+* `Direction.INCOMING` -- The traverser coming from the end node.
+
+The built-in policies include:
+
+// TODO: Wasn't really sure what these did :P
+* `SideSelectorPolicies.LEVEL` --
+* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` --
+* `SideSelectorPolicies.ALTERNATING` --
+
+The `SideSelectorPolicy` optionally takes a maxDepth which represents the combined depth that both sides must adhere to.
+
+==== Example
+Here's an example of using a built-in `SideSelectorPolicy` with a max combined depth of 5.
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+                               .sideSelector(SideSelectorPolicies.LEVEL, 5);
+td.traverse(startNode, endNode);
+----
+
+// TODO: add example of a custom SideSelector
+
+=== Collision Policies
+A `CollisionPolicy` evaluates whether a path should be included once a collision occurs.
 
 [[examples-how-to-use-the-traversal-framework]]
 === How to use the Traversal Framework
