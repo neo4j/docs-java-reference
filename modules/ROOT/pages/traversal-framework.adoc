@@ -416,8 +416,9 @@ The Bidirectional Traversal Framework allows the description of such a traversal
 
 [NOTE]
 ====
-The Uniqueness should always be set manually when using the `BidirectionalTraversalDescription` as the default of `Uniqueness.NODE_GLOBAL`
-will result in no paths being returned as the two sides will never be able to collide.
+The Uniqueness is shared with both traversals. There will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
+as both traversals need to traverse to a node to get a collision.
+As a consequence, always set the uniqueness manually when using the `BidirectionalTraversalDescription` as the default is `Uniqueness.NODE_GLOBAL`.
 ====
 
 [source, java, role="nocopy"]
@@ -431,7 +432,8 @@ td.traverse(startNode, endNode);
 ----
 
 === Collision Evaluator
-The `CollisionEvaluator` takes a `PathEvaluator`
+The `CollisionEvaluator` takes a `PathEvaluator`, which evaluates if a path is accepted as a result or not.
+It is possible to define multiple collision evaluators.
 
 === Side Selector
 In a bidirectional traversal the traverser alternates which side (start or end) to move further on for each step.
@@ -443,10 +445,9 @@ determining which side to traverse the next step from.
 
 The built-in policies include:
 
-// TODO: Wasn't really sure what these did :P
-* `SideSelectorPolicies.LEVEL` --
-* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` --
-* `SideSelectorPolicies.ALTERNATING` --
+* `SideSelectorPolicies.LEVEL` -- Stops traversal if the combined depth is larger than the given maximum depth.
+* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` -- Stops as soon as a result was found.
+* `SideSelectorPolicies.ALTERNATING` -- Alternates which branch continues the traversal.
 
 The `SideSelectorPolicy` optionally takes a maxDepth which represents the combined depth that both sides must adhere to.
 
@@ -464,9 +465,17 @@ td.traverse(startNode, endNode);
 ----
 
 // TODO: add example of a custom SideSelector
+=== Collision Detector
+A `BranchCollisionDetector` returns the paths which can be combined from the given traversals.
 
 === Collision Policies
 A `CollisionPolicy` evaluates whether a path should be included once a collision occurs.
+
+* STANDARD --
+* SHORTEST_PATH --
+
+
+
 
 [[examples-how-to-use-the-traversal-framework]]
 === How to use the Traversal Framework
