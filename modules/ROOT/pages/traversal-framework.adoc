@@ -307,37 +307,42 @@ In essence these are a composite of a Path and a RelationshipExpander that can b
 The Traversal Framework uses a `PathExpander` to discover the relationships
 that should be followed from a particular path to further branches in the traversal.
 
-For a user of the traversal API it is easier to implement the PathExpander/RelationshipExpander interface,
-since it only contains one method -- the method for getting the relationships from a path/node,
-the methods that the Expander interface adds are just for building new Expanders.
+There are multiple ways of specifying a `PathExpander`:
+
+* The built-in `PathExpander` define some commonly used `PathExpander`s.
+* The `PathExpanderBuilder` allows the combinations of defintions.
+* It is possible to write a custom `PathExpander` by implementing the `PathExpander` interface.
+
+==== Built-in PathExpanders
+The following path expanders can be found in the class `PathExpanders` and can be used to set a more specific `PathExpander` for the traversal:
+
+* `allTypesAndDirections()` -- expands all relationships in all directions (default).
+* `forType(relationshipType)` -- expands only relationships of a specific type.
+* `forDirection(direction)` -- expands only relationships in a specific direction.
+* `forTypeAndDirection(relationshipType, direction)` -- expands only relationships of a given type and a given direction.
+* `forTypesAndDirections(relationshipType, direction, relationshipType, direction, ...)` -- expands only relationships of the given types and their specific direction.
+* `forConstantDirectionWithTypes(relationshipType, ...)` -- expands only relationships of the given types, if they continue in the direction of the first relationship.
 
 ===== Example
-Here's an example of setting a customized relationship expander, which only expands outgoing relationships with the type "A":
-[source, java, role="nocopy"]
-----
-TraversalDescription td = transaction.traversalDescription()
-    .expand(StandardExpander.create(RelationshipType.withName("A"), Direction.OUTGOING));
-return td.traverse(start);
-----
-
-The same expander can also be created with the `PathExpanders` static methods.
+Here's an example of setting a customized relationship expander, which only expands outgoing relationships with the type `A`:
 [source, java, role="nocopy"]
 ----
 TraversalDescription td = transaction.traversalDescription()
     .expand(PathExpanders.forTypeAndDirection( RelationshipType.withName( "A" ), Direction.OUTGOING ));
-return td.traverse(start);
+td.traverse(start);
 ----
 
 ==== PathExpanderBuilder
-It is also possible to define a custom `PathExpander` with the `PathExpanderBuilder`.
+The `PathExpanderBuilder` allows the combination of different `PathExpander` definitions.
+This provides a more fine-grained level of customization without having to write a `PathExpander` from scratch.
 It contains a set of static method allowing the creation of a `PathExpander` with the following methods:
 
 * `empty()` -- expands no relationships
-* `emptyOrderedByType()` -- expands no relationships, guarantees the order of how types will be epxanded when any are added
+* `emptyOrderedByType()` -- expands no relationships, guarantees the order of how types will be expanded when any are added
 * `allTypesAndDirections()` -- expands all relationships in any direction
 * `allTypes(Direction)` -- expands all relationships in the given direction
 
-That PathExpander can be further improved by the following methods:
+That PathExpander can then be further defined by the following methods:
 
 * `add(relationshipType)` -- expands relationships of the given type
 * `add(relationshipType, direction)` -- expands relationships of the given type and direction
@@ -355,6 +360,54 @@ TraversalDescription td = transaction.traversalDescription()
 return td.traverse(start);
 
 td.traverse(startNode);
+----
+
+===== Custom PathExpander Example
+
+Here's an example of a custom `PathExpander`, which tracks the weight of the path in its `BranchState` and
+will only include paths if the total weight is smaller than the given maximum weight:
+[source, java, role="nocopy"]
+----
+class MaxWeightPathExpander implements PathExpander<Double>
+{
+
+    private final double maxWeight;
+
+    public MaxWeightPathExpander( double maxWeight) {
+        this.maxWeight = maxWeight;
+    }
+
+    @Override
+    public Iterable<Relationship> expand( Path path, BranchState<Double> branchState )
+    {
+        if (path.lastRelationship() != null) {
+            branchState.setState( branchState.getState() + (double) path.lastRelationship().getProperty( "weight" ) );
+        }
+
+        Iterable<Relationship> relationships = path.endNode().getRelationships( Direction.OUTGOING );
+        ArrayList<Relationship> filtered = new ArrayList<>();
+        for ( Relationship relationship : relationships ) {
+            if ( branchState.getState() + (double) relationship.getProperty( "weight" ) <= maxWeight ) {
+                filtered.add(relationship);
+            }
+        }
+        return filtered;
+    }
+
+    @Override
+    public PathExpander reverse()
+    {
+        throw new RuntimeException( "Not needed for the Traversal Framework" );
+    }
+}
+----
+
+Using the custom PathExpander and setting the initial state:
+[source, java, role="nocopy"]
+----
+TraversalDescription td = transaction.traversalDescription()
+        .expand( new MaxWeightPathExpander(5.0), InitialBranchState.DOUBLE_ZERO );
+td.traverse(start);
 ----
 
 [[examples-how-to-use-the-traversal-framework]]
