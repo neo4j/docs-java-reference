@@ -410,6 +410,23 @@ TraversalDescription td = transaction.traversalDescription()
 td.traverse(start);
 ----
 
+== The Bidirectional Traversal Framework
+
+A bidirectional traversal consists of two traversals starting from different nodes, which will return a path if both traversals collide.
+
+The Bidirectional Traversal Framework allows the description of such a traversal with the `BidirectionalTraversalDescription`.
+
+
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
+td.traverse(startNode, endNode);
+----
+
 [[examples-how-to-use-the-traversal-framework]]
 === How to use the Traversal Framework
 
