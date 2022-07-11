@@ -1,0 +1,81 @@
+:description: The Neo4j Bidirectional Traversal Framework Java API.
+
+:org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
+
+[[Bidirectional-Traversal-Framework]]
+= The Bidirectional Traversal Framework
+
+A bidirectional traversal consists of two traversals starting from different nodes, returning the paths where both traversals collide.
+
+The Bidirectional Traversal Framework allows the description of such a traversal with the `BidirectionalTraversalDescription`.
+
+[NOTE]
+====
+The Uniqueness is shared between both traversals, meaning there will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
+as both traversals need to reach the same node to cause a collision.
+As a result of this, always set the uniqueness manually when using the `BidirectionalTraversalDescription` as the default is `Uniqueness.NODE_GLOBAL`.
+====
+
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
+td.traverse(startNode, endNode);
+----
+
+== Collision Evaluator
+The `CollisionEvaluator` takes a `PathEvaluator`, which evaluates if a path is accepted as a result or not.
+It is possible to define multiple collision evaluators.
+
+== Side Selector
+In a bidirectional traversal the traverser alternates which side (start or end) to move further on for each step.
+It is possible to change how this works by implementing the `SideSelectorPolicy` interface, which contains a function for
+determining which side to traverse the next step from.
+
+* `Direction.OUTGOING` -- The traverser coming from the start node.
+* `Direction.INCOMING` -- The traverser coming from the end node.
+
+The built-in policies include:
+
+* `SideSelectorPolicies.LEVEL` -- Stops traversal if the combined depth is larger than the given maximum depth.
+* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` -- Stops as soon as a result was found.
+* `SideSelectorPolicies.ALTERNATING` -- Alternates which branch continues the traversal.
+
+The `SideSelectorPolicy` optionally takes a maxDepth which represents the combined depth that both sides must adhere to.
+
+=== Example
+Here's an example of using a built-in `SideSelectorPolicy` with a max combined depth of 5.
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+                               .sideSelector(SideSelectorPolicies.LEVEL, 5);
+td.traverse(startNode, endNode);
+----
+
+== Collision Policies
+The `BranchCollisionDetector` returns the paths which can be combined from the two given traversers.
+A `BranchCollisionPolicy` then evaluates which of these paths should be included.
+
+These are the build-in `BranchCollisionPolicies`:
+
+* `STANDARD` -- Returns all paths with a collision.
+* `SHORTEST_PATH` -- Returns all paths with the smallest traversal depth.
+
+Here's an example of using a built-in `BranchCollisionPolicy`:
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+        .collisionPolicy(BranchCollisionPolicies.SHORTEST_PATH);
+td.traverse(startNode, endNode);
+----

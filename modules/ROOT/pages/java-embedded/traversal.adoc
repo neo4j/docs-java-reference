@@ -6,7 +6,7 @@
 
 This describes traversing into another graph.
 
-For more information about traversals, see xref:traversal-framework.adoc[].
+For more information about traversals, see xref:traversal-framework/index.adoc[].
 
 == The Matrix
 

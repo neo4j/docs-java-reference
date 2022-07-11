@@ -1,0 +1,210 @@
+:description: The Neo4j Traversal Framework Example.
+
+:org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
+
+[[examples-how-to-use-the-traversal-framework]]
+= Traversal Framework Example
+
+A link:{org-neo4j-graphdb-traversal-TraversalDescription}[`org.neo4j.graphdb.traversal.TraversalDescription`^] is built using a fluent interface and such a description can then spawn several link:{org-neo4j-graphdb-traversal-Traverser}[`org.neo4j.graphdb.traversal.Traverser`^] objects.
+
+image::traversal_framework_example.svg[role="middle"]
+
+[NOTE]
+====
+The source code for the examples can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
+====
+
+With the definition of the RelationshipTypes as:
+
+[source, java]
+----
+private enum Rels implements RelationshipType
+{
+    LIKES, KNOWS
+}
+----
+
+The graph can be traversed with for example the following traverser, starting at the node with the `name = 'Joe'`:
+
+[source, java]
+----
+for ( Path position : db.traversalDescription()
+        .depthFirst()
+        .relationships( Rels.KNOWS )
+        .relationships( Rels.LIKES, Direction.INCOMING )
+        .evaluator( Evaluators.toDepth( 5 ) )
+        .traverse( node ) )
+{
+    output += position + "\n";
+}
+----
+
+The traversal will output:
+
+[source, output, role="noheader"]
+----
+(0)
+(0)<-[LIKES,1]-(5)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)<-[KNOWS,5]-(6)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)
+(0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)-[KNOWS,2]->(2)
+----
+
+Since a `TraversalDescription` is immutable it is also useful to create template descriptions which holds common settings shared by different traversals.
+For example, start with this traverser:
+
+[source, java]
+----
+friendsTraversal = db.traversalDescription()
+        .depthFirst()
+        .relationships( Rels.KNOWS )
+        .uniqueness( Uniqueness.RELATIONSHIP_GLOBAL );
+----
+
+
+This traverser would yield the following output (starting from the node with the `name = 'Joe'`):
+
+[source, java]
+----
+(0)
+(0)-[KNOWS,0]->(2)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,6]-(5)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,5]-(6)
+----
+
+Create a new traverser from it, restricting depth to three:
+
+[source, java]
+----
+for ( Path path : friendsTraversal
+        .evaluator( Evaluators.toDepth( 3 ) )
+        .traverse( node ) )
+{
+    output += path + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+(0)
+(0)-[KNOWS,0]->(2)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+----
+
+
+Or how about from depth two to four?
+That is done like this:
+
+[source, java]
+----
+for ( Path path : friendsTraversal
+        .evaluator( Evaluators.fromDepth( 2 ) )
+        .evaluator( Evaluators.toDepth( 4 ) )
+        .traverse( node ) )
+{
+    output += path + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
+(0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
+----
+
+For various useful evaluators, see the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
+
+If you are not interested in the Paths, but the Nodes you can transform the traverser into an iterable of nodes like this:
+
+[source, java]
+----
+for ( Node currentNode : friendsTraversal
+        .traverse( node )
+        .nodes() )
+{
+    output += currentNode.getProperty( "name" ) + "\n";
+}
+----
+
+This will give the following output:
+
+[source, output, role="noheader"]
+----
+Joe
+Sara
+Peter
+Dirk
+Lars
+Lisa
+Ed
+----
+
+Relationships are fine as well, here is an example how to get them:
+
+[source, java]
+----
+for ( Relationship relationship : friendsTraversal
+        .traverse( node )
+        .relationships() )
+{
+    output += relationship.getType().name() + "\n";
+}
+----
+
+
+[source, output, role="noheader"]
+----
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+KNOWS
+----
+
+== Example
+Below is an example of how to implement a procedure using the Traversal Framework. This allows the Traversal Framework
+to be used side by side with Cypher. The transaction and logger are made available through the Procedure Framework.
+
+[source, java]
+----
+@Context
+public Transaction tx;
+
+@Context
+public Log log;
+
+@Procedure(value = "traverse.findPeople")
+@Description("Finds all the known people to the given Person")
+public Stream<TestProcedure.PathResult> findFriends(@Name("person") Node person) {
+
+    final Traverser traverse = tx.traversalDescription()
+            .breadthFirst()
+            .relationships(RelationshipType.withName("KNOWS"), Direction.OUTGOING)
+            .evaluator(Evaluators.toDepth(5))
+            .evaluator(new PathLogger())
+            .traverse(person);
+
+    return stream(traverse.iterator()).map(TestProcedure.PathResult::new);
+}
+
+private final class PathLogger implements Evaluator {
+
+    @Override
+    public Evaluation evaluate(Path path) {
+        log.info(path.toString());
+        return Evaluation.INCLUDE_AND_CONTINUE;
+    }
+}
+----

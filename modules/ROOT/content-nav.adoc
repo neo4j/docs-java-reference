@@ -29,7 +29,10 @@
 ** xref:java-embedded/cypher-java.adoc[]
 ** xref:java-embedded/query-parameters.adoc[]
 
-* xref:traversal-framework.adoc[]
+* xref:traversal-framework/index.adoc[]
+** xref:traversal-framework/traversal_framework_java_api.adoc[]
+** xref:traversal-framework/bidirectional_traversal_framework.adoc[]
+** xref:traversal-framework/traversal_framework_example.adoc[]
 
 * xref:transaction-management.adoc[]
 
