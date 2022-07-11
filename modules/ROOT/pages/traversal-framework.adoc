@@ -464,18 +464,26 @@ BidirectionalTraversalDescription td = transaction
 td.traverse(startNode, endNode);
 ----
 
-// TODO: add example of a custom SideSelector
-=== Collision Detector
-A `BranchCollisionDetector` returns the paths which can be combined from the given traversals.
-
 === Collision Policies
-A `CollisionPolicy` evaluates whether a path should be included once a collision occurs.
+The `BranchCollisionDetector` returns the paths which can be combined from the two given traversers.
+A `BranchCollisionPolicy` then evaluates which of these paths should be included.
 
-* STANDARD --
-* SHORTEST_PATH --
+These are the build-in `BranchCollisionPolicies`:
 
+* `STANDARD` -- Returns all paths with a collision.
+* `SHORTEST_PATH` -- Returns all paths with the smallest traversal depth.
 
-
+Here's an example of using a built-in `BranchCollisionPolicy`:
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+        .collisionPolicy(BranchCollisionPolicies.SHORTEST_PATH);
+td.traverse(startNode, endNode);
+----
 
 [[examples-how-to-use-the-traversal-framework]]
 === How to use the Traversal Framework
