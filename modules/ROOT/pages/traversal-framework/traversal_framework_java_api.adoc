@@ -1,12 +1,13 @@
 :description: The Neo4j Traversal Framework Java API.
 
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
+:org-neo4j-graphdb-traversal-description: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Transaction.html#traversalDescription()
 
 [[traversal-java-api]]
 = Traversal Framework Java API
 
 [[traversal-java-api-traversaldescription]]
-== TraversalDescription
+== link:{org-neo4j-graphdb-traversal-description}[TraversalDescription^]
 
 The `TraversalDescription` is the main interface used for defining and initializing traversals.
 It is not meant to be implemented by users of the Traversal Framework, but rather is provided as a way for the user to describe traversals.

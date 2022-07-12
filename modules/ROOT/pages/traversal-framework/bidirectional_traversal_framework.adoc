@@ -1,13 +1,13 @@
 :description: The Neo4j Bidirectional Traversal Framework Java API.
 
-:org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
+:org-neo4j-graphdb-bidirectional-traversal-description: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Transaction.html#bidirectionalTraversalDescription()
 
 [[Bidirectional-Traversal-Framework]]
 = The Bidirectional Traversal Framework
 
 A bidirectional traversal consists of two traversals starting from different nodes, returning the paths where both traversals collide.
 
-The Bidirectional Traversal Framework allows the description of such a traversal with the `BidirectionalTraversalDescription`.
+The Bidirectional Traversal Framework allows the description of such a traversal with the link:{org-neo4j-graphdb-bidirectional-traversal-description}[BidirectionalTraversalDescription^].
 
 [NOTE]
 ====
