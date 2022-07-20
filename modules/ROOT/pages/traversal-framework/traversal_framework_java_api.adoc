@@ -225,8 +225,8 @@ Depth-first and breadth-first are common policies and can be accessed by the con
 ----
 TraversalDescription td;
 try ( Transaction tx = graphDb.beginTx() ) {
-     td = tx.traversalDescription();
-            .depthFirst()
+     td = tx.traversalDescription()
+            .depthFirst();
 }
 
 td.traverse( startNode );
@@ -238,8 +238,8 @@ This is equivalent to setting the `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` 
 ----
 TraversalDescription td;
 try ( Transaction tx = graphDb.beginTx() ) {
-     td = tx.traversalDescription();
-            .order( BranchOrderingPolicies.PREORDER_BREADTH_FIRST )
+     td = tx.traversalDescription()
+            .order( BranchOrderingPolicies.PREORDER_BREADTH_FIRST );
 }
 
 td.traverse( startNode );
@@ -315,7 +315,7 @@ class MaxWeightPathExpander implements PathExpander<Double>
 
     private final double maxWeight;
 
-    public MaxWeightPathExpander( double maxWeight) {
+    public MaxWeightPathExpander( double maxWeight ) {
         this.maxWeight = maxWeight;
     }
 
