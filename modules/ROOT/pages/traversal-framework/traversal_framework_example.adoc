@@ -1,20 +1,21 @@
-:description: The Neo4j Traversal Framework Example.
+:description: A Neo4j Traversal Framework example.
 
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 
 [[examples-how-to-use-the-traversal-framework]]
 = Traversal Framework Example
 
-A link:{org-neo4j-graphdb-traversal-TraversalDescription}[`org.neo4j.graphdb.traversal.TraversalDescription`^] is built using a fluent interface and such a description can then spawn several link:{org-neo4j-graphdb-traversal-Traverser}[`org.neo4j.graphdb.traversal.Traverser`^] objects.
+A link:{org-neo4j-graphdb-traversal-TraversalDescription}[`org.neo4j.graphdb.traversal.TraversalDescription`^] is built using a fluent interface.
+Such a description can then spawn several link:{org-neo4j-graphdb-traversal-Traverser}[`org.neo4j.graphdb.traversal.Traverser`^] objects.
 
 image::traversal_framework_example.svg[role="middle"]
 
 [NOTE]
 ====
-The source code for the examples can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
+The source code for the examples can be found at: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
 ====
 
-With the definition of the RelationshipTypes as:
+With the definition of the `RelationshipTypes` as
 
 [source, java]
 ----
@@ -24,7 +25,7 @@ private enum Rels implements RelationshipType
 }
 ----
 
-The graph can be traversed with for example the following traverser, starting at the node with the `name = 'Joe'`:
+the graph can be traversed with, for example, the following traverser starting at the node with the `name = 'Joe'`:
 
 [source, java]
 ----
@@ -39,7 +40,7 @@ for ( Path position : db.traversalDescription()
 }
 ----
 
-The traversal will output:
+The traversal will thus output:
 
 [source, output, role="noheader"]
 ----
@@ -52,7 +53,7 @@ The traversal will output:
 (0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)-[KNOWS,2]->(2)
 ----
 
-Since a `TraversalDescription` is immutable it is also useful to create template descriptions which holds common settings shared by different traversals.
+Since a `TraversalDescription` is immutable, it is useful to create template descriptions that include common settings shared by different traversals.
 For example, start with this traverser:
 
 [source, java]
@@ -64,7 +65,7 @@ friendsTraversal = db.traversalDescription()
 ----
 
 
-This traverser would yield the following output (starting from the node with the `name = 'Joe'`):
+It should yield the following output (starting from the node with the `name = 'Joe'`):
 
 [source, java]
 ----
@@ -77,7 +78,7 @@ This traverser would yield the following output (starting from the node with the
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,5]-(6)
 ----
 
-Create a new traverser from it, restricting depth to three:
+Then create a new traverser from it, restricting depth to three:
 
 [source, java]
 ----
@@ -89,7 +90,7 @@ for ( Path path : friendsTraversal
 }
 ----
 
-This will give the following output:
+This should be the output:
 
 [source, output, role="noheader"]
 ----
@@ -100,8 +101,7 @@ This will give the following output:
 ----
 
 
-Or how about from depth two to four?
-That is done like this:
+In case you want to traverse from depth two to four:
 
 [source, java]
 ----
@@ -123,9 +123,9 @@ This will give the following output:
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
 ----
 
-For various useful evaluators, see the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
+To see other useful evaluators, check the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
 
-If you are not interested in the Paths, but the Nodes you can transform the traverser into an iterable of nodes like this:
+If you are not interested in the Paths, but the Nodes, you can turn the traverser into an iterable of nodes like this:
 
 [source, java]
 ----
@@ -150,7 +150,8 @@ Lisa
 Ed
 ----
 
-Relationships are fine as well, here is an example how to get them:
+You can do this with relationships as well.
+Here is an example:
 
 [source, java]
 ----
@@ -174,8 +175,8 @@ KNOWS
 ----
 
 == Example
-Below is an example of how to implement a procedure using the Traversal Framework. This allows the Traversal Framework
-to be used side by side with Cypher. The transaction and logger are made available through the Procedure Framework.
+Below is an example of how to implement a procedure using the Traversal Framework.
+This allows the Traversal Framework to be used side by side with Cypher. The transaction and logger are made available through the Procedure Framework:
 
 [source, java]
 ----

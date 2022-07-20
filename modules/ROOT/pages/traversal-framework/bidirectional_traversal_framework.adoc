@@ -11,9 +11,9 @@ The Bidirectional Traversal Framework allows the description of such a traversal
 
 [NOTE]
 ====
-The Uniqueness is shared between both traversals, meaning there will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
+The Uniqueness is shared between both traversals, which means that there will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
 as both traversals need to reach the same node to cause a collision.
-As a result of this, always set the uniqueness manually when using the `BidirectionalTraversalDescription` as the default is `Uniqueness.NODE_GLOBAL`.
+For this reason, always set the Uniqueness manually when using the `BidirectionalTraversalDescription`, since the default is `Uniqueness.NODE_GLOBAL`.
 ====
 
 [source, java, role="nocopy"]
@@ -27,12 +27,12 @@ td.traverse(startNode, endNode);
 ----
 
 == Collision Evaluator
-The `CollisionEvaluator` takes a `PathEvaluator`, which evaluates if a path is accepted as a result or not.
+The `CollisionEvaluator` takes a `PathEvaluator` that checks if a path is accepted as a result or not.
 It is possible to define multiple collision evaluators.
 
 == Side Selector
-In a bidirectional traversal the traverser alternates which side (start or end) to move further on for each step.
-It is possible to change how this works by implementing the `SideSelectorPolicy` interface, which contains a function for
+In a bidirectional traversal, the traverser selects which side (start or end) to move on each step.
+It is possible to change how this works by implementing the `SideSelectorPolicy` interface, as it has a function for
 determining which side to traverse the next step from.
 
 * `Direction.OUTGOING` -- The traverser coming from the start node.
@@ -41,13 +41,13 @@ determining which side to traverse the next step from.
 The built-in policies include:
 
 * `SideSelectorPolicies.LEVEL` -- Stops traversal if the combined depth is larger than the given maximum depth.
-* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` -- Stops as soon as a result was found.
+* `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` -- Stops as soon as a result is found.
 * `SideSelectorPolicies.ALTERNATING` -- Alternates which branch continues the traversal.
 
-The `SideSelectorPolicy` optionally takes a maxDepth which represents the combined depth that both sides must adhere to.
+The `SideSelectorPolicy` optionally takes a `maxDepth` which represents the combined depth that both sides must adhere to.
 
 === Example
-Here's an example of using a built-in `SideSelectorPolicy` with a max combined depth of 5.
+Here's an example of how to use a built-in `SideSelectorPolicy` with a max combined depth of 5.
 [source, java, role="nocopy"]
 ----
 BidirectionalTraversalDescription td = transaction
@@ -68,7 +68,7 @@ These are the build-in `BranchCollisionPolicies`:
 * `STANDARD` -- Returns all paths with a collision.
 * `SHORTEST_PATH` -- Returns all paths with the smallest traversal depth.
 
-Here's an example of using a built-in `BranchCollisionPolicy`:
+Here's an example of how to use a built-in `BranchCollisionPolicy`:
 [source, java, role="nocopy"]
 ----
 BidirectionalTraversalDescription td = transaction
