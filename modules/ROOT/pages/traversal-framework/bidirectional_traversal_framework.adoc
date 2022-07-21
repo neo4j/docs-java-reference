@@ -16,6 +16,15 @@ as both traversals need to reach the same node to cause a collision.
 For this reason, always set the Uniqueness manually when using the `BidirectionalTraversalDescription`, since the default is `Uniqueness.NODE_GLOBAL`.
 ====
 
+== Defining the Bidirectional Traverser
+When creating a BidirectionalTraversalDescription it is possible to choose the TraversalDescription that each side takes.
+This can be done by setting it individually for each side (startSide/endSide), or setting one for both (mirroredSides).
+
+=== Mirrored Traversal
+The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal, however the
+end side will be the reverse of the start. For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
+The `PathExpander` interface also comes with a `reverse()` function which should be overridden if used in a `mirroredSides` implementation.
+
 [source, java, role="nocopy"]
 ----
 BidirectionalTraversalDescription td = transaction
@@ -26,9 +35,32 @@ BidirectionalTraversalDescription td = transaction
 td.traverse(startNode, endNode);
 ----
 
-== Collision Evaluator
-The `CollisionEvaluator` takes a `PathEvaluator` that checks if a path is accepted as a result or not.
-It is possible to define multiple collision evaluators.
+=== Start and End Side Traversal
+Here is an example of using the `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`,
+one side is traversing forward from the start node, expanding all outgoing relationships of Type `A`, the other side is traversing backwards
+from the end node, expanding all incoming relationships of Type `B`.
+
+The final paths will go from the start node to the end node where all relationships have an outgoing direction,
+the possible paths would be:
+
+* All relationships are of Type `A`
+* All relationships are of Type `B`
+* The relationships from the start node are Type `A` and after the collision are all of type `B`
+
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .startSide(transaction
+                .traversalDescription()
+                .expand(PathExpanders.forTypeAndDirection(RelationshipType.withName("A"), Direction.OUTGOING))
+                .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+        .endSide(transaction
+                .traversalDescription()
+                .expand(PathExpanders.forTypeAndDirection(RelationshipType.withName("B"), Direction.INCOMING))
+                .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
+td.traverse(startNode, endNode);
+----
 
 == Side Selector
 In a bidirectional traversal, the traverser selects which side (start or end) to move on each step.
@@ -77,5 +109,20 @@ BidirectionalTraversalDescription td = transaction
                                .traversalDescription()
                                .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
         .collisionPolicy(BranchCollisionPolicies.SHORTEST_PATH);
+td.traverse(startNode, endNode);
+----
+
+== Collision Evaluator
+There is a convenience method `collisionEvaluator()` for adding a `PathEvaluator` which will validate paths in a valid collision.
+Using the method multiple times will combine the evaluators.
+
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+    .bidirectionalTraversalDescription()
+    .mirroredSides(transaction
+       .traversalDescription()
+       .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL))
+    .collisionEvaluator(Evaluators.atDepth(3));
 td.traverse(startNode, endNode);
 ----

@@ -53,6 +53,11 @@ Traversals are defined by a traversal description, which may contain the followi
 
 image::graphdb-traversal-description.svg[role="middle"]
 
+[[implementing-traversal-api]]
+== Using the Traversal Framework
+
+The Traversal Framework can be used <<java-embedded,embedded in Java applications>>.
+It can also be used when extending Neo4j with a <<extending-neo4j-procedures, User-defined Procedure>>, see <<traversal-in-a-procedure-example, here>> for an example.
 
 To read more about the traversals, see:
 

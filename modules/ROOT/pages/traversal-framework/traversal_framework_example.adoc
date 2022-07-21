@@ -125,7 +125,7 @@ This will give the following output:
 
 To see other useful evaluators, check the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
 
-If you are not interested in the Paths, but the Nodes, you can turn the traverser into an iterable of nodes like this:
+The `Traverser` also has a `nodes()` method that will return an iterable of all the nodes in the paths:
 
 [source, java]
 ----
@@ -174,9 +174,10 @@ KNOWS
 KNOWS
 ----
 
+[[traversal-in-a-procedure-example]]
 == Example
-Below is an example of how to implement a procedure using the Traversal Framework.
-This allows the Traversal Framework to be used side by side with Cypher. The transaction and logger are made available through the Procedure Framework:
+Below is an example of how to implement a <<extending-neo4j-procedures, user-defined procedure>> using the Traversal Framework.
+The transaction and logger are made available through the Procedure Framework:
 
 [source, java]
 ----
@@ -188,7 +189,7 @@ public Log log;
 
 @Procedure(value = "traverse.findPeople")
 @Description("Finds all the known people to the given Person")
-public Stream<TestProcedure.PathResult> findFriends(@Name("person") Node person) {
+public Stream<PathResult> findFriends(@Name("person") Node person) {
 
     final Traverser traverse = tx.traversalDescription()
             .breadthFirst()
@@ -197,7 +198,7 @@ public Stream<TestProcedure.PathResult> findFriends(@Name("person") Node person)
             .evaluator(new PathLogger())
             .traverse(person);
 
-    return stream(traverse.iterator()).map(TestProcedure.PathResult::new);
+    return stream(traverse.iterator()).map(PathResult::new);
 }
 
 private final class PathLogger implements Evaluator {
@@ -208,4 +209,12 @@ private final class PathLogger implements Evaluator {
         return Evaluation.INCLUDE_AND_CONTINUE;
     }
 }
+----
+
+This allows the Traversal Framework to be used side by side with Cypher:
+
+[source, cypher]
+----
+MATCH (p:Person { name: 'Joe' })
+CALL traverse.findPeople(p) YIELD path RETURN [friend IN nodes(path) | friend.name] AS friends
 ----
