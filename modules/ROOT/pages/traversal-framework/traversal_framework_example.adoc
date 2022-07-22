@@ -5,8 +5,8 @@
 [[examples-how-to-use-the-traversal-framework]]
 = Traversal Framework Example
 
-A link:{org-neo4j-graphdb-traversal-TraversalDescription}[`org.neo4j.graphdb.traversal.TraversalDescription`^] is built using a fluent interface.
-Such a description can then spawn several link:{org-neo4j-graphdb-traversal-Traverser}[`org.neo4j.graphdb.traversal.Traverser`^] objects.
+The following are some examples to highlight how one might use the Traversal Framework.
+It utilizes the graph below which illustrates a small group of friends.
 
 image::traversal_framework_example.svg[role="middle"]
 

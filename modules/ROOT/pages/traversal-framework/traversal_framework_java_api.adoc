@@ -32,8 +32,16 @@ try ( Transaction tx = graphDb.beginTx() ) {
      td = tx.traversalDescription();
 }
 
-td.traverse( startNode );
+Traverser traverser = td.traverse( startNode );
+
+for ( Path path : traverser ) {
+    // Extend as needed
+}
 ----
+
+The `Traverser` additionally exposes methods for reading the last `relationships()` and `nodes()` for
+each of the returned `Paths` and `metadata()` which has convenience methods for finding the total
+number of returned paths, `getNumberOfPathsReturned()` and the number of relationships traversed `getNumberOfRelationshipsTraversed()`.
 
 == Relationships
 
