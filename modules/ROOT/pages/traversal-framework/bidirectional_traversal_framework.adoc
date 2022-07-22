@@ -9,6 +9,17 @@ A bidirectional traversal consists of two traversals starting from different nod
 
 The Bidirectional Traversal Framework allows the description of such a traversal with the link:{org-neo4j-graphdb-bidirectional-traversal-description}[BidirectionalTraversalDescription^].
 
+Here's a visual representation of a bidirectional traversal from start node `1` and end node `5`,
+where all bold relationships are in the result paths given the following restrictions:
+
+* The start side traverser only traverses relationships of type `A`
+* The end side traverser only traverses relationships of type `B`
+
+image:bidirectional-example.png[role="middle"]
+
+Note that paths where only one of the traversers reaches the opposite start/end node are also included, such as `(1)-[:A]->(5)` and `(1)-[:B]->(5)`.
+In the accepted path `(1)-[:A]->(2)-[:A]->(3)-[:B]->(4)-[:B]->(5)`, the traversers collide in the middle at node `3`.
+
 [NOTE]
 ====
 The Uniqueness is shared between both traversals, which means that there will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
@@ -19,21 +30,6 @@ For this reason, always set the Uniqueness manually when using the `Bidirectiona
 == Defining the Bidirectional Traverser
 When creating a BidirectionalTraversalDescription it is possible to choose the TraversalDescription that each side takes.
 This can be done by setting it individually for each side (startSide/endSide), or setting one for both (mirroredSides).
-
-=== Mirrored Traversal
-The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal, however the
-end side will be the reverse of the start. For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
-The `PathExpander` interface also comes with a `reverse()` function which should be overridden if used in a `mirroredSides` implementation.
-
-[source, java, role="nocopy"]
-----
-BidirectionalTraversalDescription td = transaction
-        .bidirectionalTraversalDescription()
-        .mirroredSides(transaction
-                               .traversalDescription()
-                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
-td.traverse(startNode, endNode);
-----
 
 === Start and End Side Traversal
 Here is an example of using the `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`,
@@ -59,6 +55,21 @@ BidirectionalTraversalDescription td = transaction
                 .traversalDescription()
                 .expand(PathExpanders.forTypeAndDirection(RelationshipType.withName("B"), Direction.INCOMING))
                 .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
+td.traverse(startNode, endNode);
+----
+
+=== Mirrored Traversal
+The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal, however the
+end side will be the reverse of the start. For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
+The `PathExpander` interface also comes with a `reverse()` function which should be overridden if used in a `mirroredSides` implementation.
+
+[source, java, role="nocopy"]
+----
+BidirectionalTraversalDescription td = transaction
+        .bidirectionalTraversalDescription()
+        .mirroredSides(transaction
+                               .traversalDescription()
+                               .uniqueness(Uniqueness.RELATIONSHIP_GLOBAL));
 td.traverse(startNode, endNode);
 ----
 
