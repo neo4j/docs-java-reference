@@ -103,8 +103,9 @@ td.traverse(startNode, endNode);
 ----
 
 == Collision Policies
-The `BranchCollisionDetector` returns the paths which can be combined from the two given traversers.
-A `BranchCollisionPolicy` then evaluates which of these paths should be included.
+A `BranchCollisionPolicy` defines when a collision is detected and accepted in a bidirectional traversal. Given an evaluator and a path predicate,
+a `BranchCollisionPolicy` will create a `BranchCollisionDetector`, which will detect collisions between two traversers and
+add the resulting path to the result if it satisfies the conditions given by the collision evaluator and uniqueness constraints.
 
 These are the build-in `BranchCollisionPolicies`:
 
