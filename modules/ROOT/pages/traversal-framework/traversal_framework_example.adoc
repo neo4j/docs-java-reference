@@ -5,8 +5,8 @@
 [[examples-how-to-use-the-traversal-framework]]
 = Traversal Framework Example
 
-The following are some examples to highlight how one might use the Traversal Framework.
-It utilizes the graph below which illustrates a small group of friends.
+Here are some examples to highlight how one might use the Traversal Framework.
+See the graph below which illustrates a small group of friends.
 
 image::traversal_framework_example.svg[role="middle"]
 
