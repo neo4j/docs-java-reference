@@ -28,7 +28,7 @@ For this reason, always set the Uniqueness manually when using the `Bidirectiona
 ====
 
 == Defining the Bidirectional Traverser
-When creating a BidirectionalTraversalDescription it is possible to choose the TraversalDescription that each side takes.
+When creating a `BidirectionalTraversalDescription` it is possible to choose the `TraversalDescription` that each side takes.
 This can be done by setting it individually for each side (startSide/endSide), or setting one for both (mirroredSides).
 
 === Start and End Side Traversal
