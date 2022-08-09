@@ -34,7 +34,7 @@ However, when mixing Cypher with Java in the Traversal API (e.g. on a function),
 * The Traversal Framework allows customized pruning during the traversal of a path. This could potentially improve the performance of a traversal.
 See <<traversal-java-api-evaluator, Evaluator>> for more information.
 * With Cypher, it is not possible to specify the order in which paths are expanded (e.g. depth-first).
-However, with the Traversal Framework it is possible to specify the <<traversal-java-api-branchselector,order of path traversal>>.
+However, with the Traversal Framework it is possible to specify the <<traversal-java-api-branchselector,order of paths traversed>>.
 * With Cypher, relationships are only traversed once (`RELATIONSHIP_GLOBAL` uniqueness).
 By using the Traversal Framework, it is possible to specify the <<traversal-java-api-uniqueness, uniqueness constraints of the path traversed>>.
 
@@ -57,7 +57,7 @@ image::graphdb-traversal-description.svg[role="middle"]
 == Using the Traversal Framework
 
 The Traversal Framework can be used <<java-embedded,embedded in Java applications>>.
-It can also be used when extending Neo4j with a <<extending-neo4j-procedures, User-defined Procedure>>, see <<traversal-in-a-procedure-example, here>> for an example.
+It can also be used when extending Neo4j with a <<extending-neo4j-procedures, User-defined Procedure>>. See an example <<traversal-in-a-procedure-example, here>>.
 
 To read more about the traversals, see:
 
