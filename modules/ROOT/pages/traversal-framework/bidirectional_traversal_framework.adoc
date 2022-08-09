@@ -36,8 +36,8 @@ Here is an example of using the `BidirectionalTraversalDescription` with a separ
 one side is traversing forward from the start node, expanding all outgoing relationships of Type `A`, the other side is traversing backwards
 from the end node, expanding all incoming relationships of Type `B`.
 
-The final paths will go from the start node to the end node where all relationships have an outgoing direction,
-the possible paths would be:
+The final paths will go from the start node to the end node where all relationships have an outgoing direction. 
+Possible paths would be:
 
 * All relationships are of Type `A`
 * All relationships are of Type `B`
@@ -59,8 +59,9 @@ td.traverse(startNode, endNode);
 ----
 
 === Mirrored Traversal
-The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal, however the
-end side will be the reverse of the start. For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
+The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal.
+However, the end side will be the reverse of the start. 
+For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
 The `PathExpander` interface also comes with a `reverse()` function which should be overridden if used in a `mirroredSides` implementation.
 
 [source, java, role="nocopy"]
@@ -89,7 +90,6 @@ The built-in policies include:
 
 The `SideSelectorPolicy` optionally takes a `maxDepth` which represents the combined depth that both sides must adhere to.
 
-=== Example
 Here's an example of how to use a built-in `SideSelectorPolicy` with a max combined depth of 5.
 [source, java, role="nocopy"]
 ----
@@ -126,7 +126,7 @@ td.traverse(startNode, endNode);
 
 == Collision Evaluator
 There is a convenience method `collisionEvaluator()` for adding a `PathEvaluator` which will validate paths in a valid collision.
-Using the method multiple times will combine the evaluators.
+Using the method multiple times will result in the combination of the evaluators.
 
 [source, java, role="nocopy"]
 ----
