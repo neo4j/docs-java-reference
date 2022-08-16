@@ -34,7 +34,7 @@ However, when mixing Cypher with Java in the Traversal API (e.g. on a function),
 * The Traversal Framework allows customized pruning during the traversal of a path. This could potentially improve the performance of a traversal.
 See <<traversal-java-api-evaluator, Evaluator>> for more information.
 * With Cypher, it is not possible to specify the order in which paths are expanded (e.g. depth-first).
-However, with the Traversal Framework it is possible to specify the <<traversal-java-api-branchselector,order of paths traversed>>.
+However, with the Traversal Framework it is possible to specify the <<traversal-java-api-branchselector, order of paths traversed>>.
 * With Cypher, relationships are only traversed once (`RELATIONSHIP_GLOBAL` uniqueness).
 By using the Traversal Framework, it is possible to specify the <<traversal-java-api-uniqueness, uniqueness constraints of the path traversed>>.
 

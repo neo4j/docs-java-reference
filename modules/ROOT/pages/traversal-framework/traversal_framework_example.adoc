@@ -125,7 +125,7 @@ This will give the following output:
 
 To see other useful evaluators, check the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
 
-The `Traverser` also has a `nodes()` method that will return an iterable of all the nodes in the paths:
+The `Traverser` also has a `nodes()` method that will return an `Iterable` of all the nodes in the paths:
 
 [source, java]
 ----
