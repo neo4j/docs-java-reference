@@ -228,7 +228,7 @@ static class PathPrinter implements Paths.PathDescriptor<Path>
 [[examples-uniqueness-of-paths-in-traversals]]
 == Uniqueness of Paths in traversals
 
-The follow example demonstrates the use of node uniqueness.
+The following example demonstrates the use of node uniqueness.
 It lists all pets descended from other pets that are owned by `Principal1`:
 
 .Descendants example graph

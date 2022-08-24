@@ -10,7 +10,7 @@ The Bidirectional Traversal Framework allows the description of such a traversal
 
 image:bidirectional-example.png[role="middle"]
 
-Here's a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
+Here is a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
 
 * The start side traverser only traverses relationships of type `A`.
 * The end side traverser only traverses relationships of type `B`.
