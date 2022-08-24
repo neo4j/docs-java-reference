@@ -44,7 +44,7 @@ for ( Path path : traverser ) {
 Additionally, the `Traverser` features methods for reading the last `relationships()` and `nodes()` for each of the returned `Paths` and `metadata()`.
 It has convenience methods for finding the total number of returned paths, `getNumberOfPathsReturned()`, and the number of relationships traversed in `getNumberOfRelationshipsTraversed()`.
 
-== Relationships
+== Using `relationships()`
 
 The method `relationships()` defines relationship types and, optionally, the relationship direction to be traversed.
 By default, all relationships are traversed, regardless of their type.
@@ -59,7 +59,7 @@ return td.traverse(startNode);
 ----
 
 [[traversal-java-api-evaluator]]
-== Evaluators
+== Using ``Evaluator``s
 
 An `Evaluator` takes the `Path` from the start node to the current node and decides whether if the `Path` should be:
 
@@ -177,7 +177,7 @@ td.traverse( startNode );
 ----
 
 [[traversal-java-api-uniqueness]]
-== `Uniqueness`
+== `Uniqueness` options
 
 Although the default is `NODE_GLOBAL`, it is possible to set the rules for how positions can be revisited during a traversal by adjusting the levels of `Uniqueness`.
 These are some of the available options:
@@ -291,7 +291,7 @@ There are multiple ways of specifying a `PathExpander`, such as:
 * The `PathExpanderBuilder` allows the combination of definitions.
 * It is possible to write a custom `PathExpander` by implementing the `PathExpander` interface.
 
-=== Using a built-in `PathExpander`
+=== Built-in ``PathExpander``s
 The following path expanders are found in the class `PathExpander` and can be used to set a more specific `PathExpander` for the traversal:
 
 * `allTypesAndDirections()` -- Expands all relationships in all directions (default).
