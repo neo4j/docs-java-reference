@@ -6,11 +6,11 @@
 = Bidirectional Traversal Framework
 
 A bidirectional traversal consists of two traversals starting from different nodes, returning the paths where both traversals collide.
-The Bidirectional Traversal Framework allows the description of such a traversal with the link:/java-reference/{neo4j-version}/traversal-framework/bidirectional_traversal_framework/#_defining_the_bidirectional_traverser[BidirectionalTraversalDescription].
-
-image:bidirectional-example.png[role="middle"]
+The Bidirectional Traversal Framework allows the description of such a traversal with the link:/java-reference/{neo4j-version}/traversal-framework/bidirectional_traversal_framework/#_defining_the_bidirectional_traverser[`BidirectionalTraversalDescription`].
 
 Here is a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
+
+image:bidirectional-example.png[role="middle"]
 
 * The start side traverser only traverses relationships of type `A`.
 * The end side traverser only traverses relationships of type `B`.
@@ -125,7 +125,7 @@ td.traverse(startNode, endNode);
 
 == Collision Evaluator
 The convenience method `collisionEvaluator()` adds a `PathEvaluator` which will validate paths in a valid collision.
-Using the method multiple times will result in the combination of the evaluators. f f
+Using the method multiple times will result in the combination of the evaluators.
 
 [source, java, role="nocopy"]
 ----

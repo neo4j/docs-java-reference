@@ -19,7 +19,7 @@ Their methods return a new `TraversalDescription` that is modified according to 
 The method `traverse()` returns the result of the traversal defined in the `TraversalDescription`.
 
 [[traversal-java-api-traverser]]
-== `Traverser`
+== The `Traverser` object
 
 The `Traverser` object is the result of invoking `traverse()` on a `TraversalDescription`.
 It represents a traversal positioned on the graph and a specification of the format of the result.
@@ -59,7 +59,7 @@ return td.traverse(startNode);
 ----
 
 [[traversal-java-api-evaluator]]
-== `Evaluator`
+== Evaluators
 
 An `Evaluator` takes the `Path` from the start node to the current node and decides whether if the `Path` should be:
 
@@ -85,7 +85,7 @@ For this reason, keep in mind that:
 
 === Built-in `Evaluators`
 
-The Traversal Framework also provides several built-in evaluators, such as:
+The Traversal Framework also provides several built-in evaluators:
 
 [options="header"]
 |===
@@ -281,7 +281,7 @@ Check the link:https://neo4j.com/docs/java-reference/current/java-embedded/graph
 
 
 [[traversal-java-api-pathexpander]]
-== `PathExpander`
+== Using a `PathExpander`
 
 The Traversal Framework uses a `PathExpander` to discover the relationships that should be followed from a particular path to further branches in the traversal.
 
@@ -291,7 +291,7 @@ There are multiple ways of specifying a `PathExpander`, such as:
 * The `PathExpanderBuilder` allows the combination of definitions.
 * It is possible to write a custom `PathExpander` by implementing the `PathExpander` interface.
 
-=== Built-in ``PathExpander``s
+=== Using a built-in `PathExpander`
 The following path expanders are found in the class `PathExpander` and can be used to set a more specific `PathExpander` for the traversal:
 
 * `allTypesAndDirections()` -- Expands all relationships in all directions (default).

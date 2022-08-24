@@ -47,7 +47,7 @@ for ( Path friendPath : friendsTraverser )
 output += "Number of friends found: " + numberOfFriends + "\n";
 ----
 
-It should give this output:
+This will return the following output:
 
 [source, output, role="noheader"]
 ----
@@ -59,8 +59,9 @@ At depth 3 => Agent Smith
 Number of friends found: 4
 ----
 
-=== Who coded the Matrix?
-To find the master mind behind "The Matrix", follow all outgoing relationships which have the type `KNOWS` or `CODED_BY`.
+=== Solving the Matrix
+
+To find the mastermind behind "The Matrix", follow all outgoing relationships which have the type `KNOWS` or `CODED_BY`.
 The final node connected to the relationship `CODED_BY` will be the Matrix's coder.
 
 [source, java]
@@ -177,7 +178,7 @@ for ( Path path : traverser )
 }
 ----
 
-This should be the output:
+This will return the following output:
 
 [source, output, role="noheader"]
 ----
