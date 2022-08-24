@@ -91,7 +91,7 @@ The Framework also provides various built-in evaluators such as:
 * `Evaluators.toDepth(int)`: Includes paths up to the given depth, pruning everything deeper.
 * `Evaluators.fromDepth(int)`: Includes paths from the given depth, ignoring those before and never prunes anything.
 * `Evaluators.includingDepths(int, int)`: Includes only the paths of depth equal to and between the 2 given depths.
-* `Evaluators.lastRelationshipTypeIs(Evalutation, Evaluation, RelationshipType...)`: Allows the choice of which evaluation to take based on
+* `Evaluators.lastRelationshipTypeIs(Evaluation, Evaluation, RelationshipType...)`: Allows the choice of which evaluation to take based on
 whether the last relationship matches one of the given ones.
 * `Evaluators.includeWhereLastRelationshipTypeIs(RelationshipType...)`: Only returns paths in which the final relationship matches the given ones.
 * `Evaluators.endNodeIs(Evaluation, Evaluation, Node...)`: Allows the choice of which evaluation to take based on
