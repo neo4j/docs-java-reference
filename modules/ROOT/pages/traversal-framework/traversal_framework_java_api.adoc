@@ -1,4 +1,4 @@
-:description: The Neo4j Traversal Framework Java API.
+:description: Neo4j Traversal Framework Java API.
 
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 :org-neo4j-graphdb-traversal-description: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Transaction.html#traversalDescription()
@@ -9,22 +9,24 @@
 = Traversal Framework Java API
 
 [[traversal-java-api-traversaldescription]]
-== link:{org-neo4j-graphdb-traversal-description}[TraversalDescription^]
+== `TraversalDescription`
 
-The `TraversalDescription` is the main interface used for defining and initializing traversals.
-It is not meant to be implemented by users of the Traversal Framework, but rather is provided as a way for the user to describe traversals.
-`TraversalDescription` instances are immutable and its methods return a new `TraversalDescription` that is modified compared to the object the method was invoked on with the arguments of the method.
+`TraversalDescription` is the main interface used for defining and initializing traversals.
+It is not meant to be implemented by users of the Traversal Framework, but it works as a means for the user to describe traversals.
+
+`TraversalDescription` instances are immutable.
+Their methods return a new `TraversalDescription` that is modified according to the object that the method was invoked on, with the arguments of it.
 The method `traverse()` returns the result of the traversal defined in the `TraversalDescription`.
 
 [[traversal-java-api-traverser]]
-== Traverser
+== The `Traverser` object
 
 The `Traverser` object is the result of invoking `traverse()` on a `TraversalDescription`.
-It represents a traversal positioned in the graph, and a specification of the format of the result.
-The actual traversal is performed lazily each time the `next()`-method of the iterator of the `Traverser` is invoked.
+It represents a traversal positioned on the graph and a specification of the format of the result.
+The actual traversal is performed lazily each time the `next()` method of the iterator of the `Traverser` is invoked.
 
-=== Example
-Here is an example of a Traversal with default values (Uniqueness: _NODE_GLOBAL_, Expander: _BOTH_, Branch Ordering: _PREORDER_DEPTH_FIRST_):
+Here is an example of a Traversal using default values, that is, Uniqueness: _NODE_GLOBAL_, Expander: _BOTH_, Branch Ordering: _PREORDER_DEPTH_FIRST_:
+
 [source, java]
 ----
 TraversalDescription td;
@@ -39,15 +41,14 @@ for ( Path path : traverser ) {
 }
 ----
 
-The `Traverser` additionally exposes methods for reading the last `relationships()` and `nodes()` for
-each of the returned `Paths` and `metadata()` which has convenience methods for finding the total
-number of returned paths, `getNumberOfPathsReturned()` and the number of relationships traversed `getNumberOfRelationshipsTraversed()`.
+Additionally, the `Traverser` features methods for reading the last `relationships()` and `nodes()` for each of the returned `Paths` and `metadata()`.
+It has convenience methods for finding the total number of returned paths, `getNumberOfPathsReturned()`, and the number of relationships traversed in `getNumberOfRelationshipsTraversed()`.
 
-== Relationships
+== Using `relationships()`
 
-The method `relationships()` defines relationship types, and optionally the relationship direction, to be traversed.
-By default, all relationships are traversed, regardless of type.
-If one or more relationships are added then only the added types will be traversed.
+The method `relationships()` defines relationship types and, optionally, the relationship direction to be traversed.
+By default, all relationships are traversed, regardless of their type.
+However, if one or more relationships are added, then only the added types will be traversed.
 
 [source, java]
 ----
@@ -58,12 +59,12 @@ return td.traverse(startNode);
 ----
 
 [[traversal-java-api-evaluator]]
-== Evaluator
+== Using ``Evaluator``s
 
-An `Evaluator` takes the link:{org-neo4j-graphdb-path}[`Path`] from the start node to the current node and decides whether:
+An `Evaluator` takes the `Path` from the start node to the current node and decides whether if the `Path` should be:
 
-* The path should be included in the result
-* The path should be expanded for further evaluation
+* Included in the result.
+* Expanded for further evaluation.
 
 Given a `Path`, an evaluator can take one of four actions:
 
@@ -72,36 +73,61 @@ Given a `Path`, an evaluator can take one of four actions:
 * `Evaluation.EXCLUDE_AND_CONTINUE`: Exclude the current node from the result, but continue the traversal.
 * `Evaluation.EXCLUDE_AND_PRUNE`: Exclude the current node from the result and do not continue the traversal.
 
-As more than one evaluator can be added, when chaining them all of them are combined, such that:
+[NOTE]
+====
+As more than one evaluator can be added, different combinations might lead to unexpected outcomes.
+For this reason, keep in mind that:
 
 * A path is included if all evaluators include it.
 * A path will only be expanded if none of the evaluators prune it.
-
-[NOTE]
-====
-Evaluators will be called for all paths the traverser encounters, even for the path consisting only of the start node.
+* Evaluators will be called for all paths the traverser encounters, even for the path consisting only of the start node.
 ====
 
-=== Built-in Evaluators
+=== Built-in `Evaluators`
 
-The Framework also provides various built-in evaluators such as:
+The Traversal Framework also provides several built-in evaluators:
 
-* `Evaluators.all()`: Includes and continues on all nodes.
-* `Evaluators.atDepth(int)`: Includes only paths at the given depth, pruning everything else.
-* `Evaluators.toDepth(int)`: Includes paths up to the given depth, pruning everything deeper.
-* `Evaluators.fromDepth(int)`: Includes paths from the given depth, ignoring those before and never prunes anything.
-* `Evaluators.includingDepths(int, int)`: Includes only the paths of depth equal to and between the 2 given depths.
-* `Evaluators.lastRelationshipTypeIs(Evaluation, Evaluation, RelationshipType...)`: Allows the choice of which evaluation to take based on
-whether the last relationship matches one of the given ones.
-* `Evaluators.includeWhereLastRelationshipTypeIs(RelationshipType...)`: Only returns paths in which the final relationship matches the given ones.
-* `Evaluators.endNodeIs(Evaluation, Evaluation, Node...)`: Allows the choice of which evaluation to take based on
-whether the last node matches one of the given nodes.
-* `Evaluators.includeIfContainsAll(Node...)`: Returns a path if all given nodes are contained within it.
-* `Evaluators.includeIfAcceptedByAny(PathEvaluator)`: Returns a path if any of the given evaluators include the current path.
-* `Evaluators.endNodeIsAtDepth(int, Node...)`: Returns a path if one of the given nodes is at the given depth.
+[options="header"]
+|===
+| Evaluator | Description
 
-=== Example
+| `Evaluators.all()`
+| Includes and continues on all nodes.
+
+| `Evaluators.atDepth(int)`
+| Includes only paths at the given depth, pruning everything else.
+
+| `Evaluators.toDepth(int)`
+| Includes paths up to the given depth, pruning everything deeper.
+
+| `Evaluators.fromDepth(int)`
+| Includes paths from the given depth, ignoring those before and never prunes anything.
+
+| `Evaluators.includingDepths(int, int)`
+| Includes only the paths of depth equal to and between the 2 given depths.
+
+| `Evaluators.lastRelationshipTypeIs(Evaluation, Evaluation, RelationshipType...)`
+| Allows the choice of which evaluation to take based on whether the last relationship matches one of the given ones.
+
+| `Evaluators.includeWhereLastRelationshipTypeIs(RelationshipType...)`
+| Only returns paths in which the final relationship matches the given ones.
+
+| `Evaluators.endNodeIs(Evaluation, Evaluation, Node...)`
+| Allows the choice of which evaluation to take based on whether the last node matches one of the given nodes.
+
+| `Evaluators.includeIfContainsAll(Node...)`
+| Returns a path if all given nodes are contained within it.
+
+| `Evaluators.includeIfAcceptedByAny(PathEvaluator)`
+| Returns a path if any of the given evaluators include the current path.
+
+| `Evaluators.endNodeIsAtDepth(int, Node...)`
+| Returns a path if one of the given nodes is at the given depth.
+
+|===
+
 Here is an example of how to use a built-in evaluator:
+
 [source, java]
 ----
 TraversalDescription td;
@@ -113,7 +139,8 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
-Here's an example of a custom implementation, including only paths which end with a node of a certain label:
+Now see an example of a custom implementation that includes only paths which end with a node of a certain label:
+
 [source, java]
 ----
 class LabelEvaluator implements Evaluator {
@@ -135,7 +162,8 @@ class LabelEvaluator implements Evaluator {
 }
 ----
 
-Here is an example of a combined evaluator, which will return all paths of length 2 that also have an end node with label `A`:
+The following example features a combined evaluator, which will return all paths of length `2` that also have an end node with label `A`:
+
 [source, java]
 ----
 TraversalDescription td;
@@ -149,28 +177,27 @@ td.traverse( startNode );
 ----
 
 [[traversal-java-api-uniqueness]]
-== Uniqueness
+== `Uniqueness` options
 
-Sets the rules for how positions can be revisited during a traversal as stated in `Uniqueness`.
-The default is `NODE_GLOBAL`.
-
-The various uniqueness levels that can be used in are:
+Although the default is `NODE_GLOBAL`, it is possible to set the rules for how positions can be revisited during a traversal by adjusting the levels of `Uniqueness`.
+These are some of the available options:
 
 * `NONE` -- Any node in the graph may be revisited.
 * `NODE_GLOBAL` -- No node in the entire graph may be visited more than once.
 This could potentially consume a lot of memory since it requires keeping an in-memory data structure remembering all the visited nodes.
-* `RELATIONSHIP_GLOBAL` -- no relationship in the entire graph may be visited more than once.
-Just like `NODE_GLOBAL` uniqueness, this could potentially use up a lot of memory.
-But since graphs typically have a larger number of relationships than nodes, the memory overhead of this uniqueness level could grow even quicker.
+* `RELATIONSHIP_GLOBAL` -- No relationship in the entire graph may be visited more than once.
+Just like `NODE_GLOBAL`, this could potentially use up a lot of memory.
+However, since graphs typically have a larger number of relationships than nodes, the memory overhead of this `Uniqueness` level could grow even quicker.
 * `NODE_PATH` -- A node may not occur previously in the path reaching up to it.
 * `RELATIONSHIP_PATH` -- A relationship may not occur previously in the path reaching up to it.
-* `NODE_RECENT` -- Similar to `NODE_GLOBAL` uniqueness in that there is a global collection of visited nodes each position is checked against.
-This uniqueness level does however have a cap on how much memory it may consume in the form of a collection that only contains the most recently visited nodes.
-The size of this collection can be specified by providing a number as the second argument to the TraversalDescription.uniqueness()-method along with the uniqueness level.
-* `RELATIONSHIP_RECENT` -- Works like `NODE_RECENT` uniqueness, but with relationships instead of nodes.
+* `NODE_RECENT` -- Similar to `NODE_GLOBAL` when it comes to using a global collection of visited nodes each position is checked against.
+However, this Uniqueness level has a cap on how much memory it may consume in the form of a collection that only contains the most recently visited nodes.
+The size of this collection can be specified by providing a number as the second argument to the `TraversalDescription.uniqueness()-method` along with the Uniqueness level.
+* `RELATIONSHIP_RECENT` -- Works like `NODE_RECENT`, but with relationships instead of nodes.
 
-=== Example
 Here is an example of a traversal using a built-in `Uniqueness` constraint:
+
+[source, java]
 ----
 TraversalDescription td;
 try ( Transaction tx = graphDb.beginTx() ) {
@@ -181,15 +208,13 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
-For an example demonstrating how to use uniqueness in a traversal see <<examples-uniqueness-of-paths-in-traversals, Uniqueness of Paths in traversals>>.
-
 [[traversal-java-api-branchselector]]
-== BranchSelector
+== `BranchOrderingPolicy` and `BranchSelector`
 
-A `BranchSelector` / `BranchOrderingPolicy` is used for selecting which branch of the traversal to attempt next.
-This is used for implementing traversal orderings.
+A `BranchOrderingPolicy` is a factory for creating ``BranchSelector``s to decide in what order branches are returned -- that is, where a branch's position is represented as a `Path` from the start node to the current node.
 
-The Traversal Framework provides a few basic ordering implementations based on the link:https://en.wikipedia.org/wiki/Depth-first_search[depth-first^] and link:https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first^] algorithms:
+The Traversal Framework provides a few basic ordering implementations based on the link:https://en.wikipedia.org/wiki/Depth-first_search[depth-first^] and link:https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first^] algorithms.
+These are:
 
 * `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` -- Traversing depth first, visiting each node before visiting its child nodes.
 * `BranchOrderingPolicies.POSTORDER_DEPTH_FIRST` -- Traversing depth first, visiting each node after visiting its child nodes.
@@ -198,17 +223,10 @@ The Traversal Framework provides a few basic ordering implementations based on t
 
 [NOTE]
 ====
-Breadth-first traversals have a higher memory overhead than depth-first traversals.
+Keep in mind that breadth-first traversals have a higher memory overhead than depth-first traversals.
 ====
 
-A `BranchSelector` carries state and hence needs to be uniquely instantiated for each traversal.
-Therefore it is supplied to the `TraversalDescription` through a `BranchOrderingPolicy` interface, which is a factory of `BranchSelector` instances.
-
-A user of the Traversal Framework rarely needs to implement their own `BranchSelector` or `BranchOrderingPolicy`, it is provided to let graph algorithm implementors provide their own traversal orders.
-The link:{org-neo4j-graphalgo-package}[Neo4j Graph Algorithms package] contains for example a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in BestFirst search algorithms such as A* and Dijkstra.
-
-=== Example
-Given the following graph, these are the results of the branch ordering policies without any extra filter:
+The following example shows the result of a `BranchOrderingPolicy` without any extra filter:
 
 image::traversal_order_example_graph.png[align="center", role="middle", width=200]
 
@@ -229,13 +247,7 @@ image::traversal_order_example_graph.png[align="center", role="middle", width=20
 |d, e, b, c, a
 |===
 
-=== BranchOrderingPolicy
-
-A `BranchOrderingPolicy` is a factory for creating ``BranchSelector``s to decide in what order branches are returned
-(where a branch's position is represented as a `Path` from the start node to the current node).
-
-Depth-first and breadth-first are common policies and can be accessed by the convenience methods breadthFirst() / depthFirst().
-
+Depth-first and breadth-first are common policies and can be accessed by the convenience methods `breadthFirst()` and `depthFirst()`.
 This is equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
 ==== Example
@@ -261,30 +273,36 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
+Since a `BranchSelector` carries state and hence needs to be uniquely instantiated for each traversal, it should be supplied to the `TraversalDescription` through a `BranchOrderingPolicy` interface, which is a factory of `BranchSelector` instances.
+
+Even though a user of the Traversal Framework rarely needs to implement their own `BranchSelector`/ `BranchOrderingPolicy`, it is relevant to know that these parameters let graph algorithm implementors provide their own traversal orders.
+
+Check the link:https://neo4j.com/docs/java-reference/current/java-embedded/graph-algorithms/[Neo4j Graph Algorithms package] to see a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in `BestFirst` search algorithms such as A* and Dijkstra.
+
+
 [[traversal-java-api-pathexpander]]
-== PathExpander
+== Using a `PathExpander`
 
-The Traversal Framework uses a `PathExpander` to discover the relationships
-that should be followed from a particular path to further branches in the traversal.
+The Traversal Framework uses a `PathExpander` to discover the relationships that should be followed from a particular path to further branches in the traversal.
 
-There are multiple ways of specifying a `PathExpander`:
+There are multiple ways of specifying a `PathExpander`, such as:
 
-* The built-in `PathExpander` define some commonly used ``PathExpander``s.
+* The built-in `PathExpander` defines some commonly used ``PathExpander``s.
 * The `PathExpanderBuilder` allows the combination of definitions.
 * It is possible to write a custom `PathExpander` by implementing the `PathExpander` interface.
 
-=== Built-in PathExpanders
-The following path expanders can be found in the class `PathExpanders` and can be used to set a more specific `PathExpander` for the traversal:
+=== Built-in ``PathExpander``s
+The following path expanders are found in the class `PathExpander` and can be used to set a more specific `PathExpander` for the traversal:
 
-* `allTypesAndDirections()` -- expands all relationships in all directions (default).
-* `forType(relationshipType)` -- expands only relationships of a specific type.
-* `forDirection(direction)` -- expands only relationships in a specific direction.
-* `forTypeAndDirection(relationshipType, direction)` -- expands only relationships of a given type and a given direction.
-* `forTypesAndDirections(relationshipType, direction, relationshipType, direction, ...)` -- expands only relationships of the given types and their specific direction.
-* `forConstantDirectionWithTypes(relationshipType, ...)` -- expands only relationships of the given types, if they continue in the direction of the first relationship.
+* `allTypesAndDirections()` -- Expands all relationships in all directions (default).
+* `forType(relationshipType)` -- Expands only relationships of a specific type.
+* `forDirection(direction)` -- Expands only relationships in a specific direction.
+* `forTypeAndDirection(relationshipType, direction)` -- Expands only relationships of a given type and a given direction.
+* `forTypesAndDirections(relationshipType, direction, relationshipType, direction, ...)` -- Expands only relationships of the given types and their specific direction.
+* `forConstantDirectionWithTypes(relationshipType, ...)` -- Expands only relationships of the given types, if they continue in the direction of the first relationship.
 
-==== Example
-Here's an example of setting a custom relationship expander, which only expands outgoing relationships with the type `A`:
+Here is an example of how to set a custom relationship expander that only expands outgoing relationships with the type `A`:
+
 [source, java, role="nocopy"]
 ----
 TraversalDescription td = transaction.traversalDescription()
@@ -292,25 +310,27 @@ TraversalDescription td = transaction.traversalDescription()
 td.traverse( startNode );
 ----
 
-=== PathExpanderBuilder
+=== `PathExpanderBuilder`
+
 The `PathExpanderBuilder` allows the combination of different `PathExpander` definitions.
-This provides a more fine-grained level of customization without having to write a `PathExpander` from scratch.
-It contains a set of static method allowing the creation of a `PathExpander` with the following methods:
+It provides a more fine-grained level of customization without the need to write a `PathExpander` from scratch.
+It also contains a set of static methods allowing the creation of a `PathExpander` with the following methods:
 
-* `empty()` -- expands no relationships.
-* `emptyOrderedByType()` -- expands no relationships, guarantees the order of how types will be expanded when any are added.
-* `allTypesAndDirections()` -- expands all relationships in any direction.
-* `allTypes(Direction)` -- expands all relationships in the given direction.
+* `empty()` -- Expands no relationships.
+* `emptyOrderedByType()` -- Expands no relationships and guarantees the order of how types will be expanded when any are added.
+* `allTypesAndDirections()` -- Expands all relationships in any direction.
+* `allTypes(Direction)` -- Expands all relationships in the given direction.
 
-That PathExpander can then be further defined by the following methods:
+That `PathExpander` can then be further defined by the following methods:
 
-* `add(relationshipType)` -- expands relationships of the given type.
-* `add(relationshipType, direction)` -- expands relationships of the given type and direction.
-* `remove(relationshipType)` -- remove the expansion of relationships of the given type.
-* `addNodeFilter(filter)` -- adds a filter based on Nodes.
-* `addRelationshipFilter(filter)` -- adds a filter based on Relationships.
+* `add(relationshipType)` -- Expands relationships of the given type.
+* `add(relationshipType, direction)` -- Expands relationships of the given type and direction.
+* `remove(relationshipType)` -- Removes the expansion of relationships of the given type.
+* `addNodeFilter(filter)` -- Adds a filter based on nodes.
+* `addRelationshipFilter(filter)` -- Adds a filter based on relationships.
 
-==== Example
+This is how it may look:
+
 [source, java, role="nocopy"]
 ----
 TraversalDescription td = transaction.traversalDescription()
@@ -320,10 +340,8 @@ TraversalDescription td = transaction.traversalDescription()
 td.traverse( startNode );
 ----
 
-==== Custom PathExpander Example
+Now see an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and only includes paths if the total weight is smaller than the given maximum weight:
 
-Here's an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and
-only include paths if the total weight is smaller than the given maximum weight:
 [source, java, role="nocopy"]
 ----
 class MaxWeightPathExpander implements PathExpander<Double>
@@ -360,7 +378,8 @@ class MaxWeightPathExpander implements PathExpander<Double>
 }
 ----
 
-Using the custom `PathExpander` and setting the initial state:
+Here is an example of how to use the custom `PathExpander` and set the initial state:
+
 [source, java, role="nocopy"]
 ----
 TraversalDescription td = transaction.traversalDescription()
