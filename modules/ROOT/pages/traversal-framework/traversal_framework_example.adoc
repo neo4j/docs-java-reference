@@ -1,19 +1,16 @@
-:description: A Neo4j Traversal Framework example.
+:description: Neo4j Traversal Framework examples.
 
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 
 [[examples-how-to-use-the-traversal-framework]]
-= Traversal Framework Example
+= Traversal Framework Examples
 
 Here are some examples to highlight how one might use the Traversal Framework.
-See the graph below which illustrates a small group of friends.
+The source code for the examples can be found at link:https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
+
+See the graph below which illustrates a small group of friends:
 
 image::traversal_framework_example.svg[role="middle"]
-
-[NOTE]
-====
-The source code for the examples can be found at: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
-====
 
 With the definition of the `RelationshipTypes` as
 
@@ -175,7 +172,7 @@ KNOWS
 ----
 
 [[traversal-in-a-procedure-example]]
-== Example
+== User-defined procedure with a Traversal Framework
 Below is an example of how to implement a <<extending-neo4j-procedures, user-defined procedure>> using the Traversal Framework.
 The transaction and logger are made available through the Procedure Framework:
 
