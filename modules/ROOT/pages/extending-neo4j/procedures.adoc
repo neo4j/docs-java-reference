@@ -26,7 +26,7 @@ CALL org.neo4j.examples.findDenseNodes(1000)
 
 A `CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
 Arguments can be supplied directly within the query or taken from the associated parameter set.
-For full details, see the documentation in xref:3.5@cypher-manual:ROOT:clauses/call/index.adoc[Cypher Manual -> `CALL` procedure].
+For full details, see the documentation in link:{neo4j-docs-base-uri}/cypher-manual/3.5/clauses/call[Cypher Manual -> `CALL` procedure].
 
 
 [[user-defined-procedures]]
@@ -363,5 +363,5 @@ The classes that can be injected are:
 All of the above classes are considered safe and future-proof, and will not compromise the security of the database.
 There are also several classes that can be injected that are unsupported (restricted) and can be changed with little or no notice.
 Procedures written to use these restricted API's will not be loaded by default, and it will be necessary to use the `dbms.security.procedures.unrestricted` to load unsafe procedures.
-Read more about this config setting in xref:3.5@operations-manual:ROOT:security/securing-extensions/index.adoc[Operations Manual -> Securing extensions].
+Read more about this config setting in link:{neo4j-docs-base-uri}/operations-manual/3.5/security/securing-extensions[Operations Manual -> Securing extensions].
 
