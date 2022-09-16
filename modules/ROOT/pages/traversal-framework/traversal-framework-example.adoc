@@ -1,9 +1,8 @@
-:description: Neo4j Traversal Framework examples.
-
-:org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
-
 [[examples-how-to-use-the-traversal-framework]]
 = Traversal Framework Examples
+:description: Neo4j Traversal Framework examples.
+:org-neo4j-graphdb-traversal-evaluator: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/traversal/Evaluator.html
+:org-neo4j-graphdb-traversal-evaluators: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/traversal/Evaluators.html
 
 Here are some examples to highlight how one might use the Traversal Framework.
 The source code for the examples can be found at link:https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
@@ -119,6 +118,7 @@ This will give the following output:
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
 ----
+
 
 To see other useful evaluators, check the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
 
