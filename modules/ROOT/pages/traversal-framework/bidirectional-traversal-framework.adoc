@@ -6,7 +6,7 @@
 = Bidirectional Traversal Framework
 
 A bidirectional traversal consists of two traversals starting from different nodes, returning the paths where both traversals collide.
-The Bidirectional Traversal Framework allows the description of such a traversal with the link:/java-reference/{neo4j-version}/traversal-framework/bidirectional_traversal_framework/#_defining_the_bidirectional_traverser[`BidirectionalTraversalDescription`].
+The Bidirectional Traversal Framework allows the description of such a traversal with the xref:traversal-framework/bidirectional-traversal-framework.adoc#_defining_the_bidirectional_traverser[`BidirectionalTraversalDescription`].
 
 Here is a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
 
