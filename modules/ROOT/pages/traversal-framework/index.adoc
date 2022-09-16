@@ -35,11 +35,11 @@ Some of the advantages of using the Traversal Framework over Cypher include:
 * The Traversal Framework allows the use of any desired Java library to help in the evaluation of the traversal.
 * It allows customized pruning during the traversal of a path.
 This could potentially improve the performance of a traversal.
-See link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-evaluator[Evaluator] for more information.
+See link:/java-reference/{neo4j-version}/traversal-framework/traversal-framework-java-api/#traversal-java-api-evaluator[Evaluator] for more information.
 * With Cypher, it is not possible to specify the order in which paths are expanded (e.g. depth-first).
-However, with the Traversal Framework it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-branchselector[order of paths traversed].
+However, with the Traversal Framework it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal-framework-java-api/#traversal-java-api-branchselector[order of paths traversed].
 * With Cypher, relationships are only traversed once (`RELATIONSHIP_GLOBAL` uniqueness).
-By using the Traversal Framework, it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-uniqueness[uniqueness constraints of the path traversed].
+By using the Traversal Framework, it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal-framework-java-api/#traversal-java-api-uniqueness[uniqueness constraints of the path traversed].
 
 
 [[traversal-concepts]]
@@ -61,7 +61,7 @@ image::graphdb-traversal-description.svg[role="middle"]
 
 The Traversal Framework can be used link:/java-reference/{neo4j-version}/java-embedded/[embedded in Java applications].
 It can also be used when extending Neo4j with a link:/java-reference/{neo4j-version}/extending-neo4j/procedures/[User-defined Procedure].
-See an example link:/java-reference/5.0/traversal-framework/traversal_framework_example/#traversal-in-a-procedure-example[here].
+See an example link:/java-reference/5.0/traversal-framework/traversal-framework-example/#traversal-in-a-procedure-example[here].
 
 To read more about the traversals, see:
 
