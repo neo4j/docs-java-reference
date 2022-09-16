@@ -8,7 +8,7 @@
 
 This describes how to work with values and types when writing user-defined procedures and functions.
 
-The _input_ and _output_ to and from a procedure or a function must be one of the supported types, as described in xref:4.2@cypher-manual:ROOT:syntax/values/index.adoc[Cypher Manual -> Values and types].
+The _input_ and _output_ to and from a procedure or a function must be one of the supported types, as described in link:{neo4j-docs-base-uri}/cypher-manual/4.2/syntax/values/[Cypher Manual -> Values and types].
 
 Composite types are supported via:
 
