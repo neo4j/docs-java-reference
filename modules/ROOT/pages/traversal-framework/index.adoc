@@ -65,6 +65,6 @@ See an example link:/java-reference/5.0/traversal-framework/traversal_framework_
 
 To read more about the traversals, see:
 
-* xref:traversal-framework/traversal_framework_java_api.adoc[]
-* xref:traversal-framework/bidirectional_traversal_framework.adoc[]
-* xref:traversal-framework/traversal_framework_example.adoc[]
+* xref:traversal-framework/traversal-framework-java-api.adoc[]
+* xref:traversal-framework/bidirectional-traversal-framework.adoc[]
+* xref:traversal-framework/traversal-framework-example.adoc[]
