@@ -250,7 +250,7 @@ image::traversal_order_example_graph.png[align="center", role="middle", width=20
 Depth-first and breadth-first are common policies and can be accessed by the convenience methods `breadthFirst()` and `depthFirst()`.
 This is equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
-==== Example
+=== Example
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
