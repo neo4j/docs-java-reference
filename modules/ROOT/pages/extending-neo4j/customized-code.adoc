@@ -16,7 +16,7 @@ Examples of use cases for procedures and functions are:
 
 Procedures and functions are written in Java and compiled into _jar_ files.
 They are deployed to the database by dropping that _jar_ file into the _plugins_ directory on each standalone or clustered server.
-For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/4.3/configuration/file-locations/[Operations Manual -> File locations].
+For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/configuration/file-locations/[Operations Manual -> File locations].
 The database must be re-started on each server to pick up new procedures and functions.
 
 Procedures and functions can take arguments and return results.
@@ -53,9 +53,9 @@ In addition, procedures can perform write operations on the database.
 
 Neo4j also comes bundled with a number of _built-in_ procedures and functions.
 
-The available built-in procedures varies depending edition and mode, as described in link:{neo4j-docs-base-uri}/operations-manual/4.3/reference/procedures/[Operations Manual -> Procedures].
+The available built-in procedures varies depending edition and mode, as described in link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/reference/procedures/[Operations Manual -> Procedures].
 Running `SHOW PROCEDURES` will display the full list of procedures available in a particular database instance, including user-defined procedures.
 
-The built-in functions are described in link:{neo4j-docs-base-uri}/cypher-manual/4.3/functions/[Cypher Manual -> Functions].
+The built-in functions are described in link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/functions/[Cypher Manual -> Functions].
 Running `SHOW FUNCTIONS` will display the full list of all the functions available in a particular database instance, including user-defined functions.
 
