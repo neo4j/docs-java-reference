@@ -4,13 +4,13 @@
 = JMX metrics
 
 Neo4j provides different levels of monitoring facilities in order to supply a continuous overview of the system's health.
-For a description of the monitoring options, see link:{neo4j-docs-base-uri}/operations-manual/3.5/monitoring[Neo4j Operations Manual -> Monitoring].
+For a description of the monitoring options, see link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/monitoring[Neo4j Operations Manual -> Monitoring].
 Many of the metrics are exposed through link:http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html[JMX^].
 
 [WARNING]
 ====
 Please note that the available JMX MBeans and their names will be updated in Neo4j version 4.0.
-Beans that duplicate metrics or monitoring options, described in link:{neo4j-docs-base-uri}/operations-manual/3.5/monitoring[Neo4j Operations Manual -> Monitoring], will be removed.
+Beans that duplicate metrics or monitoring options, described in link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/monitoring[Neo4j Operations Manual -> Monitoring], will be removed.
 ====
 
 [[jmx-remote]]
@@ -97,7 +97,7 @@ For additional information on the primitive datatypes (`int`, `long` etc.) used 
 
 The following JMX management beans are available on instances that are part of a Causal Cluster.
 One JMX Bean not included here is for the current configuration of the Neo4j instance.
-For configuration details, see link:{neo4j-docs-base-uri}/operations-manual/3.5/reference/configuration-settings[Neo4j Operations Manual -> Configuration settings].
+For configuration details, see link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/reference/configuration-settings[Neo4j Operations Manual -> Configuration settings].
 
 
 [[jmx-list]]

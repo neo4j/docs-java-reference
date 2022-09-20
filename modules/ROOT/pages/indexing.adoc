@@ -23,7 +23,7 @@
 ====
 Explicit indexing in Neo4j is deprecated, and will be removed in the next major release.
 Consider configuring indexes to support full-text search instead.
-See link:{neo4j-docs-base-uri}/cypher-manual/3.5/schema/index#schema-index-fulltext-search[Cypher Manual -> Indexes to support full-text search].
+See link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/schema/index#schema-index-fulltext-search[Cypher Manual -> Indexes to support full-text search].
 ====
 
 [NOTE]

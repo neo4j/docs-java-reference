@@ -7,7 +7,7 @@
 [WARNING]
 ====
 Explicit indexes are deprecated and due to be removed in Neo4j 4.0.
-Please see link:https://neo4j.com/docs/cypher-manual/3.5/schema/index/#schema-index-fulltext-search[Cypher Manual -> Indexes to support full-text search] to learn about using full-text schema indexes instead.
+Please see link:https://neo4j.com/docs/cypher-manual/{neo4j-version}/schema/index/#schema-index-fulltext-search[Cypher Manual -> Indexes to support full-text search] to learn about using full-text schema indexes instead.
 ====
 
 This demonstrates how to work with indexes with an example of a user database.
