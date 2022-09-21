@@ -7,13 +7,13 @@
 This topic describes how to access JMX for Neo4j DBMS to monitor metrics.
 
 Neo4j provides different levels of monitoring facilities in order to supply a continuous overview of the system's health.
-For a description of the monitoring options, see xref:4.2@operations-manual:ROOT:monitoring/index.adoc[Neo4j Operations Manual -> Monitoring].
+For a description of the monitoring options, see link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/monitoring/[Neo4j Operations Manual -> Monitoring].
 Many of the metrics are exposed through link:https://www.oracle.com/java/technologies/javase/javamanagement.html[JMX^].
 
 [NOTE]
 ====
 Please note that the available JMX MBeans and their names have been updated in Neo4j 4.0.
-Beans that duplicate metrics or monitoring options, described in xref:4.2@operations-manual:ROOT:monitoring/index.adoc[Neo4j Operations Manual -> Monitoring], have been removed.
+Beans that duplicate metrics or monitoring options, described in link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/monitoring/[Neo4j Operations Manual -> Monitoring], have been removed.
 ====
 
 
@@ -21,7 +21,7 @@ Beans that duplicate metrics or monitoring options, described in xref:4.2@operat
 == Adjusting remote JMX access to Neo4j
 
 Per default, the Neo4j Enterprise Server edition does not allow remote JMX connections.
-To enable this feature, you need to enable JMX Remote Management and also configure JMX for secure remote access, in the xref:4.2@operations-manual:ROOT:configuration/neo4j-conf/index.adoc[_conf/neo4j.conf_ file].
+To enable this feature, you need to enable JMX Remote Management and also configure JMX for secure remote access, in the link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/configuration/neo4j-conf/[_conf/neo4j.conf_ file].
 
 
 [[enable-jmx-remote]]

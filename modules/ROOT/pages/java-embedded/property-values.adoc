@@ -54,6 +54,6 @@ If these objects are returned from procedures, the original types cannot be recr
 [NOTE]
 ====
 Strings that contain special characters can have inconsistent or non-deterministic ordering in Neo4j.
-For details, see xref:4.2@cypher-manual:ROOT:syntax/values/index.adoc#property-types-sip-note[Cypher Manual -> Sorting of special characters].
+For details, see link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/syntax/values/#property-types-sip-note[Cypher Manual -> Sorting of special characters].
 ====
 
