@@ -4,7 +4,7 @@
 [[cypher-java]]
 = Cypher queries
 
-In Java, you can use the xref:4.1@cypher-manual:ROOT:index.adoc[Cypher query language] as per the example below.
+In Java, you can use the link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/[Cypher query language] as per the example below.
 
 [TIP]
 ====
@@ -118,5 +118,5 @@ You should instead use only one and if you need the facilities of the other meth
 
 For more information on the Java interface to Cypher, see the link:{neo4j-javadocs-base-uri}/index.html[Neo4j Javadocs^].
 
-For more information and examples for Cypher, see xref:4.1@cypher-manual:ROOT:index.adoc[Neo4j Cypher Manual].
+For more information and examples for Cypher, see link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/[Neo4j Cypher Manual].
 
