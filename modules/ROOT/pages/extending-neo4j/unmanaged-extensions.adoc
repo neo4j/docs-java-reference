@@ -103,7 +103,7 @@ When writing unmanaged extensions, you have greater control over the amount of m
 If you keep too much state around, it can lead to more frequent full Garbage Collection and subsequent unresponsiveness by the Neo4j server.
 
 A common way that state can increase, is the creation of JSON objects to represent the result of a query which is then sent back to your application.
-Neo4j's Transactional Cypher HTTP endpoint (see xref:4.3@http-api:ROOT:actions/index.adoc[HTTP API Docs -> transactional Cypher endpoint]) streams responses back to the client.
+Neo4j's Transactional Cypher HTTP endpoint (see link:{neo4j-docs-base-uri}/http-api/4.3/actions/[HTTP API Docs -> transactional Cypher endpoint]) streams responses back to the client.
 For example, the following unmanaged extension streams an array of a person's colleagues:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java

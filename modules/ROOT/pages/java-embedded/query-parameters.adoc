@@ -7,7 +7,7 @@
 Here are some examples for query parameters.
 The examples below illustrate how to use parameters when executing Cypher queries from Java.
 
-For more information on parameters see the xref:4.3@cypher-manual:ROOT:index.adoc[Neo4j Cypher Manual].
+For more information on parameters see the link:{neo4j-docs-base-uri}/cypher-manual/{neo4j-version}/[Neo4j Cypher Manual].
 
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
