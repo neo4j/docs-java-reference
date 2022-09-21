@@ -377,7 +377,7 @@ All numbers are counts and sums since the Neo4j instance was started.
 
 | MemoryPools
 | Get information about each pool of memory mapped regions from store files with memory mapping enabled.
-| link:{neo4j-javadoc-base-uri}/org/neo4j/management/WindowPoolInfo.html[org.neo4j.management.WindowPoolInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| link:{neo4j-javadocs-base-uri}/org/neo4j/management/WindowPoolInfo.html[org.neo4j.management.WindowPoolInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
 | yes
 | no
 
@@ -800,7 +800,7 @@ The following JMX management beans are unique to instances that are part of a Hi
 
 | BranchedStores
 | A list of the branched stores.
-| link:{neo4j-javadoc-base-uri}/org/neo4j/management/BranchedStoreInfo.html[org.neo4j.management.BranchedStoreInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| link:{neo4j-javadocs-base-uri}/org/neo4j/management/BranchedStoreInfo.html[org.neo4j.management.BranchedStoreInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
 | yes
 | no
 
@@ -840,7 +840,7 @@ The following JMX management beans are unique to instances that are part of a Hi
 
 | InstancesInCluster
 | Information about all instances in this cluster.
-| link:{neo4j-javadoc-base-uri}/org/neo4j/management/ClusterMemberInfo.html[org.neo4j.management.ClusterMemberInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
+| link:{neo4j-javadocs-base-uri}/org/neo4j/management/ClusterMemberInfo.html[org.neo4j.management.ClusterMemberInfo[\]^] as link:http://docs.oracle.com/javase/7/docs/api/javax/management/openmbean/CompositeData.html[CompositeData[\]^]
 | yes
 | no
 
