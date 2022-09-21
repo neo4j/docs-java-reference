@@ -250,7 +250,7 @@ image::traversal_order_example_graph.png[align="center", role="middle", width=20
 Depth-first and breadth-first are common policies and can be accessed by the convenience methods `breadthFirst()` and `depthFirst()`.
 This is equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
-==== Example
+=== Example
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
@@ -277,7 +277,7 @@ Since a `BranchSelector` carries state and hence needs to be uniquely instantiat
 
 Even though a user of the Traversal Framework rarely needs to implement their own `BranchSelector`/ `BranchOrderingPolicy`, it is relevant to know that these parameters let graph algorithm implementors provide their own traversal orders.
 
-Check the link:https://neo4j.com/docs/java-reference/current/java-embedded/graph-algorithms/[Neo4j Graph Algorithms package] to see a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in `BestFirst` search algorithms such as A* and Dijkstra.
+Check the xref:java-embedded/graph-algorithms.adoc[Neo4j Graph Algorithms package] to see a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in `BestFirst` search algorithms such as A* and Dijkstra.
 
 
 [[traversal-java-api-pathexpander]]
