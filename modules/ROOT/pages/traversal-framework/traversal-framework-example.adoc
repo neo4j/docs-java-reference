@@ -172,7 +172,7 @@ KNOWS
 
 [[traversal-in-a-procedure-example]]
 == User-defined procedure with a Traversal Framework
-Below is an example of how to implement a <<extending-neo4j-procedures, user-defined procedure>> using the Traversal Framework.
+Below is an example of how to implement a xref:extending-neo4j/procedures.adoc[user-defined procedure] using the Traversal Framework.
 The transaction and logger are made available through the Procedure Framework:
 
 [source, java]
