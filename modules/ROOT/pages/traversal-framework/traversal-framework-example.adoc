@@ -119,7 +119,7 @@ This will give the following output:
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
 ----
 
-To see other useful evaluators, check the link:{org-neo4j-graphdb-traversal-Evaluators}[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the link:{org-neo4j-graphdb-traversal-Evaluator}[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
+To see other useful evaluators, check the xref:/docs/java-reference/{neo4j-version}/traversal-framework/traversal-framework-java-api/#traversal-java-api-evaluator[`org.neo4j.graphdb.traversal.Evaluators`^] Java API or simply implement the  xref:/docs/java-reference/{neo4j-version}/traversal-framework/traversal-framework-java-api/#traversal-java-api-evaluator[`org.neo4j.graphdb.traversal.Evaluator`^] interface yourself.
 
 The `Traverser` also has a `nodes()` method that will return an `Iterable` of all the nodes in the paths:
 
