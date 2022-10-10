@@ -63,7 +63,7 @@ public class HelloWorldResource
 ----
 
 The full source code is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java[HelloWorldResource.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java[HelloWorldResource.java^]
 
 Having built your code, the resulting jar file (and any customized dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
 You also need to tell Neo4j where to look for the extension by adding some configuration in _neo4j.conf_:
@@ -176,7 +176,7 @@ public class ColleaguesResource
 ----
 
 The full source code is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java[ColleaguesResource.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java[ColleaguesResource.java^]
 
 As well as depending on JAX-RS API, this example also uses Jackson -- a Java JSON library.
 You will need to add the following dependency to your Maven POM file (or equivalent):
@@ -297,7 +297,7 @@ public class ColleaguesCypherExecutionResource
 ----
 
 The full source code is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java[ColleaguesCypherExecutionResource.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java[ColleaguesCypherExecutionResource.java^]
 
 Your `findColleagues` method will now respond to `GET` requests at the URI:
 
@@ -382,7 +382,7 @@ public void testMyExtensionWithFunctionFixture()
 ----
 
 The full source code of the example is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/ExtensionTestingDocIT.java[ExtensionTestingDocIT.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/ExtensionTestingDocIT.java[ExtensionTestingDocIT.java^]
 
 
 Note the use of `server.httpURI().resolve( "myExtension" )` to ensure that the correct base URI is used.
@@ -428,5 +428,5 @@ public void shouldWorkWithServer()
 ----
 
 The full source code of the example is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/JUnitDocIT.java[JUnitDocIT.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/JUnitDocIT.java[JUnitDocIT.java^]
 

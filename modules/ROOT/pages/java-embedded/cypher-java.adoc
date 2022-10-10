@@ -9,7 +9,7 @@ In Java, you can use the xref:5.0@cypher-manual:ROOT:index.adoc[Cypher query lan
 [TIP]
 ====
 The source code for the examples can be found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java[JavaQuery.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java[JavaQuery.java^]
 ====
 
 First, you can add some data:

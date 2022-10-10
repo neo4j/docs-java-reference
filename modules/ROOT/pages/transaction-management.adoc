@@ -197,7 +197,7 @@ Below, you will find an example of how deadlocks can be handled in procedures, s
 
 [TIP]
 ====
-The full source code used for the code snippet can be found at link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/kernel/src/test/java/examples/DeadlockDocTest.java[DeadlockDocTest.java^].
+The full source code used for the code snippet can be found at link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/kernel/src/test/java/examples/DeadlockDocTest.java[DeadlockDocTest.java^].
 ====
 
 When dealing with deadlocks in code, there are several issues you may want to address:
@@ -341,7 +341,7 @@ The following example shows how to register a listener for a specific database, 
 
 [TIP]
 ====
-The full source code used for the code snippet can be found at link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TransactionEventListenerExample.java[TransactionEventListenerExample.java^].
+The full source code used for the code snippet can be found at link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/TransactionEventListenerExample.java[TransactionEventListenerExample.java^].
 ====
 
 .TransactionEventListener
