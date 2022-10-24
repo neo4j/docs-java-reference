@@ -85,7 +85,7 @@ The examples below are only valid Neo4j Community Edition.
 
 To add Neo4j Enterprise Edition as a dependency, please get in contact with link:https://neo4j.com/contact-us/[Neo4j Professional Services^].
 
-See link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/introduction/[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
+See link:{neo4j-docs-base-uri}/operations-manual/{page-version}/introduction/[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
 ====
 
 
@@ -193,7 +193,7 @@ registerShutdownHook( managementService );
 If you are using the Enterprise Edition of Neo4j in embedded standalone mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
 
 If you are intending to operate embedded clusters, then you should use the link:{com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.ClusterDatabaseManagementServiceBuilder`^] with appropriate configuration.
-For maintainability purposes, you can define your embedded DBMS configuration in the link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/configuration/neo4j-conf/[_neo4j.conf_] file as follows:
+For maintainability purposes, you can define your embedded DBMS configuration in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/neo4j-conf/[_neo4j.conf_] file as follows:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
 //EmbeddedNeo4jClusterUsingBuilder.java[tag=neo4jConf]

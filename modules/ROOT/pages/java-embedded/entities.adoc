@@ -12,7 +12,7 @@ The same approach can be used with relationships.
 [TIP]
 ====
 The source code of the examples is found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
 ====
 
 First off, store the node and make it accessible inside the package:

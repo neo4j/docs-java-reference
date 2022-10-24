@@ -12,7 +12,7 @@ This page describes how to traverse a graph using the xref:traversal-framework/i
 == The Matrix example
 
 This example of a traversed graph uses some of the characters featured in the film trilogy "The Matrix".
-The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java[NewMatrix.java].
+The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java[NewMatrix.java].
 
 image::examples-matrix.svg[title="Matrix node space view"]
 
@@ -105,7 +105,7 @@ Number of hackers found: 1
 === Walking an ordered path
 
 The following example shows how to use a custom `Evaluator` to find paths that adhere to a predefined order.
-The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java[OrderedPath.java].
+The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java[OrderedPath.java].
 
 To create the example graph that will be traversed over, do the following:
 

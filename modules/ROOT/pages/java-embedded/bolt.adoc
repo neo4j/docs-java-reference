@@ -45,7 +45,7 @@ With this dependency in place, you can configure Neo4j to enable a Bolt connecto
 [TIP]
 ====
 The source code for the example can be found here:
-https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithBolt.java[EmbeddedNeo4jWithBolt.java^]
+https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithBolt.java[EmbeddedNeo4jWithBolt.java^]
 ====
 
 [source, java]

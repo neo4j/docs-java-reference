@@ -13,7 +13,7 @@ For an overview of unique nodes, see xref:transaction-management.adoc#transactio
 [TIP]
 ====
 The source code for the examples can be found here:
-link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java[GetOrCreateDocIT.java^]
+link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java[GetOrCreateDocIT.java^]
 ====
 
 Create a unique constraint:
