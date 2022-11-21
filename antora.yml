@@ -6,10 +6,10 @@ nav:
 - modules/ROOT/content-nav.adoc
 asciidoc:
   attributes:
-    neo4j-version: '5.2'
-    neo4j-version-exact: '5.2.0'
-    neo4j-buildnumber: '5.2'
-    java-driver-version: '5.2.0'
+    neo4j-version: '5.3'
+    neo4j-version-exact: '5.3.0'
+    neo4j-buildnumber: '5.3'
+    java-driver-version: '5.3.0'
     neo4j-documentation-branch: 'dev'
     page-origin-private: false
-    neo4j-javadocs-base-uri: "https://neo4j.com/docs/java-reference/5.0/javadocs"
+    neo4j-javadocs-base-uri: "https://neo4j.com/docs/java-reference/5/javadocs"
