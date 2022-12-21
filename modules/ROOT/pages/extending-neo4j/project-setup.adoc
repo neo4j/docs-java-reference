@@ -11,14 +11,14 @@ The following shows the steps to create and deploy a new procedure.
 
 [TIP]
 ====
-The example described in this section is available link:https://github.com/neo4j-examples/neo4j-procedure-template/tree/4.0[on GitHub (neo4j-examples/neo4j-procedure-template)^].
+The example described in this section is available on link:https://github.com/neo4j-examples/neo4j-procedure-template[GitHub (neo4j-examples/neo4j-procedure-template)^].
 ====
 
 == Set up a project with Maven
 
 A project can be set up in any way that allows for compiling a procedure and producing a _jar_ file.
 
-Below are the main parts of the link:https://github.com/neo4j-examples/neo4j-procedure-template/blob/4.0/pom.xml[example configuration^], using the link:https://maven.apache.org/[Maven^] build system.
+Below are the main parts of the link:https://github.com/neo4j-examples/neo4j-procedure-template/blob/4.3/pom.xml[example configuration^], using the link:https://maven.apache.org/[Maven^] build system.
 
 .Excerpts from the Maven _pom.xml_ file
 [source, xml, subs="attributes, specialcharacters"]
@@ -46,7 +46,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
 Add a dependency section that includes the procedure and function APIs, which procedures and functions use at runtime.
 
-The scope is set to `provided`, because once the procedure is deployed to a Neo4j instance, this dependency is provided by Neo4j.
+The scope is set to `provided` because once the procedure is deployed to a Neo4j instance, this dependency is provided by Neo4j.
 If non-Neo4j dependencies are added to the project, their scope should normally be `compile`.
 
 [source, xml]
