@@ -6,8 +6,6 @@
 [[extending-neo4j-procedures]]
 = User-defined procedures
 
-This describes how to write, test, and deploy a user-defined procedure for Neo4j.
-
 A _user-defined procedure_ is a mechanism that enables you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
 Procedures can take arguments, perform operations on the database, and return results.
 For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
@@ -28,7 +26,7 @@ The procedure name must be fully qualified, so a procedure named `findDenseNodes
 CALL org.neo4j.examples.findDenseNodes(1000)
 ----
 
-A `CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
+`CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
 Arguments can be supplied directly within the query or taken from the associated parameter set.
 For full details, see the documentation in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/clauses/call[Cypher Manual -> `CALL` procedure].
 
@@ -44,20 +42,16 @@ The example discussed below is available as link:{procedure-template-url}[a repo
 To get started quickly you can fork the repository and work with the code as you follow along in the guide below.
 ====
 
-1. Create integration tests.
-2. Define the procedure.
-
+First, decide what the procedure should do, then write a test that proves that it does it right.
+Finally, write a procedure that passes the test.
 
 == Integration tests
 
 The test dependencies include _Neo4j Harness_ and _JUnit_.
 These can be used to write integration tests for procedures.
+The tests should start a Neo4j instance, load the procedure, and execute queries against it.
 
-First, decide what the procedure should do, then write a test that proves that it does it right.
-Finally, write a procedure that passes the test.
-
-Below is a template for testing a procedure that accesses Neo4j's full-text indexes from Cypher.
-
+.A template for testing a procedure that accesses Neo4j's full-text indexes from Cypher.
 [source, java]
 ----
 package example;
@@ -84,23 +78,23 @@ public class ManualFullTextIndexTest
     @Test
     public void shouldAllowIndexingAndFindingANode() throws Throwable
     {
-        // In a try-block, to make sure you close the driver after the test
+        // In a try-block, make sure you close the driver after the test
         try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withoutEncryption().toConfig() ) )
         {
 
-            // Given I've started Neo4j with the FullTextIndex procedure class
-            //       which my 'neo4j' rule above does.
+            // Given you've started Neo4j with the FullTextIndex procedure class
+            //       which your 'neo4j' rule does.
             Session session = driver.session();
 
-            // And given I have a node in the database
+            // And given you have a node in the database
             long nodeId = session.run( "CREATE (p:User {name:'Brookreson'}) RETURN id(p)" )
                     .single()
                     .get( 0 ).asLong();
 
-            // When I use the index procedure to index a node
+            // When you use the index procedure to index a node
             session.run( "CALL example.index($id, ['name'])", parameters( "id", nodeId ) );
 
-            // Then I can search for that node with lucene query syntax
+            // Then you can search for that node with Lucene query syntax
             StatementResult result = session.run( "CALL example.search('User', 'name:Brook*')" );
             assertThat( result.single().get( "nodeId" ).asLong(), equalTo( nodeId ) );
         }
@@ -119,19 +113,19 @@ Particular things to note:
 * All procedures are annotated `@Procedure`.
 * The procedure annotation can take three optional arguments: `name`, `mode`, and `eager`.
 ** `name` is used to specify a different name for the procedure than the default generated, which is `class.path.nameOfMethod`.
-   If `mode` is specified then `name` must be specified as well.
-** `mode` is used to declare the types of interactions that the procedure will perform.
-   A procedure will fail if it attempts to execute database operations that violates its mode.
+   If `mode` is specified, `name` must be specified as well.
+** `mode` is used to declare the types of interactions that the procedure performs.
+   A procedure fails if it attempts to execute database operations that violate its mode.
    The default `mode` is `READ`.
    The following modes are available:
-*** `READ` This procedure will only perform read operations against the graph.
-*** `WRITE` This procedure will perform read and write operations against the graph.
-*** `SCHEMA` This procedure will perform operations against the schema, i.e. create and drop indexes and constraints.
-    A procedure with this mode is able to read graph data, but not write.
-*** `DBMS` This procedure will perform system operations such as user management and query management.
+*** `READ` -- This procedure only performs read operations against the graph.
+*** `WRITE` -- This procedure performs read and write operations against the graph.
+*** `SCHEMA` -- This procedure performs operations against the schema, i.e. create and drop indexes and constraints.
+    A procedure with this mode can read graph data, but not write.
+*** `DBMS` -- This procedure performs system operations such as user management and query management.
     A procedure with this mode is not able to read or write graph data.
 ** `eager` is a boolean setting defaulting to `false`.
-   If it is set to `true` then the Cypher planner will plan an extra `eager` operation before calling the procedure.
+   If it is set to `true`, the Cypher planner plans an extra `eager` operation before calling the procedure.
    This is useful in cases where the procedure makes changes to the database in a way that could interact with the operations preceding the procedure.
    For example:
 +
@@ -142,15 +136,15 @@ WHERE n.key = 'value'
 WITH n
 CALL deleteNeighbours(n, 'FOLLOWS')
 ----
-This query could delete some of the nodes that would be matched by the Cypher query, and then the `n.key` lookup will fail.
-Marking this procedure as `eager` will prevent this from causing an error in Cypher code.
+This query can delete some of the nodes that are matched by the Cypher query, and the `n.key` lookup will fail.
+Marking this procedure as `eager` prevents this from causing an error in Cypher code.
 However, it is still possible for the procedure to interfere with itself by trying to read entities it has previously deleted.
 It is the responsibility of the procedure author to handle that case.
 * The _context_ of the procedure, which is the same as each resource that the procedure wants to use, is annotated `@Context`.
 
 [NOTE]
 ====
-The correct way to signal an error from within a procedure is to throw a `RuntimeException`.
+The correct way to signal an error from within a procedure is to throw `RuntimeException`.
 ====
 
 
@@ -168,8 +162,8 @@ The classes that can be injected are:
 //* `SecurityContext`
 //* `ProcedureTransaction`
 
-All of the above classes are considered safe and future-proof, and will not compromise the security of the database.
-There are also several classes that can be injected that are unsupported (restricted) and can be changed with little or no notice.
-Procedures written to use these restricted API's will not be loaded by default, and it will be necessary to use the `dbms.security.procedures.unrestricted` to load unsafe procedures.
+All of the above classes are considered safe and future-proof and do not compromise the security of the database.
+Several unsupported (restricted) classes can also be injected and can be changed with little or no notice.
+Procedures written to use these restricted APIs are not loaded by default, and you need to use the `dbms.security.procedures.unrestricted` to load unsafe procedures.
 Read more about this config setting in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/security/securing-extensions[Operations Manual -> Securing extensions].
 

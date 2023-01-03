@@ -5,14 +5,12 @@
 [[examples-how-to-use-the-traversal-framework]]
 = Traversal Framework Examples
 
-Here are some examples to highlight how one might use the Traversal Framework.
-The source code for the examples can be found at link:https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
-
-See the graph below which illustrates a small group of friends:
+The following are some examples of how you can use the Traversal Framework.
+The source code for the examples can be found in link:https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
 
 image::traversal_framework_example.svg[role="middle"]
 
-With the definition of the `RelationshipTypes` as
+This graph illustrates a small group of friends with the definition of the `RelationshipTypes` as
 
 [source, java]
 ----
@@ -22,7 +20,7 @@ private enum Rels implements RelationshipType
 }
 ----
 
-the graph can be traversed with, for example, the following traverser starting at the node with the `name = 'Joe'`:
+The graph can be traversed with, for example, the following traverser starting at the node with the `name = 'Joe'`:
 
 [source, java]
 ----
@@ -50,7 +48,7 @@ The traversal will thus output:
 (0)<-[LIKES,1]-(5)-[KNOWS,6]->(1)-[KNOWS,4]->(4)-[KNOWS,3]->(3)-[KNOWS,2]->(2)
 ----
 
-Since a `TraversalDescription` is immutable, it is useful to create template descriptions that include common settings shared by different traversals.
+Since `TraversalDescription` is immutable, it is useful to create template descriptions that include common settings shared by different traversals.
 For example, start with this traverser:
 
 [source, java]
@@ -62,7 +60,7 @@ friendsTraversal = db.traversalDescription()
 ----
 
 
-It should yield the following output (starting from the node with the `name = 'Joe'`):
+It yields the following output (starting from the node with the `name = 'Joe'`):
 
 [source, java]
 ----
@@ -75,7 +73,7 @@ It should yield the following output (starting from the node with the `name = 'J
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)<-[KNOWS,5]-(6)
 ----
 
-Then create a new traverser from it, restricting depth to three:
+Then, create a new traverser from it, restricting depth to three:
 
 [source, java]
 ----
@@ -111,7 +109,7 @@ for ( Path path : friendsTraversal
 }
 ----
 
-This will give the following output:
+This gives the following output:
 
 [source, output, role="noheader"]
 ----
@@ -120,9 +118,9 @@ This will give the following output:
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
 ----
 
-To see other useful evaluators, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-evaluator[Using Evaluators].
+For other useful evaluators, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-evaluator[Using Evaluators].
 
-The `Traverser` also has a `nodes()` method that will return an `Iterable` of all the nodes in the paths:
+The `Traverser` also has a `nodes()` method, which returns an `Iterable` of all the nodes in the paths:
 
 [source, java]
 ----
@@ -134,7 +132,7 @@ for ( Node currentNode : friendsTraversal
 }
 ----
 
-This will give the following output:
+This gives the following output:
 
 [source, output, role="noheader"]
 ----
@@ -173,7 +171,7 @@ KNOWS
 
 [[traversal-in-a-procedure-example]]
 == User-defined procedure with a Traversal Framework
-Below is an example of how to implement a <<extending-neo4j-procedures, user-defined procedure>> using the Traversal Framework.
+This example shows how to implement a xref:/extending-neo4j/procedures.adoc[user-defined procedure] using the Traversal Framework.
 The transaction and logger are made available through the Procedure Framework:
 
 [source, java]

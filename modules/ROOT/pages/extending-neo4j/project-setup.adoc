@@ -1,4 +1,4 @@
-:description: Prepare a project for extending Neo4j with user-defined procedures and functions.
+:description: How to set up a project for extending Neo4j with user-defined procedures and functions.
 
 :procedure-template-version: 1.0.0-SNAPSHOT
 
@@ -6,8 +6,8 @@
 [[extending-neo4j-procedures-setup]]
 = Setting up a plugin project
 
-This section describes how to prepare a project for writing user-defined procedures and functions in Neo4j.
-The following shows the steps to create and deploy a new procedure.
+You can set up a project for extending Neo4j with a user-defined procedure, build the project, and deploy the procedure to a Neo4j instance.
+The same steps can be used for user-defined functions.
 
 [TIP]
 ====
@@ -16,7 +16,7 @@ The example described in this section is available on link:https://github.com/ne
 
 == Set up a project with Maven
 
-A project can be set up in any way that allows for compiling a procedure and producing a _jar_ file.
+A project can be set up in any way that allows for compiling a procedure and producing a JAR file.
 
 Below are the main parts of the link:https://github.com/neo4j-examples/neo4j-procedure-template/blob/5.x/pom.xml[example configuration^], using the link:https://maven.apache.org/[Maven^] build system.
 
@@ -49,7 +49,7 @@ Add a dependency section that includes the procedure and function APIs, which pr
 The scope is set to `provided` because once the procedure is deployed to a Neo4j instance, this dependency is provided by Neo4j.
 If non-Neo4j dependencies are added to the project, their scope should normally be `compile`.
 
-[source, xml]
+[source, xml, subs="attributes, specialcharacters"]
 ----
 <dependency>
  <groupId>org.neo4j</groupId>
@@ -97,7 +97,7 @@ It is used to start Neo4j with a specific procedure or function deployed, which 
 
 The steps that Maven will go through to build the project.
 
-The goal is first to _compile_ the source, then to _package_ it in a _jar_ that can be deployed to a Neo4j instance.
+The goal is first to _compile_ the source, then to _package_ it in a JAR that can be deployed to a Neo4j instance.
 
 The link:https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade^] plugin is used to package the compiled procedure.
 It also includes all dependencies in the package, unless the dependency scope is set to _test_ or _provided_.

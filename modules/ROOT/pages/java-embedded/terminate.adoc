@@ -4,11 +4,11 @@
 [[java-embedded-tx-terminate]]
 = Terminate a transaction
 
-The describes how to terminate (abort) a long-running transaction from another thread.
+You can terminate (abort) a long-running transaction from another thread.
 
 [TIP]
 ====
-The source code for the examples can be found here:
+The source code for the examples can befound at:
 https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java[TerminateTransactions.java^]
 ====
 
@@ -23,7 +23,7 @@ DatabaseManagementService managementService = new DatabaseManagementServiceBuild
 GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
 ----
 
-Then start creating an infinite binary tree of nodes in the database, as an example of a long-running transaction:
+Then, start creating an infinite binary tree of nodes in the database as an example of a long-running transaction:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
 //TerminateTransactions.java[tag=mkTree]
@@ -61,8 +61,7 @@ catch ( TransactionTerminatedException ignored )
 }
 ----
 
-After waiting for some time, you decide to terminate the transaction.
-This is done from a separate thread:
+After waiting for some time, terminate the transaction from a separate thread:
 
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java
@@ -73,8 +72,8 @@ This is done from a separate thread:
 tx.terminate();
 ----
 
-Running this will execute the long-running transaction for about one second and prints the maximum depth of the tree that was created before the transaction was terminated.
-No changes are actually made to the data -- because the transaction has been terminated, the end result is as if no operations were performed.
+Running this executes the long-running transaction for about one second and prints the maximum depth of the tree that had been created before the transaction was terminated.
+No changes have been made to the data (because of the transaction's termination) and the result is as if no operations have been performed.
 
 This is an example output:
 

@@ -1,4 +1,4 @@
-:description: The Neo4j Traversal Framework Java API.
+:description: An overview of the Traversal Framework, a detailed description of the Neo4j Traversal Framework Java API, and how to use them.
 
 :org-neo4j-graphdb-Direction-both: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/Direction.html#BOTH
 
@@ -6,25 +6,20 @@
 [[traversal]]
 = Traversal Framework
 
-[abstract]
---
-This section provides an overview of the Traversal Framework, a detailed description of the Neo4j Traversal Framework Java API and how to use it.
---
-
 The Neo4j Traversal Framework Java API is a callback-based, lazily-executed way of specifying desired movements through a graph in Java.
 Some traversal examples can be found on xref:java-embedded/traversal.adoc[].
 
 Although the Traversal Framework is less readable and more complex than the link:https://neo4j.com/docs/cypher-manual/[Cypher query language], it offers a powerful approach to traversing the graph.
-This is because the Traversal Framework has the ability to dynamically make custom choices at each step of the traversal, thus making the process more expressive and potentially more performant than Cypher.
+This is because the Traversal Framework can dynamically make custom choices at each step of the traversal, thus making the process more expressive and potentially more performant than Cypher.
 
 [WARNING]
 ====
 It is generally recommended to use Cypher wherever it is possible.
-However, when using the Traversal Framework, keep in mind:
+However, when using the Traversal Framework, keep in mind that:
 
-* Cypher uses memory tracking which allows a query to be aborted if it occupies too much memory.
+* Cypher uses memory tracking that allows a query to be aborted if it occupies too much memory.
 However, when mixing Cypher with Java in the Traversal API (e.g. on a function), you may run out of memory.
-* Do not reuse objects fetched during a Traversal in another transaction.
+* Do not reuse objects fetched during a traversal in another transaction.
 Instead, use their IDs to fetch new ones.
 ====
 
@@ -33,13 +28,12 @@ Instead, use their IDs to fetch new ones.
 Some of the advantages of using the Traversal Framework over Cypher include:
 
 * The Traversal Framework allows the use of any desired Java library to help in the evaluation of the traversal.
-* It allows customized pruning during the traversal of a path.
-This could potentially improve the performance of a traversal.
-See link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-evaluator[Evaluator] for more information.
+* It allows customized pruning during the traversal of a path, which could potentially improve the performance of a traversal.
+See xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-evaluator[Evaluator] for more information.
 * With Cypher, it is not possible to specify the order in which paths are expanded (e.g. depth-first).
-However, with the Traversal Framework it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-branchselector[order of paths traversed].
-* With Cypher, relationships are only traversed once (`RELATIONSHIP_GLOBAL` uniqueness).
-By using the Traversal Framework, it is possible to specify the link:/java-reference/{neo4j-version}/traversal-framework/traversal_framework_java_api/#traversal-java-api-uniqueness[uniqueness constraints of the path traversed].
+However, with the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-branchselector[order of paths traversed].
+* With Cypher, relationships are only traversed when `RELATIONSHIP_GLOBAL` uniqueness is specified. 
+By using the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[uniqueness constraints on the path traversed].
 
 
 [[traversal-concepts]]
@@ -54,14 +48,14 @@ image::graphdb-traversal-description.svg[role="middle"]
 * _Pathexpander_ -- defines what to traverse, typically in terms of relationship direction and type.
 * _Uniqueness_ -- defines the restrictions of previously traversed nodes and relationships on the graph.
 * _Evaluator_ -- decides what to return and whether to stop or continue the traversal beyond its current position.
-* _Order_ -- defines in which order paths are expanded, for example `depth-first` or `breadth-first`.
+* _Order_ -- defines in which order paths are expanded, for example, `depth-first` or `breadth-first`.
 
 [[implementing-traversal-api]]
 == Using the Traversal Framework
 
-The Traversal Framework can be used link:/java-reference/{neo4j-version}/java-embedded/[embedded in Java applications].
-It can also be used when extending Neo4j with a link:/java-reference/{neo4j-version}/extending-neo4j/procedures/[User-defined Procedure].
-See an example link:/java-reference/5.0/traversal-framework/traversal_framework_example/#traversal-in-a-procedure-example[here].
+The Traversal Framework can be used xref:java-embedded/traversal.adoc[embedded in Java applications].
+It can also be used when extending Neo4j with a xref:/extending-neo4j/procedures.adoc[User-defined Procedure].
+See an example xref:traversal-framework/traversal_framework_example.adoc#traversal-in-a-procedure-example[User-defined procedure with a Traversal Framework].
 
 To read more about the traversals, see:
 

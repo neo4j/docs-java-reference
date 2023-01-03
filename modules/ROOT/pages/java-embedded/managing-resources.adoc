@@ -6,13 +6,11 @@
 [[java-embedded-resource-iteration]]
 = Resource iterator
 
-This describes best practices for managing resources in long-running transactions.
-
-Inside a long-running transaction it is good practice to ensure that any link:{org-neo4j-graphdb-ResourceIterator}[`org.neo4j.graphdb.ResourceIterator`^] obtained inside the transaction are closed as early as possible.
+Inside a long-running transaction, it is а good practice to ensure that any link:{org-neo4j-graphdb-ResourceIterator}[`org.neo4j.graphdb.ResourceIterator`^] obtained inside the transaction are closed as early as possible.
 This is either achieved by exhausting the iterator or by explicitly calling its close method.
 
-Below is an example of how to work with a `ResourceIterator`.
-As you do not exhaust the iterator, you can close it explicitly using the `close()` method.
+The following is an example of how to work with `ResourceIterator`.
+If you do not exhaust the iterator, you can close it explicitly using the `close()` method.
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
 //EmbeddedNeo4jWithIndexing.java[tag=resourceIterator]
