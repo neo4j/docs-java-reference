@@ -97,7 +97,7 @@ Specifies which access role an authenticated user will be granted.
 
 [NOTE]
 ====
-The above configuration is provided as an example and needs to be updated based on your infrastructure.
+The provided configuration is an example and needs to be updated based on your infrastructure.
 ====
 
 After finishing your JAAS configuration, configure JMX to use it by adding the following configuration items into _conf/neo4j.conf_ file:

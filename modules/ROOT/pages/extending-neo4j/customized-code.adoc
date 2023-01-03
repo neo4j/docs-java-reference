@@ -10,14 +10,14 @@ This is the preferred means for extending Neo4j.
 Examples of use cases for procedures and functions are:
 
 * To provide access to functionality that is not available in Cypher.
-* To provide access to third party systems.
+* To provide access to third-party systems.
 * To perform graph-global operations, such as counting connected components or finding dense nodes.
 * To express a procedural operation that is difficult to express declaratively with Cypher.
 
-Procedures and functions are written in Java and compiled into _jar_ files.
-They are deployed to the database by dropping that _jar_ file into the _plugins_ directory on each standalone or clustered server.
-For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> File locations].
-The database must be re-started on each server to pick up new procedures and functions.
+Procedures and functions are written in Java and compiled into JAR files.
+They are deployed to the database by dropping that JAR file into the _plugins_ directory on each standalone or clustered server.
+For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
+The database must be restarted on each server to pick up new procedures and functions.
 
 Procedures and functions can take arguments and return results.
 In addition, procedures can perform write operations on the database.
@@ -32,13 +32,13 @@ In addition, procedures can perform write operations on the database.
 | Cardinality
 
 | `Procedure`
-| For each row the procedure takes parameters and returns multiple results.
+| For each row, the procedure takes parameters and returns multiple results.
 | `+CALL abc(...)+`
 | Update allowed.
 | Changes cardinality similarly to a `MATCH` clause (0, 1, or many).
 
 | `Scalar function`
-| For each row the function takes parameters and returns a single result.
+| For each row, the function takes parameters and returns a single result.
 | `+abc(...)+`
 | Read-only.
 | Maintains cardinality, one for one.
@@ -53,9 +53,9 @@ In addition, procedures can perform write operations on the database.
 
 Neo4j also comes bundled with a number of _built-in_ procedures and functions.
 
-The available built-in procedures varies depending edition and mode, as described in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/reference/procedures[Operations Manual -> Procedures].
-Running `SHOW PROCEDURES` will display the full list of procedures available in a particular database instance, including user-defined procedures.
+The available built-in procedures vary depending on edition and mode, as described in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/reference/procedures[Operations Manual -> Procedures].
+Running `SHOW PROCEDURES` displays the full list of procedures available in your Neo4j DBMS, including user-defined procedures.
 
 The built-in functions are described in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/functions[Cypher Manual -> Functions].
-Running `SHOW FUNCTIONS` will display the full list of all the functions available in a particular database instance, including user-defined functions.
+Running `SHOW FUNCTIONS` displays the full list of all the functions available in your Neo4j DBMS, including user-defined functions.
 

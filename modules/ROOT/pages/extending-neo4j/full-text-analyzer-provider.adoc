@@ -4,15 +4,12 @@
 [[extending-neo4j-analyzer-provider]]
 = Full-text index analyzer providers
 
-This describes how to extend full-text index analyzers provided in Neo4j.
-
 Full-text indexes always have an analyzer, which describes how text is analyzed for indexing and querying.
-The analyzer breaks the text up into smaller tokens, and processes these tokens with a number of filters.
-These filters can do many different things.
-For example, some remove stop-words, such as "the" and "is", while others transform the tokens by stemming them, or turn them into lower-case.
+The analyzer breaks the text up into smaller tokens and processes these tokens using filters.
+The filters can do different things, such as removing stop-words (e.g., _the_ and _is_), stemming the tokens, or turning them into lower-case.
 
-Which analyzer you should use depends on what you want to use the index for.
-For example, if the text being indexed belong to a special domain, such as email addresses, you would want an analyzer specific to that domain.
+Which analyzer to use, depends on what you want to use the index for.
+For example, if the text being indexed belongs to a special domain, such as email addresses, you would want an analyzer specific to that domain.
 Or if the text is always in a particular language, such as Russian, you could use an analyzer specific to that language.
 
 Neo4j comes with a number of built-in analyzers.
@@ -24,7 +21,7 @@ This default can be changed with the `dbms.index.fulltext.default_analyzer` sett
 This setting only takes effect when a full-text index is created.
 Once a full-text index has been created, it remembers the analyzer in its index-specific settings.
 
-It is possible to extend the available analyzers in Neo4j, by implementing an `AnalyzerProvider`.
+It is possible to extend the available analyzers in Neo4j by implementing `AnalyzerProvider`.
 The `AnalyzerProvider` acts as a factory, which builds the concrete Lucene `Analyzer` instance used by the index.
 The following example creates a customized analyzer:
 
@@ -61,21 +58,21 @@ public class CustomAnalyzerProvider extends AnalyzerProvider // <1>
 <1> The `CustomAnalyzerProvider` class must be `public`, and it must extend the `org.neo4j.graphdb.schema.AnalyzerProvider` class.
 <2> The `CustomAnalyzerProvider` class must additionally have a `public` constructor that takes no arguments.
     Without this constructor, the new analyzer provider will not be loaded by Neo4j.
-    There will be no warnings logged when an analyzer provider is ignored for this reason, so take care.
+    There will be no warnings logged when an analyzer provider is ignored because of this reason, so take care.
 <3> The constructor must then call its super-constructor, and give the name of the `custom-analyzer` provider as an argument.
-    This is the name that will be used to refer to this analyzer provider, when configuring indexes.
+    This is the name that will be used to refer to this analyzer provider when configuring indexes.
 <4> Lastly, the `createAnalyzer` method must be implemented.
     This method creates and returns the concrete `Analyzer` instance, that the indexes will use.
-    If this method returns `null` or throws an exception, then the index will be marked as FAILED.
-<5> In this example, we are creating instances of Lucene's `CustomAnalyzer`.
-    We can, however, create and return anything that extends the `org.apache.lucene.analysis.Analyzer` class.
+    If this method returns `null` or throws an exception, the index will be marked as FAILED.
+<5> This example creates instances of Lucene's `CustomAnalyzer`.
+    You can, however, create and return anything that extends the `org.apache.lucene.analysis.Analyzer` class.
 
 Follow the guide in xref:extending-neo4j/project-setup.adoc[], to learn how to package the customized `AnalyzerProvider` in a JAR file that can be integrated into Neo4j.
 
 The analyzer providers are picked up by Neo4j via service loading.
-This means that in addition to having implemented the class above, we must also add the fully qualified class name to a service file, and put that file on the class path.
+This means that in addition to having implemented the class, you must also add the fully qualified class name to a service file, and put that file on the classpath.
 These service files are usually included in the JAR file that contains the Neo4j extensions.
-In a typical Maven project, such as the one created by the guide above, the directory structure would look like this:
+In a typical Maven project, such as the one created by xref:extending-neo4j/project-setup.adoc[], the directory structure would look like this:
 
 [source]
 ----
@@ -92,11 +89,11 @@ project/
 ----
 <1> This is the `CustomAnalyzerProvider` from our previous code example.
 <2> This is the service loader file.
-    It is a plain-text file that contains a line, with the fully qualified name, for each `AnalyzerProvider` we implement in our project.
+    It is a plain-text file that contains a line, with the fully qualified name, for each `AnalyzerProvider` implemented in our project.
     In this case, it contains a single line: `my_package.CustomAnalyzerProvider`.
 
 
-In order for the `META-INF/services` resources to be handled correctly by the `maven-shade-plugin`, it may be necessary to include a service resource transformation to the plug-in configuration.
+For the `META-INF/services` resources to be handled correctly by the `maven-shade-plugin`, it may be necessary to include a service resource transformation to the plug-in configuration.
 This is an example of what that may look like:
 
 [source, xml]

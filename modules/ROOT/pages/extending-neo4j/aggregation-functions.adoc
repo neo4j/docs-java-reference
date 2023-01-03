@@ -1,4 +1,4 @@
-:description: How to write, test and deploy a user-defined aggregation function for Neo4j.
+:description: How to write, test, and deploy a user-defined aggregation function for Neo4j.
 
 :org-neo4j-procedure-UserAggregationFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserAggregationFunction.html
 
@@ -6,14 +6,12 @@
 [[extending-neo4j-aggregation-functions]]
 = User-defined aggregation functions
 
-This describes how to write, test and deploy a user-defined aggregation function for Neo4j.
-
 _User-defined aggregation functions_ are functions that aggregate data and return a single result.
-For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
+For a comparison between user-defined procedures, functions, and aggregation functions, see xref:extending-neo4j/customized-code.adoc[].
 
 
 [[call-user-defined-aggregation-function]]
-== Call a aggregation function
+== Call an aggregation function
 
 User-defined aggregation functions are called in the same way as any other Cypher aggregation function.
 The function name must be fully qualified, so a function named `longestString` defined in the package `org.neo4j.examples` could be called using:
@@ -32,7 +30,7 @@ User-defined aggregation functions are annotated with `@UserAggregationFunction`
 The annotated function must return an instance of an aggregator class.
 An aggregator class contains one method annotated with `@UserAggregationUpdate` and one method annotated with `@UserAggregationResult`.
 The method annotated with `@UserAggregationUpdate` will be called multiple times and enables the class to aggregate data.
-When the aggregation is done the method annotated with `@UserAggregationResult` is called once and the result of the aggregation will be returned.
+When the aggregation is done, the method annotated with `@UserAggregationResult` will be called once and the result of the aggregation will be returned.
 
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
@@ -40,7 +38,7 @@ For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggre
 
 [NOTE]
 ====
-The correct way to signal an error from within an aggregation function is to throw a `RuntimeException`.
+The correct way to signal an error from within an aggregation function is to throw `RuntimeException`.
 ====
 
 [source, java]
@@ -92,8 +90,8 @@ public class LongestString
 
 Tests for user-defined aggregation functions are created in the same way as those for normal user-defined functions.
 
-Below is a template for testing a user-defined aggregation function that finds the longest string.
 
+.A template for testing a user-defined aggregation function that finds the longest string.
 [source, java]
 ----
 package example;

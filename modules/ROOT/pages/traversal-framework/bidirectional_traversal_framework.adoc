@@ -5,32 +5,32 @@
 [[Bidirectional-Traversal-Framework]]
 = Bidirectional Traversal Framework
 
-A bidirectional traversal consists of two traversals starting from different nodes, returning the paths where both traversals collide.
-The Bidirectional Traversal Framework allows the description of such a traversal with the link:/java-reference/{neo4j-version}/traversal-framework/bidirectional_traversal_framework/#_defining_the_bidirectional_traverser[`BidirectionalTraversalDescription`].
+A bidirectional traversal consists of two traversals starting from different nodes and returning the paths to where both traversals collide.
+The Bidirectional Traversal Framework allows the description of such a traversal with the <<_defining_the_bidirectional_traverser, `BidirectionalTraversalDescription`>>.
 
-Here is a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
-
-image:bidirectional-example.png[role="middle"]
+The following is a visual representation of a bidirectional traversal from start node `1` and end node `5`, where all bold relationships are in the result paths given the following restrictions:
 
 * The start side traverser only traverses relationships of type `A`.
 * The end side traverser only traverses relationships of type `B`.
+
+image:bidirectional-example.png[role="middle"]
 
 Note that paths where only one of the traversers reaches the opposite start/end node are also included, such as `(1)-[:A]->(5)` and `(1)-[:B]->(5)`.
 In the accepted path `(1)-[:A]->(2)-[:A]->(3)-[:B]->(4)-[:B]->(5)`, the traversers collide in the middle at node `3`.
 
 [NOTE]
 ====
-The Uniqueness is shared between both traversals, which means that there will be no results if the Uniqueness is set to `Uniqueness.NODE_GLOBAL`,
-as both traversals need to reach the same node to cause a collision.
-For this reason, always set the Uniqueness manually when using the `BidirectionalTraversalDescription`, since the default is `Uniqueness.NODE_GLOBAL`.
+The `Uniqueness` is shared between both traversals, which means that there will be no results if the `Uniqueness` is set to `Uniqueness.NODE_GLOBAL` (which is the default) as both traversals need to reach the same node to cause a collision.
+Therefore, when using `BidirectionalTraversalDescription`, always set the `Uniqueness` manually.
+For more information on the available options, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[`Uniqueness` options].
 ====
 
 == Defining the Bidirectional Traverser
-When creating a `BidirectionalTraversalDescription`, it is possible to choose the `TraversalDescription` that each side takes.
-This can be done by setting it individually for each side (startSide/endSide), or setting one for both (mirroredSides).
+When creating `BidirectionalTraversalDescription`, it is possible to choose the `TraversalDescription` that each side takes.
+This can be done by setting it individually for each side (`startSide`/`endSide`) or setting one for both (`mirroredSides`).
 
 === Start and End Side Traversal
-See this example of a `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`:
+See this example of `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`:
 
 [source, java, role="nocopy"]
 ----
@@ -48,10 +48,10 @@ td.traverse(startNode, endNode);
 ----
 
 One side is traversing forward from the start node and expanding all outgoing relationships of Type `A`.
-The other side is traversing backwards from the end node and expanding all incoming relationships of Type `B`.
+The other side is traversing backward from the end node and expanding all incoming relationships of Type `B`.
 
-The final paths will go from the start node to the end node, where all relationships have an outgoing direction.
-Possible paths would be:
+The final paths go from the start node to the end node, where all relationships have an outgoing direction.
+Possible paths are:
 
 * All relationships are of Type `A`.
 * All relationships are of Type `B`.
@@ -59,9 +59,9 @@ Possible paths would be:
 
 === Mirrored Traversal
 The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal.
-However, the end side will be the reverse of the start.
+However, the end side is the reverse of the start.
 For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
-The `PathExpander` interface also comes with a `reverse()` function which should be overridden if used in a `mirroredSides` implementation.
+The `PathExpander` interface also comes with a `reverse()` function, which should be overridden if used in a `mirroredSides` implementation.
 
 [source, java, role="nocopy"]
 ----
@@ -75,8 +75,7 @@ td.traverse(startNode, endNode);
 
 == Side Selector
 In a bidirectional traversal, the traverser selects which side (start or end) to move on each step.
-It is possible to change how this works by implementing the `SideSelectorPolicy` interface, as it has a function for
-determining which side to traverse the next step from.
+It is possible to change how this works by implementing the `SideSelectorPolicy` interface, as it has a function for determining from which side to traverse the next step.
 
 * `Direction.OUTGOING` -- The traverser coming from the start node.
 * `Direction.INCOMING` -- The traverser coming from the end node.
@@ -87,9 +86,9 @@ The built-in policies include:
 * `SideSelectorPolicies.LEVEL_STOP_DESCENT_ON_RESULT` -- Stops as soon as a result is found.
 * `SideSelectorPolicies.ALTERNATING` -- Alternates which branch continues the traversal.
 
-The `SideSelectorPolicy` optionally takes a `maxDepth` which represents the combined depth that both sides must adhere to.
+The `SideSelectorPolicy` optionally takes `maxDepth`, which represents the combined depth that both sides must adhere to.
 
-Here is an example of how to use a built-in `SideSelectorPolicy` with a max combined depth of 5:
+The following is an example of how to use the built-in `SideSelectorPolicy` with a max combined depth of 5:
 [source, java, role="nocopy"]
 ----
 BidirectionalTraversalDescription td = transaction
@@ -102,15 +101,15 @@ td.traverse(startNode, endNode);
 ----
 
 == Collision Policies
-A `BranchCollisionPolicy` defines when a collision is detected and accepted in a bidirectional traversal.
-Given an evaluator and a path predicate, a `BranchCollisionPolicy` will create a `BranchCollisionDetector`, which will detect collisions between two traversers and add the resulting path to the result if it satisfies the conditions given by the collision evaluator and Uniqueness constraints.
+`BranchCollisionPolicy` defines when a collision is detected and accepted in a bidirectional traversal.
+Given an evaluator and a path predicate, `BranchCollisionPolicy` creates `BranchCollisionDetector`, which detects collisions between two traversers and adds the resulting path to the result if it satisfies the conditions given by the collision evaluator and Uniqueness constraints.
 
 These are the built-in `BranchCollisionPolicies`:
 
 * `STANDARD` -- Returns all paths with a collision.
 * `SHORTEST_PATH` -- Returns all paths with the smallest traversal depth.
 
-Here is an example of how to use a built-in `BranchCollisionPolicy`:
+The following is an example of how to use the built-in `BranchCollisionPolicy`:
 
 [source, java, role="nocopy"]
 ----
@@ -124,8 +123,8 @@ td.traverse(startNode, endNode);
 ----
 
 == Collision Evaluator
-The convenience method `collisionEvaluator()` adds a `PathEvaluator` which will validate paths in a valid collision.
-Using the method multiple times will result in the combination of the evaluators.
+The convenience method `collisionEvaluator()` adds `PathEvaluator`, which validates paths in a valid collision.
+Using the method multiple times results in the combination of the evaluators.
 
 [source, java, role="nocopy"]
 ----

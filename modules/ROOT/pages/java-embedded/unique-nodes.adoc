@@ -1,18 +1,16 @@
-:description: How to ensure uniqueness of a property when creating nodes.
+:description: How to ensure the uniqueness of a property when creating nodes.
 
 
 [[java-embedded-unique-nodes]]
 = Unique nodes
 
-This describes how to ensure uniqueness of a property when creating nodes.
-
-Getting or creating a unique node using Cypher and uniqueness constraints.
+This describes how to ensure the uniqueness of a property when creating nodes.
 
 For an overview of unique nodes, see xref:transaction-management.adoc#transactions-unique-nodes[Transaction management -> Creating unique nodes].
 
 [TIP]
 ====
-The source code for the examples can be found here:
+The source code for the examples can be found in:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/test/java/org/neo4j/examples/GetOrCreateDocIT.java[GetOrCreateDocIT.java^]
 ====
 
@@ -55,12 +53,12 @@ try ( Transaction tx = graphDb.beginTx() )
 }
 ----
 
-The `MERGE` clause will either take a read-lock on the matching node already exists, or it will take a write-lock and ensure that the current transaction is the only one creating the node.
+The `MERGE` clause takes either a read-lock on the matching node that already exists or a write-lock and ensures that the current transaction is the only one creating the node.
 
-It is technically possible to use a "lock node" or a "lock property" but this should be avoided if possible.
-Using the "lock node" pattern is both difficult to do correctly, and it has worse performance characteristics since it always involves a write-lock.
+It is technically possible to use a _lock node_ or a _lock property_ but this should be avoided if possible.
+Using the _lock node_ pattern is difficult to do correctly and it has worse performance characteristics because it always involves a write-lock.
 
-One might also be tempted to use Java synchronization for pessimistic locking, but this is dangerous.
-By mixing locks in Neo4j and in the Java runtime, it is possible to produce deadlocks that are not detectable by Neo4j.
+You might also be tempted to use Java synchronization for pessimistic locking, but this is dangerous.
+By mixing locks in Neo4j and the Java runtime, it is possible to produce deadlocks that are not detectable by Neo4j.
 As long as all locking is done by Neo4j, all deadlocks will be detected and avoided.
 

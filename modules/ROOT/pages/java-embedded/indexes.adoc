@@ -11,7 +11,7 @@ For information about how to create an index on all `User` nodes that have a `us
 
 [TIP]
 ====
-The source code used in this example is found here:
+The source code used in this example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java[EmbeddedNeo4jWithIndexing.java^]
 ====
 
@@ -26,10 +26,14 @@ DatabaseManagementService managementService = new DatabaseManagementServiceBuild
 GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
 ----
 
-Then you can configure the database to index users by name.
+Then, you can configure the database to index users by name.
 This only needs to be done once.
-However, note that schema changes and data changes are not allowed in the same transaction.
+
+[NOTE]
+====
+Note that schema changes and data changes are not allowed in the same transaction.
 Each transaction must either change the schema or the data, but not both.
+====
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
 //EmbeddedNeo4jWithIndexing.java[tag=createIndex]
@@ -53,14 +57,14 @@ try ( Transaction tx = graphDb.beginTx() )
     Index all nodes with the `User` label, that also have a `username` property.
     This way, you can find `User` nodes by their `username` properties.
 <3> An index always has a name.
-    If you don't specify a name, one will be generated for you.
-<4> Calling `create` is necessary in order for the index definition to be created in the database.
-    This index is now created, but it still only exists in our current transaction.
-<5> Committing the transaction commits our new index to the database.
-    It will become available for use once it has finished populating itself with the existing data in our database.
+    If not specified, it will be generated for you.
+<4> Calling `create` is necessary for the index definition to be created in the database.
+    This index is now created, but it still only exists in your current transaction.
+<5> Committing the transaction commits your new index to the database.
+    It will become available for use once it has finished populating itself with the existing data in your database.
 
 Indexes are populated asynchronously when they are first created.
-It is possible to use the core API to wait for index population to complete:
+It is possible to use the core API to wait for the index population to complete:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jWithIndexing.java
 //EmbeddedNeo4jWithIndexing.java[tag=wait]
@@ -113,7 +117,7 @@ try ( Transaction tx = graphDb.beginTx() )
 
 [NOTE]
 ====
-Please read xref:java-embedded/managing-resources.adoc[] on how to properly close `ResourceIterators` returned from index lookups.
+For information on how to properly close `ResourceIterators` returned from index lookups, read xref:java-embedded/managing-resources.adoc[].
 ====
 
 And this is how to find a user by ID:

@@ -8,7 +8,7 @@ In Java, you can use the link:{neo4j-docs-base-uri}/cypher-manual/{page-version}
 
 [TIP]
 ====
-The source code for the examples can be found here:
+The source code for the examples can befound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java[JavaQuery.java^]
 ====
 
@@ -52,7 +52,7 @@ try ( Transaction tx = db.beginTx();
 }
 ----
 
-In the above example, you can also see how to iterate over the rows of the link:{neo4j-javadocs-base-uri}/org/neo4j/graphdb/Result.html[`org.neo4j.graphdb.Result`^].
+In this example, you can also see how to iterate over the rows of the link:{neo4j-javadocs-base-uri}/org/neo4j/graphdb/Result.html[`org.neo4j.graphdb.Result`^].
 
 The code will generate:
 
@@ -63,15 +63,15 @@ n: Node[0]; n.name: my node;
 
 [CAUTION]
 ====
-When using an `Result`, you should consume the entire result (iterate over all rows using `next()`, iterating over the iterator from `columnAs()` or calling for example `resultAsString()`).
+When using the `Result` object, you should consume the entire result (iterate over all rows using `next()`, by iterating over the iterator from `columnAs()` or calling for example `resultAsString()`).
 Failing to do so will not properly clean up resources used by the `Result` object, leading to unwanted behavior, such as leaking transactions.
-In case you do not want to iterate over all of the results, make sure to invoke `close()` as soon as you are done, to release the resources tied to the result.
+In case you do not want to iterate over all of the results, make sure you invoke `close()` as soon as you are done, to release the resources tied to the result.
 ====
 
 The recommended way to handle results is to use a link:http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html[try-with-resources statement^].
-This will make sure that the result is closed at the end of the statement.
+This ensures that the result is closed at the end of the statement.
 
-You can also get a list of the columns in the result like this:
+You can also get a list of the columns in the result:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=columns]
@@ -89,7 +89,7 @@ This gives you:
 ----
 
 Use the following to fetch the result items from a single column.
-In this case, you will have to read the property from the node, and not from the result:
+In this case, you must read the property from the node, and not from the result:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/main/java/org/neo4j/cypher/example/JavaQuery.java
 //JavaQuery.java[tags=items]
@@ -107,7 +107,7 @@ In this case, there is only one node in the result:
 Node[0]: my node
 ----
 
-Only use this if the result only contains a single column, or you are only interested in a single column of the result.
+Use this only if the result contains a single column or you are interested in a single column of the result.
 
 [NOTE]
 ====

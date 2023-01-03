@@ -6,10 +6,8 @@
 [[extending-neo4j-functions]]
 = User-defined functions
 
-This describes how to write, test and deploy a user-defined function for Neo4j.
-
-_User-defined functions_ are a simpler form of procedures that are read-only and always return a single value.
-Although they are not as powerful in capability, they are often easier to use and more efficient than procedures for many common tasks.
+_User-defined functions_ are simpler forms of procedures that return a single value and are read-only.
+Although they are less powerful in capability, they are often easier to use and more efficient than procedures for many common tasks.
 For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
 
 
@@ -29,7 +27,8 @@ RETURN org.neo4j.examples.join(collect(p.names))
 [[writing-udf]]
 == Create a function
 
-User-defined functions are created similarly to how procedures are created, but are instead annotated with `@UserFunction` and instead of returning a stream of values it returns a single value.
+User-defined functions are created similarly to how procedures are created.
+But unlike procedures, they are annotated with `@UserFunction` and return a single value instead of a stream of values.
 
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
@@ -37,7 +36,7 @@ For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs
 
 [NOTE]
 ====
-The correct way to signal an error from within a function is to throw a `RuntimeException`.
+The correct way to signal an error from within a function is to throw `RuntimeException`.
 ====
 
 [source, java]
@@ -68,8 +67,7 @@ public class Join
 
 Tests for user-defined functions are created in the same way as those for procedures.
 
-Below is a template for testing a user-defined function that joins a list of strings.
-
+.A template for testing a user-defined function that joins a list of strings.
 [source, java]
 ----
 package example;

@@ -5,8 +5,7 @@
 = Extending Neo4j
 
 This section describes how to extend Neo4j and Cypher using procedures, functions, and plugins.
-This section introduces different methods to extend the standard Neo4j functionality.
-How to set up remote debugging is also explained.
+It introduces different methods to extend the standard Neo4j functionality and explains how to set up remote debugging.
 
 Neo4j provides the following methods to extend the standard functionality:
 
@@ -19,7 +18,7 @@ Writing extensions requires the user to be familiar with Java or other JVM progr
 //The following topics are:
 //
 //How to develop and deploy user-defined procedures and functions.
-//How to develop and deploy a customized authentication and authorization plugins.
+//How to develop and deploy customized authentication and authorization plugins.
 //How to customize the analyzer used in a full-text index.
 //How to build extensions for the Neo4j HTTP server.
 //How to configure the Neo4j server for remote debugging sessions.

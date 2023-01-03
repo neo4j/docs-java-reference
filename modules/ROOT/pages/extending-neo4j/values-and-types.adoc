@@ -6,22 +6,18 @@
 [[extending-neo4j-procedures-and-functions-values-and-types]]
 = Values and types
 
-This describes how to work with values and types when writing user-defined procedures and functions.
-
 The _input_ and _output_ to and from a procedure or a function must be one of the supported types, as described in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/syntax/values[Cypher Manual -> Values and types].
 
 Composite types are supported via:
 
-* `List<T>`, where `T` is one the supported types, and
+* `List<T>`, where `T` is one of the supported types, and
 * `Map<String, Object>`, where the values in the map must have one of the supported types.
 
 The use of `Object` is supported for the case where the type is not known beforehand.
 Note, however, that the actual value must still have one of the aforementioned types.
 
-The Cypher types and their equivalents in Java are outlined in the table below:
-
 [[writing-procedure-types]]
-.Supported types
+.Supported Cypher types and their equivalents in Java
 [options="header", cols="m,m"]
 |===
 | Cypher type   | Java type
@@ -43,12 +39,14 @@ The Cypher types and their equivalents in Java are outlined in the table below:
 
 For more details, see the link:{org-neo4j-procedure-Procedure}[Neo4j Javadocs `org.neo4j.procedure.Procedure`^].
 
-Take note that there are two cases where more than one Java type is mapped to a single Cypher type.
+[NOTE]
+====
+There are two cases where more than one Java type is mapped to a single Cypher type.
 When this happens, type information is lost.
 If the following objects are returned from procedures, the original types cannot be recreated:
 
-* A Cypher `Duration` is created when either a `java.time.Duration` or a `java.time.Period` is provided.
-  If a `Duration` is returned, only the common interface `java.time.temporal.TemporalAmount` will remain.
-* A Cypher `DateTime` is created when a `java.time.OffsetDateTime` is provided.
-  If a `DateTime` is returned, it will be converted into a `java.time.ZonedDateTime`.
-
+* A Cypher `Duration` is created when either `java.time.Duration` or `java.time.Period` is provided.
+  If `Duration` is returned, only the common interface `java.time.temporal.TemporalAmount` remains.
+* A Cypher `DateTime` is created when `java.time.OffsetDateTime` is provided.
+  If `DateTime` is returned, it is converted into `java.time.ZonedDateTime`.
+====
