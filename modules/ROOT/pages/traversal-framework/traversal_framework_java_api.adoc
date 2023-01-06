@@ -25,7 +25,7 @@ The `Traverser` object is the result of invoking `traverse()` on `TraversalDescr
 It represents a traversal positioned on the graph and a specification of the format of the result.
 The actual traversal is performed lazily each time the `next()` method of the iterator of the `Traverser` is invoked.
 
-Here is an example of a Traversal using default values, that is, Uniqueness: _NODE_GLOBAL_, Expander: _BOTH_, Branch Ordering: _PREORDER_DEPTH_FIRST_:
+The following is an example of `Traverser` using default values, that is, Uniqueness: `NODE_GLOBAL`, Expander: `BOTH`, and Branch Ordering: `PREORDER_DEPTH_FIRST`:
 
 [source, java]
 ----
@@ -48,7 +48,7 @@ It has convenience methods for finding the total number of returned paths, `getN
 
 The method `relationships()` defines relationship types and, optionally, the relationship direction to be traversed.
 By default, all relationships are traversed, regardless of their type.
-However, if one or more relationships are added, then only the added types will be traversed.
+However, if one or more relationships are added, then only the added types are traversed.
 
 [source, java]
 ----
@@ -68,10 +68,10 @@ An `Evaluator` takes the `Path` from the start node to the current node and deci
 
 Given `Path`, an evaluator can take one of four actions:
 
-* `Evaluation.INCLUDE_AND_CONTINUE`: Include the current node in the result and continue the traversal.
-* `Evaluation.INCLUDE_AND_PRUNE`: Include the current node in the result, but do not continue the traversal.
-* `Evaluation.EXCLUDE_AND_CONTINUE`: Exclude the current node from the result, but continue the traversal.
-* `Evaluation.EXCLUDE_AND_PRUNE`: Exclude the current node from the result and do not continue the traversal.
+* `Evaluation.INCLUDE_AND_CONTINUE` -- Include the current node in the result and continue the traversal.
+* `Evaluation.INCLUDE_AND_PRUNE` -- Include the current node in the result, but do not continue the traversal.
+* `Evaluation.EXCLUDE_AND_CONTINUE` -- Exclude the current node from the result, but continue the traversal.
+* `Evaluation.EXCLUDE_AND_PRUNE` -- Exclude the current node from the result and do not continue the traversal.
 
 [NOTE]
 ====
@@ -85,7 +85,7 @@ For this reason, keep in mind that:
 
 === Built-in `Evaluators`
 
-The Traversal Framework also provides several built-in evaluators:
+The Traversal Framework provides several built-in evaluators:
 
 [options="header"]
 |===
@@ -138,6 +138,8 @@ try ( Transaction tx = graphDb.beginTx() ) {
 
 td.traverse( startNode );
 ----
+
+=== Custom implementations of `Evaluator`
 
 Now you can see an example of a custom implementation that includes only paths that end with a node of a certain label:
 
@@ -250,7 +252,7 @@ image::traversal_order_example_graph.png[align="center", role="middle", width=20
 Depth-first and breadth-first are common policies and can be accessed by the convenience methods `breadthFirst()` and `depthFirst()`.
 This is equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
-=== Example
+.Example of using `depthFirst()`:
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
@@ -262,6 +264,7 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
+.Example of using `BranchOrderingPolicies.PREORDER_BREADTH_FIRST`:
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
@@ -340,7 +343,7 @@ TraversalDescription td = transaction.traversalDescription()
 td.traverse( startNode );
 ----
 
-Now see an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and only includes paths if the total weight is smaller than the given maximum weight:
+The following is an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and only includes paths if the total weight is smaller than the given maximum weight:
 
 [source, java, role="nocopy"]
 ----

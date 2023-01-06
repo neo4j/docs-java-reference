@@ -7,23 +7,35 @@
 = Traversal Framework
 
 The Neo4j Traversal Framework Java API is a callback-based, lazily-executed way of specifying desired movements through a graph in Java.
-Some traversal examples can be found on xref:java-embedded/traversal.adoc[].
+Some traversal examples can be found in xref:java-embedded/traversal.adoc[].
+
+
+[[traversal-concepts]]
+== Main concepts
+
+A traversal takes a start node on a graph and returns a set of paths representing the visited nodes and their relationships.
+Traversals are defined by a traversal description, which may contain the following elements:
+
+* _Starting node_ -- defines where the traversal begins.
+* _Pathexpander_ -- defines what to traverse, typically in terms of relationship direction and type.
+* _Uniqueness_ -- defines the restrictions of previously traversed nodes and relationships on the graph.
+* _Evaluator_ -- decides what to return and whether to stop or continue the traversal beyond its current position.
+* _Order_ -- defines in which order paths are expanded, for example, `depth-first` or `breadth-first`.
+
+image::graphdb-traversal-description.svg[role="middle"]
+
+[[implementing-traversal-api]]
+== Using the Traversal Framework
+
+The Traversal Framework can be used xref:java-embedded/traversal.adoc[embedded in Java applications].
+It can also be used when extending Neo4j with a xref:/extending-neo4j/procedures.adoc[User-defined Procedure].
+For an example, see xref:traversal-framework/traversal_framework_example.adoc#traversal-in-a-procedure-example[User-defined procedure with a Traversal Framework].
+
+[[traversal-vs-cypher]]
+== Traversal Framework vs Cypher
 
 Although the Traversal Framework is less readable and more complex than the link:https://neo4j.com/docs/cypher-manual/[Cypher query language], it offers a powerful approach to traversing the graph.
 This is because the Traversal Framework can dynamically make custom choices at each step of the traversal, thus making the process more expressive and potentially more performant than Cypher.
-
-[WARNING]
-====
-It is generally recommended to use Cypher wherever it is possible.
-However, when using the Traversal Framework, keep in mind that:
-
-* Cypher uses memory tracking that allows a query to be aborted if it occupies too much memory.
-However, when mixing Cypher with Java in the Traversal API (e.g. on a function), you may run out of memory.
-* Do not reuse objects fetched during a traversal in another transaction.
-Instead, use their IDs to fetch new ones.
-====
-
-== When to use the Traversal Framework over Cypher
 
 Some of the advantages of using the Traversal Framework over Cypher include:
 
@@ -35,30 +47,13 @@ However, with the Traversal Framework, it is possible to specify the xref:/trave
 * With Cypher, relationships are only traversed when `RELATIONSHIP_GLOBAL` uniqueness is specified. 
 By using the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[uniqueness constraints on the path traversed].
 
+[WARNING]
+====
+It is generally recommended to use Cypher wherever it is possible.
+However, when using the Traversal Framework, keep in mind that:
 
-[[traversal-concepts]]
-== Main concepts
-
-A traversal takes a start node on a graph and returns a set of ``Path`` representing the visited nodes and their relationships.
-Traversals are defined by a traversal description, which may contain the following elements:
-
-image::graphdb-traversal-description.svg[role="middle"]
-
-* _Starting node_ -- defines where the traversal begins.
-* _Pathexpander_ -- defines what to traverse, typically in terms of relationship direction and type.
-* _Uniqueness_ -- defines the restrictions of previously traversed nodes and relationships on the graph.
-* _Evaluator_ -- decides what to return and whether to stop or continue the traversal beyond its current position.
-* _Order_ -- defines in which order paths are expanded, for example, `depth-first` or `breadth-first`.
-
-[[implementing-traversal-api]]
-== Using the Traversal Framework
-
-The Traversal Framework can be used xref:java-embedded/traversal.adoc[embedded in Java applications].
-It can also be used when extending Neo4j with a xref:/extending-neo4j/procedures.adoc[User-defined Procedure].
-See an example xref:traversal-framework/traversal_framework_example.adoc#traversal-in-a-procedure-example[User-defined procedure with a Traversal Framework].
-
-To read more about the traversals, see:
-
-* xref:traversal-framework/traversal_framework_java_api.adoc[]
-* xref:traversal-framework/bidirectional_traversal_framework.adoc[]
-* xref:traversal-framework/traversal_framework_example.adoc[]
+* Cypher uses memory tracking that allows a query to be aborted if it occupies too much memory.
+However, when mixing Cypher with Java in the Traversal API (e.g. on a function), you may run out of memory.
+* Do not reuse objects fetched during a traversal in another transaction.
+Instead, use their IDs to fetch new ones.
+====
