@@ -25,12 +25,13 @@ Therefore, when using `BidirectionalTraversalDescription`, always set the `Uniqu
 For more information on the available options, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[`Uniqueness` options].
 ====
 
-== Defining the Bidirectional Traverser
+== Defining the bidirectional traverser
 When creating `BidirectionalTraversalDescription`, it is possible to choose the `TraversalDescription` that each side takes.
 This can be done by setting it individually for each side (`startSide`/`endSide`) or setting one for both (`mirroredSides`).
 
-=== Start and End Side Traversal
-See this example of `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`:
+=== Start and end side traversal
+
+The following is an example of `BidirectionalTraversalDescription` with a separate traverser for the `startSide()` and `endSide()`:
 
 [source, java, role="nocopy"]
 ----
@@ -57,10 +58,11 @@ Possible paths are:
 * All relationships are of Type `B`.
 * The relationships from the start node are Type `A` and, after the collision, they are all of type `B`.
 
-=== Mirrored Traversal
+=== Mirrored traversal
+
 The `mirroredSides(TraversalDescription)` method sets both the start side and end side of this bidirectional traversal.
 However, the end side is the reverse of the start.
-For the `Direction` of `Relationships` this means that `OUTGOING` becomes `INCOMING` and vice versa.
+For the `Direction` of `Relationships`, this means that `OUTGOING` becomes `INCOMING` and vice versa.
 The `PathExpander` interface also comes with a `reverse()` function, which should be overridden if used in a `mirroredSides` implementation.
 
 [source, java, role="nocopy"]
@@ -73,7 +75,8 @@ BidirectionalTraversalDescription td = transaction
 td.traverse(startNode, endNode);
 ----
 
-== Side Selector
+== Side selector
+
 In a bidirectional traversal, the traverser selects which side (start or end) to move on each step.
 It is possible to change how this works by implementing the `SideSelectorPolicy` interface, as it has a function for determining from which side to traverse the next step.
 
@@ -100,7 +103,8 @@ BidirectionalTraversalDescription td = transaction
 td.traverse(startNode, endNode);
 ----
 
-== Collision Policies
+== Collision policies
+
 `BranchCollisionPolicy` defines when a collision is detected and accepted in a bidirectional traversal.
 Given an evaluator and a path predicate, `BranchCollisionPolicy` creates `BranchCollisionDetector`, which detects collisions between two traversers and adds the resulting path to the result if it satisfies the conditions given by the collision evaluator and Uniqueness constraints.
 
@@ -122,7 +126,8 @@ BidirectionalTraversalDescription td = transaction
 td.traverse(startNode, endNode);
 ----
 
-== Collision Evaluator
+== Collision evaluator
+
 The convenience method `collisionEvaluator()` adds `PathEvaluator`, which validates paths in a valid collision.
 Using the method multiple times results in the combination of the evaluators.
 
