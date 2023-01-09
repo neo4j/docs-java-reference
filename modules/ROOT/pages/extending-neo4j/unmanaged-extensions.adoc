@@ -70,7 +70,7 @@ You also need to tell Neo4j where to look for the extension by adding some confi
 [properties]
 ----
 #Comma-separated list of JAXRS packages containing JAXRS Resource, one package name for each mountpoint.
-dbms.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged
+server.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged
 ----
 
 Your `hello` method responds to `GET` requests at the URI:
