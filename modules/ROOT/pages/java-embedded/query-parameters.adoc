@@ -4,16 +4,15 @@
 [[cypher-parameters-java]]
 = Query parameters
 
-Here are some examples for query parameters.
-The examples below illustrate how to use parameters when executing Cypher queries from Java.
+The following examples illustrate how to use parameters when executing Cypher queries from Java.
 
-For more information on parameters see the link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/[Neo4j Cypher Manual].
+For more information on parameters, see the link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/[Neo4j Cypher Manual].
 
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithParameterForNodeId]
 
-Node ID:
+.Node ID:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -31,7 +30,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithParameterForNodeObject]
 
-Node object:
+.Node object:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -49,7 +48,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithParameterForMultipleNodeIds]
 
-Multiple node IDs:
+.Multiple node IDs:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -67,7 +66,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithStringLiteralAsParameter]
 
-String literal:
+.String literal:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -85,7 +84,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithParameterForSkipLimit]
 
-Numeric parameters for `SKIP` and `LIMIT`:
+.Numeric parameters for `SKIP` and `LIMIT`:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -105,7 +104,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=exampleWithParameterRegularExpression]
 
-Regular expression:
+.Regular expression:
 [source, java]
 ----
 Map<String,Object> params = new HashMap<>();
@@ -123,7 +122,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=create_node_from_map]
 
-Create node with properties:
+.Create a node with properties:
 [source, java]
 ----
 Map<String,Object> props = new HashMap<>();
@@ -142,7 +141,7 @@ transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=create_multiple_nodes_from_map]
 
-Create multiple nodes with properties:
+.Create multiple nodes with properties:
 [source, java]
 ----
 Map<String,Object> n1 = new HashMap<>();
@@ -172,7 +171,7 @@ Result result = transaction.execute( query, params );
 //https://github.com/neo4j/neo4j-documentation/blob/dev/cypher/cypher-docs/src/test/java/org/neo4j/cypher/example/JavaExecutionEngineDocTest.java
 //JavaExecutionEngineDocTest.java[tag=set_properties_on_a_node_from_a_map]
 
-Setting all properties on node:
+.Setting all properties on a node:
 [source, java]
 ----
 Map<String, Object> n1 = new HashMap<>();

@@ -8,18 +8,17 @@
 [[intro-unmanaged-extensions]]
 == Introduction
 
-Sometimes you will want a finer-grained level of control over your application's interactions with Neo4j than Cypher provides.
-For these situations you can use the unmanaged extension API.
+Unmanaged server extensions are used if you want to have a finer-grained level of control over your application's interactions with Neo4j than Cypher provides.
 
 [CAUTION]
 ====
-This is a sharp tool, that enables users to deploy arbitrary link:https://en.wikipedia.org/wiki/JAX-RS[JAX-RS^] classes to the server so be careful when using this.
+This is a sharp tool, that enables users to deploy arbitrary link:https://en.wikipedia.org/wiki/JAX-RS[JAX-RS^] classes to the server so be careful when using it.
 In particular, it is possible to consume lots of heap space on the server and degrade performance.
 If in doubt, please ask for help via one of the community channels.
 ====
 
-The first step when writing an unmanaged extension is to create a project which includes dependencies to the Neo4j core jars.
-In Maven this would be achieved by adding the following lines to the pom file:
+The first step when writing an unmanaged extension is to create a project which includes dependencies to the Neo4j core JARs.
+In Maven, this would be achieved by adding the following lines to the POM file:
 
 ["source", "xml", "unnumbered", "2", subs="attributes, specialcharacters"]
 ----
@@ -33,8 +32,8 @@ In Maven this would be achieved by adding the following lines to the pom file:
 
 Now you are ready to write your extension.
 
-In your code, you will interact with the database using `DatabaseManagementService`, which you can access by using the `@Context` annotation.
-The following example serves as a template which you can base your extension on:
+In your code, you interact with Neo4j using `DatabaseManagementService`, which you can access by using the `@Context` annotation.
+The following example serves as a template on which you can base your extension:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java
 //HelloWorldResource.java[tag=HelloWorldResource]
@@ -62,19 +61,19 @@ public class HelloWorldResource
 }
 ----
 
-The full source code is found here:
+The full source code isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java[HelloWorldResource.java^]
 
-Having built your code, the resulting jar file (and any customized dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
+Having built your code, the resulting JAR file (and any customized dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
 You also need to tell Neo4j where to look for the extension by adding some configuration in _neo4j.conf_:
 
-[source]
+[properties]
 ----
-#Comma separated list of JAXRS packages containing JAXRS Resource, one package name for each mountpoint.
-dbms.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged
+#Comma-separated list of JAXRS packages containing JAXRS Resource, one package name for each mountpoint.
+server.unmanaged_extension_classes=org.neo4j.examples.server.unmanaged=/examples/unmanaged
 ----
 
-Your `hello` method will now respond to `GET` requests at the URI:
+Your `hello` method responds to `GET` requests at the URI:
 
 [source, HTTP API, role="noheader"]
 ----
@@ -102,7 +101,7 @@ Hello World, nodeId=123
 When writing unmanaged extensions, you have greater control over the amount of memory that your Neo4j queries use.
 If you keep too much state around, it can lead to more frequent full Garbage Collection and subsequent unresponsiveness by the Neo4j server.
 
-A common way that state can increase, is the creation of JSON objects to represent the result of a query which is then sent back to your application.
+A common way that state can increase, is the creation of JSON objects to represent the result of a query, which is then sent back to your application.
 Neo4j's Transactional Cypher HTTP endpoint (see link:{neo4j-docs-base-uri}/http-api/{page-version}/actions[HTTP API Docs -> transactional Cypher endpoint]) streams responses back to the client.
 For example, the following unmanaged extension streams an array of a person's colleagues:
 
@@ -175,11 +174,11 @@ public class ColleaguesResource
 }
 ----
 
-The full source code is found here:
+The full source code isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java[ColleaguesResource.java^]
 
 As well as depending on JAX-RS API, this example also uses Jackson -- a Java JSON library.
-You will need to add the following dependency to your Maven POM file (or equivalent):
+You need to add the following dependency to your Maven POM file (or equivalent):
 
 [source,xml]
 --------
@@ -194,7 +193,7 @@ You will need to add the following dependency to your Maven POM file (or equival
 ====
 From Neo4j 3.5.15, a breaking change was introduced following an update to the Jackson dependency.
 
-Jackson v1 is out of support, and has accumulated security issues such as:
+Jackson v1 is out of support and has accumulated security issues such as:
 
 * link:https://www.cvedetails.com/cve/CVE-2017-7525/[`CVE-2017-7525`]
 * link:https://www.cvedetails.com/cve/CVE-2017-17485/[`CVE-2017-17485`]
@@ -206,7 +205,7 @@ Jackson v1 is out of support, and has accumulated security issues such as:
 For further information about Jackson v2, please see the link:https://github.com/FasterXML/jackson[Jackson Project on GitHub].
 ====
 
-Our `findColleagues` method will now respond to `GET` requests at the URI:
+Your `findColleagues` method now responds to `GET` requests at the URI:
 
 [source, HTTP API, role="noheader"]
 ----
@@ -231,7 +230,7 @@ which results in:
 [[server-unmanaged-extensions-execution-engine]]
 == Executing Cypher
 
-You can execute Cypher queries by using the `GraphDatabaseService` that is injected into the extension.
+You can execute Cypher queries by using the `GraphDatabaseService`, which is injected into the extension.
 For example, the following unmanaged extension retrieves a person's colleagues using Cypher:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java
@@ -296,10 +295,10 @@ public class ColleaguesCypherExecutionResource
 }
 ----
 
-The full source code is found here:
+The full source code isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java[ColleaguesCypherExecutionResource.java^]
 
-Your `findColleagues` method will now respond to `GET` requests at the URI:
+Your `findColleagues` method now responds to `GET` requests at the URI:
 
 [source, HTTP API, role="noheader"]
 ----
@@ -338,7 +337,7 @@ You can access this toolkit by adding the following test dependency to your proj
 --------
 
 The test toolkit provides a mechanism to start a Neo4j instance with a customized configuration and with extensions of your choice.
-It also provides mechanisms to specify data fixtures to include when starting Neo4j, as you can see in the example below:
+It also provides mechanisms to specify data fixtures to include when starting Neo4j, as you can see in the following example:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/neo4j-harness-enterprise-test/src/test/java/org/neo4j/harness/enterprise/doc/ExtensionTestingDocIT.java
 //ExtensionTestingDocIT.java[tag=testEnterpriseExtension]
@@ -381,7 +380,7 @@ public void testMyExtensionWithFunctionFixture()
 }
 ----
 
-The full source code of the example is found here:
+The full source code of the example isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/ExtensionTestingDocIT.java[ExtensionTestingDocIT.java^]
 
 
@@ -413,13 +412,13 @@ public void shouldWorkWithServer()
     // Given
     URI serverURI = neo4j.httpURI();
 
-    // When I access the server
+    // When you access the server
     HTTP.Response response = HTTP.GET( serverURI.toString() );
 
     // Then it should reply
     assertEquals(200, response.status());
 
-    // and we have access to underlying GraphDatabaseService
+    // and you have access to underlying GraphDatabaseService
     try (Transaction tx = neo4j.defaultDatabaseService().beginTx()) {
         assertEquals( 2, count(tx.findNodes( Label.label( "Admin" ) ) ));
         tx.commit();
@@ -427,6 +426,6 @@ public void shouldWorkWithServer()
 }
 ----
 
-The full source code of the example is found here:
+The full source code of the example isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/JUnitDocIT.java[JUnitDocIT.java^]
 

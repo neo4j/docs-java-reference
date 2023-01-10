@@ -25,7 +25,7 @@ The following topics are:
 
 [WARNING]
 ====
-When running your own code and Neo4j in the same JVM, there are a few things you should keep in mind:
+When running your own code and Neo4j in the same JVM, there are a few things to keep in mind:
 
 * Do not create or retain more objects than you strictly need to.
   Large caches in particular tend to promote more objects to the old generation, thus increasing the need for expensive full garbage collections.

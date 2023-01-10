@@ -1,22 +1,19 @@
-:description: Traversal API.
+:description: How to traverse a graph using the traversal framework.
 
 
 [[java-embedded-traversal]]
-= Traversal
+= Traversing a graph
 
-[abstract]
---
 This page describes how to traverse a graph using the <<traversal, Traversal Framework>>.
---
 
 == The Matrix example
 
 This example of a traversed graph uses some of the characters featured in the film trilogy "The Matrix".
-The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java[NewMatrix.java].
+The source code can be found in link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/NewMatrix.java[NewMatrix.java].
 
 image::examples-matrix.svg[title="Matrix node space view"]
 
-Here is an example of how to define the `TraversalDescription` to find all the friends, and friend of friends, of a given person and how to return the results excluding the initial person:
+The following is an example of how to define the `TraversalDescription` to find all the friends and friends of friends of a person X, and how to return the results excluding the person X:
 
 [source, java]
 ----
@@ -30,7 +27,7 @@ private Traverser getFriends( Transaction transaction, final Node person )
 }
 ----
 
-To perform the actual traversal and print the names of all found friends, do the following:
+Perform the actual traversal and print the names of all found friends:
 
 [source, java]
 ----
@@ -47,7 +44,7 @@ for ( Path friendPath : friendsTraverser )
 output += "Number of friends found: " + numberOfFriends + "\n";
 ----
 
-This will return the following output:
+The traversal returns the following output:
 
 [source, output, role="noheader"]
 ----
@@ -61,7 +58,7 @@ Number of friends found: 4
 
 === Solving the Matrix
 
-To find the mastermind behind "The Matrix", follow all outgoing relationships which have the type `KNOWS` or `CODED_BY`.
+To find the mastermind behind "The Matrix", follow all outgoing relationships that have the type `KNOWS` or `CODED_BY`.
 The final node connected to the relationship `CODED_BY` will be the Matrix's coder.
 
 [source, java]
@@ -105,9 +102,9 @@ Number of hackers found: 1
 === Walking an ordered path
 
 The following example shows how to use a custom `Evaluator` to find paths that adhere to a predefined order.
-The source code can be found here: link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java[OrderedPath.java].
+The source code can be found in link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java[OrderedPath.java].
 
-To create the example graph that will be traversed over, do the following:
+First, you create the example graph that will be traversed over:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
 //OrderedPath.java[tag=createGraph]
@@ -160,10 +157,10 @@ TraversalDescription td = tx.traversalDescription()
     .uniqueness( Uniqueness.NODE_PATH ); //<1>
 ----
 
-Note that the uniqueness was set to `Uniqueness.NODE_PATH`.
+Note that the uniqueness is set to `Uniqueness.NODE_PATH`.
 This makes it possible to revisit the same node during the traversal, but not the same path.
 
-To perform the traversal and print all ordered paths found, do the following:
+Then, you can perform the traversal and print all ordered paths found:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
 //OrderedPath.java[tag=printPath]
@@ -178,7 +175,7 @@ for ( Path path : traverser )
 }
 ----
 
-This will return the following output:
+This returns the following output:
 
 [source, output, role="noheader"]
 ----
@@ -186,7 +183,6 @@ This will return the following output:
 ----
 
 In this case, a customized class is used to format the path output.
-See how to do it:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/orderedpath/OrderedPath.java
 //OrderedPath.java[tag=pathPrinter]
@@ -235,8 +231,8 @@ It lists all pets descended from other pets that are owned by `Principal1`:
 .Descendants example graph
 image:uniqueness-of-paths-in-traversals-graph.svg[role="middle"]
 
-In order to return all descendants of `Pet0` which are owned by `Principal1` (i.e. `Pet1` and `Pet3`), the uniqueness of the traversal needs to be set to `NODE_PATH` rather than the default `NODE_GLOBAL`.
-This way nodes can be traversed more than once, and paths that have different nodes with some in common (like the start and the end nodes) can be returned.
+To return all descendants of `Pet0` which are owned by `Principal1` (i.e. `Pet1` and `Pet3`), the uniqueness of the traversal needs to be set to `NODE_PATH` rather than the default `NODE_GLOBAL`.
+This way, nodes can be traversed more than once, and paths that have different nodes with some in common (like the start and the end nodes) can be returned.
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/UniquenessOfPathsDocTest.java
 //UniquenessOfPathsDocTest.java[tag=traverser]
@@ -274,7 +270,7 @@ This will return the following paths:
 (2)-[descendant,0]->(5)<-[owns,3]-(1)
 ----
 
-To see how this differs from using `NODE_GLOBAL` uniqueness, do the following.
+You can also see how this differs from using `NODE_GLOBAL` uniqueness.
 Note that the `TraversalDescription` object is immutable, so a new instance is required.
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/test/java/org/neo4j/examples/UniquenessOfPathsDocTest.java

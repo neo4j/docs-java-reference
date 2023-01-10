@@ -8,7 +8,7 @@ This describes how both nodes and relationships can have properties.
 
 Properties are named values where the name is a string.
 Property values can be either a primitive or an array of one primitive type.
-For example `String`, `int` and `int[]` values are valid for properties.
+For example `String`, `int`, and `int[]` values are valid for properties.
 
 [NOTE]
 ====
@@ -32,11 +32,11 @@ Setting a property to `NULL` is equivalent to deleting the property.
 | char                              | 16-bit unsigned integers representing Unicode characters.
 | String                            | Sequence of Unicode characters.
 | org.neo4j.graphdb.spatial.Point   | A 2D or 3D point object in a given coordinate system.
-| java.time.LocalDate               | An instant capturing the date, but not the time, nor the timezone.
-| java.time.OffsetTime              | An instant capturing the time of day, and the timezone offset, but not the date.
-| java.time.LocalTime               | An instant capturing the time of day, but not the date, nor the timezone.
-| java.time.ZonedDateTime           | An instant capturing the date, the time, and the timezone.
-| java.time.LocalDateTime           | An instant capturing the date and the time, but not the timezone.
+| java.time.LocalDate               | An instant capturing of the date, but not the time and timezone.
+| java.time.OffsetTime              | An instant capturing of the time of day and the timezone offset, but not the date.
+| java.time.LocalTime               | An instant capturing of the time of day, but not the date and timezone.
+| java.time.ZonedDateTime           | An instant capturing of the date, time, and timezone.
+| java.time.LocalDateTime           | An instant capturing of the date and time, but not the timezone.
 | java.time.temporal.TemporalAmount | A temporal amount. This captures the difference in time between two instants.
 |===
 
@@ -46,10 +46,10 @@ Note that there are two cases where more than one Java type is mapped to a singl
 When this happens, type information is lost.
 If these objects are returned from procedures, the original types cannot be recreated:
 
-* A Cypher `Duration` is created when either a `java.time.Duration` or a `java.time.Period` is provided.
-  If a `Duration` is returned, only the common interface `java.time.temporal.TemporalAmount` will remain.
-* A Cypher `DateTime` is created when a `java.time.OffsetDateTime` is provided.
-  If a `DateTime` is returned, it will be converted into a `java.time.ZonedDateTime`.
+* A Cypher `Duration` is created when either `java.time.Duration` or `java.time.Period` is provided.
+  If `Duration` is returned, only the common interface `java.time.temporal.TemporalAmount` remains.
+* A Cypher `DateTime` is created when `java.time.OffsetDateTime` is provided.
+  If `DateTime` is returned, it is converted into `java.time.ZonedDateTime`.
 
 [NOTE]
 ====

@@ -7,7 +7,7 @@ This repository contains the AsciiDoc and other sources to build the link:{docs-
 
 == Installation
 
-To build these docs locally you will need link:https://nodejs.org/en/download/package-manager/[Node & NPM^] installed.
+To build these docs locally you need link:https://nodejs.org/en/download/package-manager/[Node & NPM^] installed.
 
 To install the dependencies run:
 
@@ -26,15 +26,15 @@ To preview the docs, run:
 npm run start
 ----
 
-This will build a set of HTML files in `build/site` and then serve them through an express server at http://localhost:8000.
-The start script will also listen for changes and automatically rebuild the files automatically.
-You will still need to refresh the page to view the changes.
+This builds a set of HTML files in `build/site` and then serves them through an express server at http://localhost:8000.
+The start script also listens for changes and automatically rebuilds the files.
+You still need to refresh the page to view the changes.
 
 
 == Contributing
 
 To make changes to this repository, please create a fork of this repo and a new branch to stage your changes.
-Your branch should be prefixed with the version number, for example `5.0-feature-to-document`.
+Your branch should be prefixed with the version number, for example, `5.0-feature-to-document`.
 
 When you are finished with your changes push the branch to your fork and create a Pull Request.
 Please add at least one approver.

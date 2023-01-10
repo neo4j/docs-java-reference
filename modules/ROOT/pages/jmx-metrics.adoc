@@ -6,21 +6,20 @@
 
 This topic describes how to access JMX for Neo4j DBMS to monitor metrics.
 
-Neo4j provides different levels of monitoring facilities in order to supply a continuous overview of the system's health.
+Neo4j provides different levels of monitoring facilities to supply a continuous overview of the system's health.
 For a description of the monitoring options, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/monitoring[Neo4j Operations Manual -> Monitoring].
 Many of the metrics are exposed through link:https://www.oracle.com/java/technologies/javase/javamanagement.html[JMX^].
 
 [NOTE]
 ====
-Please note that the available JMX MBeans and their names have been updated in Neo4j 4.0.
-Beans that duplicate metrics or monitoring options, described in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/monitoring[Neo4j Operations Manual -> Monitoring], have been removed.
+The available JMX MBeans and their names have been updated in Neo4j 4.0.
+Beans that duplicate metrics or monitoring options, described in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/monitoring/metrics/reference/#jvm-metrics[Neo4j Operations Manual -> Monitoring], have been removed.
 ====
-
 
 [[jmx-remote]]
 == Adjusting remote JMX access to Neo4j
 
-Per default, the Neo4j Enterprise Server edition does not allow remote JMX connections.
+By default, the Neo4j Enterprise edition does not allow remote JMX connections.
 To enable this feature, you need to enable JMX Remote Management and also configure JMX for secure remote access, in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/neo4j-conf[_conf/neo4j.conf_ file].
 
 
@@ -28,23 +27,23 @@ To enable this feature, you need to enable JMX Remote Management and also config
 === Enable JMX Remote Management
 
 Add the following lines to the _conf/neo4j.conf_ file to enable JMX Remote Management.
-If you run into issues with automatic host name discovery, you can uncomment the following configuration line:
+If you run into issues with automatic hostname discovery, you can uncomment the following configuration line:
 
-`+dbms.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME+`
+`+server.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME+`
 
 [source, properties]
 ----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.port=3637
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.authenticate=true
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.ssl=false
+server.jvm.additional=-Dcom.sun.management.jmxremote.port=3637
+server.jvm.additional=-Dcom.sun.management.jmxremote.authenticate=true
+server.jvm.additional=-Dcom.sun.management.jmxremote.ssl=false
 
-# Some systems cannot discover host name automatically, and need this line configured:
-# dbms.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME
+# Some systems cannot discover the hostname automatically, and need this line configured:
+# server.jvm.additional=-Djava.rmi.server.hostname=$THE_NEO4J_SERVER_HOSTNAME
 ----
 
 [IMPORTANT]
 ====
-Although SSL for JMX Remote Management is disabled throughout this document, to configure it based on your requirements you can follow the instructions in the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^].
+Although SSL for JMX Remote Management is disabled throughout this document, to configure it based on your requirements, you can follow the instructions in the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^].
 ====
 
 
@@ -54,7 +53,7 @@ Although SSL for JMX Remote Management is disabled throughout this document, to 
 Password authentication is enabled by default in JMX Remote Management.
 You can find information about setting up authentication with LDAP and file-based approach in the following sections.
 
-Please refer to the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^] for more options, including configuration steps for SSL client authentication.
+Refer to the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^] for more options, including configuration steps for SSL client authentication.
 
 
 [[ldap]]
@@ -97,15 +96,15 @@ Specifies which access role an authenticated user will be granted.
 
 [NOTE]
 ====
-The above configuration is provided as an example and needs to be updated based on your infrastructure.
+The provided configuration is an example and needs to be updated based on your infrastructure.
 ====
 
 After finishing your JAAS configuration, configure JMX to use it by adding the following configuration items into _conf/neo4j.conf_ file:
 
 [source, properties]
 ----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.login.config=Neo4jJMXConfig
-dbms.jvm.additional=-Djava.security.auth.login.config=/absolute/path/to/conf/jmx.ldap
+server.jvm.additional=-Dcom.sun.management.jmxremote.login.config=Neo4jJMXConfig
+server.jvm.additional=-Djava.security.auth.login.config=/absolute/path/to/conf/jmx.ldap
 ----
 
 With this setup, you can connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with a valid username and password defined in your LDAP directory.
@@ -116,18 +115,18 @@ With this setup, you can connect to JMX monitoring of the Neo4j server using `<I
 
 [IMPORTANT]
 ====
-The file-based password authentication stores the password in clear-text and is intended only for development use.
+The file-based password authentication stores the password in clear text and is intended only for development use.
 ====
 
 You can set your password for JMX remote access and save it in the _conf/jmx.password_ configuration file.
-Please note that on Unix-based systems, the _jmx.password_ file needs to be owned by the user that will run the server, and have permissions set to `0600`.
+Note that on Unix-based systems, the _jmx.password_ file needs to be owned by the user that runs the server, and has permissions set to `0600`.
 
 [source, properties]
 ----
 monitorRole password_to_be_changed
 ----
 
-Next, configure access level and save it in _conf/jmx.access_ configuration file.
+Next, configure the access level and save it in _conf/jmx.access_ configuration file.
 
 [source, properties]
 ----
@@ -138,8 +137,8 @@ Finally, configure JMX to use the completed password and access files by adding 
 
 [source, properties]
 ----
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.password.file=/absolute/path/to/conf/jmx.password
-dbms.jvm.additional=-Dcom.sun.management.jmxremote.access.file=/absolute/path/to/conf/jmx.access
+server.jvm.additional=-Dcom.sun.management.jmxremote.password.file=/absolute/path/to/conf/jmx.password
+server.jvm.additional=-Dcom.sun.management.jmxremote.access.file=/absolute/path/to/conf/jmx.access
 ----
 
 With this setup, you can connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with the username `monitor`, and the password `password_to_be_changed`.
@@ -167,11 +166,11 @@ Connect to the process running your Neo4j database instance:
 .Connecting JConsole to the Neo4j Java process
 image::jconsole_connect1.png[alt="Connecting with JConsole", width=300]
 
-Now, beside the MBeans exposed by the JVM, you will see be default `neo4j.metrics` section in the MBeans tab.
-Under that, you will have access to all the monitoring information exposed by Neo4j.
+Besides the MBeans, exposed by the JVM, you also see be default `neo4j.metrics` section in the MBeans tab.
+Under that, you have access to all the monitoring information exposed by Neo4j.
 
 For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html#GUID-805517EC-2D33-4D61-81D8-4D0FA770D1B8[the JMX documention^].
 
-.Neo4j MBeans View
+.Neo4j MBeans view
 image::jconsole_beans1.png[alt="Neo4j MBeans view", width=600]
 

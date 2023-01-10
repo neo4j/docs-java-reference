@@ -4,14 +4,12 @@
 [[java-embedded-entities]]
 = Domain entities
 
-This describes one way to handle domain entities when using Neo4j.
-
-Entities can be wrapped around a node.
+Domain entities can be wrapped around a node.
 The same approach can be used with relationships.
 
 [TIP]
 ====
-The source code of the examples is found here:
+The source code of the examples isfound at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
 ====
 

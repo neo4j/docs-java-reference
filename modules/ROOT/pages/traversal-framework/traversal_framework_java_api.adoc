@@ -15,17 +15,17 @@
 It is not meant to be implemented by users of the Traversal Framework, but it works as a means for the user to describe traversals.
 
 `TraversalDescription` instances are immutable.
-Their methods return a new `TraversalDescription` that is modified according to the object that the method was invoked on, with the arguments of it.
+Their methods return a new `TraversalDescription` that is modified according to the object that the method was invoked on, with its arguments.
 The method `traverse()` returns the result of the traversal defined in the `TraversalDescription`.
 
 [[traversal-java-api-traverser]]
 == The `Traverser` object
 
-The `Traverser` object is the result of invoking `traverse()` on a `TraversalDescription`.
+The `Traverser` object is the result of invoking `traverse()` on `TraversalDescription`.
 It represents a traversal positioned on the graph and a specification of the format of the result.
 The actual traversal is performed lazily each time the `next()` method of the iterator of the `Traverser` is invoked.
 
-Here is an example of a Traversal using default values, that is, Uniqueness: _NODE_GLOBAL_, Expander: _BOTH_, Branch Ordering: _PREORDER_DEPTH_FIRST_:
+The following is an example of `Traverser` using default values, that is, Uniqueness: `NODE_GLOBAL`, Expander: `BOTH`, and Branch Ordering: `PREORDER_DEPTH_FIRST`:
 
 [source, java]
 ----
@@ -48,7 +48,7 @@ It has convenience methods for finding the total number of returned paths, `getN
 
 The method `relationships()` defines relationship types and, optionally, the relationship direction to be traversed.
 By default, all relationships are traversed, regardless of their type.
-However, if one or more relationships are added, then only the added types will be traversed.
+However, if one or more relationships are added, then only the added types are traversed.
 
 [source, java]
 ----
@@ -61,17 +61,17 @@ return td.traverse(startNode);
 [[traversal-java-api-evaluator]]
 == Using ``Evaluator``s
 
-An `Evaluator` takes the `Path` from the start node to the current node and decides whether if the `Path` should be:
+An `Evaluator` takes the `Path` from the start node to the current node and decides whether the `Path` should be:
 
 * Included in the result.
 * Expanded for further evaluation.
 
-Given a `Path`, an evaluator can take one of four actions:
+Given `Path`, an evaluator can take one of four actions:
 
-* `Evaluation.INCLUDE_AND_CONTINUE`: Include the current node in the result and continue the traversal.
-* `Evaluation.INCLUDE_AND_PRUNE`: Include the current node in the result, but do not continue the traversal.
-* `Evaluation.EXCLUDE_AND_CONTINUE`: Exclude the current node from the result, but continue the traversal.
-* `Evaluation.EXCLUDE_AND_PRUNE`: Exclude the current node from the result and do not continue the traversal.
+* `Evaluation.INCLUDE_AND_CONTINUE` -- Include the current node in the result and continue the traversal.
+* `Evaluation.INCLUDE_AND_PRUNE` -- Include the current node in the result, but do not continue the traversal.
+* `Evaluation.EXCLUDE_AND_CONTINUE` -- Exclude the current node from the result, but continue the traversal.
+* `Evaluation.EXCLUDE_AND_PRUNE` -- Exclude the current node from the result and do not continue the traversal.
 
 [NOTE]
 ====
@@ -79,13 +79,13 @@ As more than one evaluator can be added, different combinations might lead to un
 For this reason, keep in mind that:
 
 * A path is included if all evaluators include it.
-* A path will only be expanded if none of the evaluators prune it.
-* Evaluators will be called for all paths the traverser encounters, even for the path consisting only of the start node.
+* A path can only be expanded if none of the evaluators prune it.
+* Evaluators are called for all paths the traverser encounters, even for the path that consists of the start node only.
 ====
 
 === Built-in `Evaluators`
 
-The Traversal Framework also provides several built-in evaluators:
+The Traversal Framework provides several built-in evaluators:
 
 [options="header"]
 |===
@@ -139,7 +139,9 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
-Now see an example of a custom implementation that includes only paths which end with a node of a certain label:
+=== Custom implementations of `Evaluator`
+
+Now you can see an example of a custom implementation that includes only paths that end with a node of a certain label:
 
 [source, java]
 ----
@@ -162,7 +164,7 @@ class LabelEvaluator implements Evaluator {
 }
 ----
 
-The following example features a combined evaluator, which will return all paths of length `2` that also have an end node with label `A`:
+The following example features a combined evaluator, which returns all paths of length `2` that also have an end node with the label `A`:
 
 [source, java]
 ----
@@ -211,7 +213,7 @@ td.traverse( startNode );
 [[traversal-java-api-branchselector]]
 == `BranchOrderingPolicy` and `BranchSelector`
 
-A `BranchOrderingPolicy` is a factory for creating ``BranchSelector``s to decide in what order branches are returned -- that is, where a branch's position is represented as a `Path` from the start node to the current node.
+`BranchOrderingPolicy` is a factory for creating ``BranchSelector``s to decide in what order branches are returned -- that is, where a branch's position is represented as `Path` from the start node to the current node.
 
 The Traversal Framework provides a few basic ordering implementations based on the link:https://en.wikipedia.org/wiki/Depth-first_search[depth-first^] and link:https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first^] algorithms.
 These are:
@@ -226,7 +228,7 @@ These are:
 Keep in mind that breadth-first traversals have a higher memory overhead than depth-first traversals.
 ====
 
-The following example shows the result of a `BranchOrderingPolicy` without any extra filter:
+The following example shows the result of `BranchOrderingPolicy` without any extra filter:
 
 image::traversal_order_example_graph.png[align="center", role="middle", width=200]
 
@@ -250,7 +252,7 @@ image::traversal_order_example_graph.png[align="center", role="middle", width=20
 Depth-first and breadth-first are common policies and can be accessed by the convenience methods `breadthFirst()` and `depthFirst()`.
 This is equivalent to setting the `BranchOrderingPolicies.PREORDER_BREADTH_FIRST` / `BranchOrderingPolicies.PREORDER_DEPTH_FIRST` policy.
 
-=== Example
+.Example of using `depthFirst()`:
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
@@ -262,6 +264,7 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
+.Example of using `BranchOrderingPolicies.PREORDER_BREADTH_FIRST`:
 [source, java, role="nocopy"]
 ----
 TraversalDescription td;
@@ -273,19 +276,19 @@ try ( Transaction tx = graphDb.beginTx() ) {
 td.traverse( startNode );
 ----
 
-Since a `BranchSelector` carries state and hence needs to be uniquely instantiated for each traversal, it should be supplied to the `TraversalDescription` through a `BranchOrderingPolicy` interface, which is a factory of `BranchSelector` instances.
+Since `BranchSelector` carries state and hence needs to be uniquely instantiated for each traversal, it should be supplied to the `TraversalDescription` through a `BranchOrderingPolicy` interface, which is a factory of `BranchSelector` instances.
 
 Even though a user of the Traversal Framework rarely needs to implement their own `BranchSelector`/ `BranchOrderingPolicy`, it is relevant to know that these parameters let graph algorithm implementors provide their own traversal orders.
 
-Check the link:https://neo4j.com/docs/java-reference/current/java-embedded/graph-algorithms/[Neo4j Graph Algorithms package] to see a `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in `BestFirst` search algorithms such as A* and Dijkstra.
+Check the link:https://neo4j.com/docs/java-reference/current/java-embedded/graph-algorithms/[Neo4j Graph Algorithms package] to see `BestFirst` order `BranchSelector` / `BranchOrderingPolicy` that is used in `BestFirst` search algorithms such as A* and Dijkstra.
 
 
 [[traversal-java-api-pathexpander]]
-== Using a `PathExpander`
+== Using `PathExpander`
 
-The Traversal Framework uses a `PathExpander` to discover the relationships that should be followed from a particular path to further branches in the traversal.
+The Traversal Framework uses `PathExpander` to discover the relationships that should be followed from a particular path to further branches in the traversal.
 
-There are multiple ways of specifying a `PathExpander`, such as:
+There are multiple ways of specifying `PathExpander`, such as:
 
 * The built-in `PathExpander` defines some commonly used ``PathExpander``s.
 * The `PathExpanderBuilder` allows the combination of definitions.
@@ -313,8 +316,8 @@ td.traverse( startNode );
 === `PathExpanderBuilder`
 
 The `PathExpanderBuilder` allows the combination of different `PathExpander` definitions.
-It provides a more fine-grained level of customization without the need to write a `PathExpander` from scratch.
-It also contains a set of static methods allowing the creation of a `PathExpander` with the following methods:
+It provides a more fine-grained level of customization without the need to write `PathExpander` from scratch.
+It also contains a set of static methods allowing the creation of `PathExpander` with the following methods:
 
 * `empty()` -- Expands no relationships.
 * `emptyOrderedByType()` -- Expands no relationships and guarantees the order of how types will be expanded when any are added.
@@ -340,7 +343,7 @@ TraversalDescription td = transaction.traversalDescription()
 td.traverse( startNode );
 ----
 
-Now see an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and only includes paths if the total weight is smaller than the given maximum weight:
+The following is an example of a custom `PathExpander` which tracks the weight of the path in its `BranchState` and only includes paths if the total weight is smaller than the given maximum weight:
 
 [source, java, role="nocopy"]
 ----

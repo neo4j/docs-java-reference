@@ -4,15 +4,15 @@
 [[best-practices]]
 = Best practices
 
-It is also important to consider any security implications of deploying customized code.
+It is important to consider any security implications of deploying customized code.
 Refer to the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/security/securing-extensions[Operations Manual -> Securing Extensions] for details on best practices for securing user-defined procedures and functions.
 
-Since you will be running customized-built code and Neo4j in the same JVM, there are a few things you should keep in mind:
+Since you will be running custom-built code and Neo4j in the same JVM, there are a few things you should keep in mind:
 
 * Do not create or retain more objects than you strictly need to.
   Large caches in particular tend to promote more objects to the old generation, thus increasing the need for expensive full garbage collections.
 * Do not use internal Neo4j APIs.
   They are internal to Neo4j and subject to change without notice, which may break or change the behavior of your code.
 * If possible, avoid using Java object serialization or reflection in your code or in any runtime dependency that you use.
-  Otherwise, if you cannot avoid using Java object serialization and reflection, then ensure that the `-XX:+TrustFinalNonStaticFields` JVM flag is disabled in `neo4j.conf`.
+  If you cannot avoid using Java object serialization and reflection, ensure that the `-XX:+TrustFinalNonStaticFields` JVM flag is disabled in `neo4j.conf`.
 
