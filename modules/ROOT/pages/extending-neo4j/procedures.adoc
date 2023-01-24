@@ -10,6 +10,10 @@ A _user-defined procedure_ is a mechanism that enables you to extend Neo4j by wr
 Procedures can take arguments, perform operations on the database, and return results.
 For a comparison between user-defined procedures, functions, and aggregation functions see xref:extending-neo4j/customized-code.adoc[].
 
+[NOTE]
+====
+User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classed as user database procedure.
+====
 
 [[call-procedure]]
 == Call a procedure
