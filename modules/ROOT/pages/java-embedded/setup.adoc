@@ -281,8 +281,6 @@ Obviously, the database has to already exist in this case.
 Concurrent access to the same database files by multiple (read-only or write) instances is not supported.
 ====
 
-<<<<<<< HEAD
-=======
 == Adding Neo4j to the build path
 
 Get the Neo4j libraries from one of these sources:
@@ -338,4 +336,3 @@ Note that the listed dependencies do not contain the implementation, but pull it
 For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
 
 Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
->>>>>>> c3380e8 (changing the order of topics as requested (#89))
