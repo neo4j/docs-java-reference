@@ -5,7 +5,6 @@
 :com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/EnterpriseDatabaseManagementServiceBuilder.html
 :com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/ClusterDatabaseManagementServiceBuilder.html
 
-
 [[java-embedded-setup]]
 = Including Neo4j in your project
 
@@ -13,64 +12,6 @@ This topic describes how to embed Neo4j in your Java application.
 
 After selecting the appropriate <<editions,edition>> for your platform, you can embed Neo4j in your Java application by including the Neo4j library jars in your build.
 The following sections show how to do this by either altering the build path directly or by using dependency management.
-
-
-== Adding Neo4j to the build path
-
-Get the Neo4j libraries from one of these sources:
-
-* Extract a link:https://neo4j.com/download/other-releases/#releases[Neo4j zip/tarball^], and use the _jar_ files found in the _lib/_ directory.
-* Use the _jar_ files available from link:http://search.maven.org/#search|ga|1|g%3A%22org.neo4j%22[Maven Central Repository^].
-
-Add the jar files to your project:
-
-JDK tools::
- Append to `-classpath`
-Eclipse::
- * Right-click on the project and then go _Build Path -> Configure Build Path_.
-   In the dialog, choose _Add External JARs_, browse to the Neo4j _lib/_ directory and select all of the jar files.
- * Another option is to use link:http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/buildpath/ref-preferences-user-libraries.htm[User Libraries^].
-IntelliJ IDEA::
- See link:http://www.jetbrains.com/help/idea/2016.1/configuring-project-and-global-libraries.html[Libraries, Global Libraries, and the Configure Library dialog^].
-NetBeans::
- * Right-click on the _Libraries_ node of the project, choose _Add JAR/Folder_, browse to the Neo4j _lib/_ directory and select all of the jar files.
- * You can also handle libraries from the project node, see link:http://netbeans.org/kb/docs/java/project-setup.html#projects-classpath[Managing a Project's Classpath^].
-
-
-[[editions]]
-== Editions
-
-The following table outlines the available editions and their names for use with dependency management tools.
-
-[TIP]
-====
-Follow the links in the table for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, Scala SBT!
-====
-
-.Neo4j editions
-[cols="<20,<30,<50", options="header"]
-|===
-
-| Neo4j Edition
-| Dependency
-| Description
-
-| Community
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
-| A high performance, fully ACID transactional graph database.
-
-| Enterprise
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j-enterprise%22[org.neo4j:neo4j-enterprise^]
-| Adding advanced monitoring, online backup, and clustering.
-
-|===
-
-Note that the listed dependencies do not contain the implementation, but pulls it in transitively.
-
-For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
-
-Javadocs can be downloaded packaged in jar files from Maven Central or read at link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
-
 
 == Adding Neo4j as a dependency
 
@@ -339,3 +280,59 @@ Obviously, the database has to already exist in this case.
 ====
 Concurrent access to the same database files by multiple (read-only or write) instances is not supported.
 ====
+
+== Adding Neo4j to the build path
+
+Get the Neo4j libraries from one of these sources:
+
+* Extract a link:https://neo4j.com/download/other-releases/#releases[Neo4j zip/tarball^], and use the JAR files found in the _lib/_ directory.
+* Use the JAR files available from link:http://search.maven.org/#search|ga|1|g%3A%22org.neo4j%22[Maven Central Repository^].
+
+Add the JAR files to your project:
+
+JDK tools::
+ Append to `-classpath`
+Eclipse::
+ * Right-click on the project and then go to _Build Path -> Configure Build Path_.
+   In the dialog, select _Add External JARs_, browse the Neo4j _lib/_ directory, and select all the JAR files.
+ * Another option is to use link:http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/buildpath/ref-preferences-user-libraries.htm[User Libraries^].
+IntelliJ IDEA::
+ See link:http://www.jetbrains.com/help/idea/2016.1/configuring-project-and-global-libraries.html[Libraries, Global Libraries, and the Configure Library dialog^].
+NetBeans::
+ * Right-click on the _Libraries_ node of the project, select _Add JAR/Folder_, browse the Neo4j _lib/_ directory and select all the JAR files.
+ * You can also handle libraries from the project node, see link:http://netbeans.org/kb/docs/java/project-setup.html#projects-classpath[Managing a Project's Classpath^].
+
+
+[[editions]]
+== Editions
+
+The following table outlines the available editions and their names for use with dependency management tools.
+
+[TIP]
+====
+Follow the links in the table for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, and Scala SBT.
+====
+
+.Neo4j editions
+[cols="<20,<30,<50", options="header"]
+|===
+
+| Neo4j Edition
+| Dependency
+| Description
+
+| Community
+| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
+| A high-performance, fully ACID transactional graph database.
+
+| Enterprise
+| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j-enterprise%22[org.neo4j:neo4j-enterprise^]
+| Adding advanced monitoring, online backup, and clustering.
+
+|===
+
+Note that the listed dependencies do not contain the implementation, but pull it transitively.
+
+For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
+
+Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
