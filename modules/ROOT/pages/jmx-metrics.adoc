@@ -166,6 +166,9 @@ Connect to the process running your Neo4j database instance:
 .Connecting JConsole to the Neo4j Java process
 image::jconsole_connect1.png[alt="Connecting with JConsole", width=300]
 
+Please note: when you are connecting to a remote process or, in some cases, local that is running as a service please choose a `Remote Process` connection option.
+<port> is value that is configured by `com.sun.management.jmxremote.port` property.
+
 Besides the MBeans, exposed by the JVM, you also see be default `neo4j.metrics` section in the MBeans tab.
 Under that, you have access to all the monitoring information exposed by Neo4j.
 
