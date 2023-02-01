@@ -14,7 +14,7 @@ For a comparison between user-defined procedures, functions, and aggregation fun
 
 [NOTE]
 ====
-User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classed as user database procedure.
+User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classed as a user database procedure.
 ====
 
 [[call-procedure]]
@@ -56,53 +56,76 @@ These can be used to write integration tests for procedures.
 First, decide what the procedure should do, then write a test that proves that it does it right.
 Finally, write a procedure that passes the test.
 
-Below is a template for testing a procedure that accesses Neo4j's full-text indexes from Cypher.
-
+.An example for testing a procedure that returns relationship types found in the graph.
 [source, java]
 ----
 package example;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.neo4j.driver.v1.*;
-import org.neo4j.graphdb.factory.GraphDatabaseSettings;
-import org.neo4j.harness.junit.Neo4jRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Value;
+import org.neo4j.harness.Neo4j;
+import org.neo4j.harness.Neo4jBuilders;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.neo4j.driver.v1.Values.parameters;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ManualFullTextIndexTest
-{
-    // This rule starts a Neo4j instance
-    @Rule
-    public Neo4jRule neo4j = new Neo4jRule()
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class GetRelationshipTypesTests {
 
-            // This is the Procedure to test
-            .withProcedure( FullTextIndex.class );
+    private Driver driver;
+    private Neo4j embeddedDatabaseServer;
 
+    @BeforeAll
+    void initializeNeo4j() {
+        this.embeddedDatabaseServer = Neo4jBuilders.newInProcessBuilder()
+                .withDisabledServer()
+                .withProcedure(GetRelationshipTypes.class)
+                .build();
+
+        this.driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());
+    }
+
+    @AfterAll
+    void closeDriver(){
+        this.driver.close();
+        this.embeddedDatabaseServer.close();
+    }
+
+    @AfterEach
+    void cleanDb(){
+        try(Session session = driver.session()) {
+            session.run("MATCH (n) DETACH DELETE n");
+        }
+    }
+
+    /**
+     * We should be getting the correct values when there is only one type in each direction
+     */
     @Test
-    public void shouldAllowIndexingAndFindingANode() throws Throwable
-    {
-        // In a try-block, to make sure you close the driver after the test
-        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withoutEncryption().toConfig() ) )
-        {
+    public void shouldReturnTheTypesWhenThereIsOneEachWay() {
+        final String expectedIncoming = "INCOMING";
+        final String expectedOutgoing = "OUTGOING";
 
-            // Given I've started Neo4j with the FullTextIndex procedure class
-            //       which my 'neo4j' rule above does.
-            Session session = driver.session();
+        // In a try-block, to make sure we close the session after the test
+        try(Session session = driver.session()) {
 
-            // And given I have a node in the database
-            long nodeId = session.run( "CREATE (p:User {name:'Brookreson'}) RETURN id(p)" )
-                    .single()
-                    .get( 0 ).asLong();
+            //Create our data in the database.
+            session.run(String.format("CREATE (:Person)-[:%s]->(:Movie {id:1})-[:%s]->(:Person)", expectedIncoming, expectedOutgoing));
 
-            // When I use the index procedure to index a node
-            session.run( "CALL example.index($id, ['name'])", parameters( "id", nodeId ) );
+            //Execute our procedure against it.
+            Record record = session.run("MATCH (u:Movie {id:1}) CALL example.getRelationshipTypes(u) YIELD outgoing, incoming RETURN outgoing, incoming").single();
 
-            // Then I can search for that node with lucene query syntax
-            StatementResult result = session.run( "CALL example.search('User', 'name:Brook*')" );
-            assertThat( result.single().get( "nodeId" ).asLong(), equalTo( nodeId ) );
+            //Get the incoming / outgoing relationships from the result
+            assertThat(record.get("incoming").asList(Value::asString)).containsOnly(expectedIncoming);
+            assertThat(record.get("outgoing").asList(Value::asString)).containsOnly(expectedOutgoing);
         }
     }
 }
