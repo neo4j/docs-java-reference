@@ -51,7 +51,7 @@ The test dependencies include _Neo4j Harness_ and _JUnit_.
 These can be used to write integration tests for procedures.
 The tests should start a Neo4j instance, load the procedure, and execute queries against it.
 
-.A template for testing a procedure that accesses Neo4j's full-text indexes from Cypher.
+.An example for testing a procedure that returns relationship types found in the graph.
 [source, java]
 ----
 package example;
