@@ -43,8 +43,10 @@ The correct way to signal an error from within a function is to throw `RuntimeEx
 ----
 package example;
 
+import java.util.List;
+
+import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
-import org.neo4j.procedure.Procedure;
 import org.neo4j.procedure.UserFunction;
 
 public class Join
@@ -72,37 +74,47 @@ Tests for user-defined functions are created in the same way as those for proced
 ----
 package example;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.neo4j.driver.v1.*;
-import org.neo4j.harness.junit.Neo4jRule;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Session;
+import org.neo4j.harness.Neo4j;
+import org.neo4j.harness.Neo4jBuilders;
 
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class JoinTest
-{
-    // This rule starts a Neo4j instance
-    @Rule
-    public Neo4jRule neo4j = new Neo4jRule()
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class JoinTest {
 
-            // This is the function to test
-            .withFunction( Join.class );
+    private Neo4j embeddedDatabaseServer;
+
+    @BeforeAll
+    void initializeNeo4j() {
+        this.embeddedDatabaseServer = Neo4jBuilders.newInProcessBuilder()
+                .withDisabledServer()
+                .withFunction(Join.class)
+                .build();
+    }
+
+    @AfterAll
+    void closeNeo4j() {
+        this.embeddedDatabaseServer.close();
+    }
 
     @Test
-    public void shouldAllowIndexingAndFindingANode() throws Throwable
-    {
-        // This is in a try-block, to make sure you close the driver after the test
-        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withEncryptionLevel( Config.EncryptionLevel.NONE ).toConfig() ) )
-        {
-            // Given
-            Session session = driver.session();
+    void joinsStrings() {
+        // This is in a try-block, to make sure we close the driver after the test
+        try(Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());
+            Session session = driver.session()) {
 
             // When
             String result = session.run( "RETURN example.join(['Hello', 'World']) AS result").single().get("result").asString();
 
             // Then
-            assertThat( result, equalTo( "Hello,World" ) );
+            assertThat( result).isEqualTo(( "Hello,World" ));
         }
     }
 }
