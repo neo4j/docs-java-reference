@@ -172,7 +172,6 @@ When connecting to a remote process or, in some cases, a local process running a
 
 The `<port>` value is configured by the `com.sun.management.jmxremote.port` property.
 ====
-<port> is value that is configured by `com.sun.management.jmxremote.port` property.
 
 Besides the MBeans, exposed by the JVM, you also see be default `neo4j.metrics` section in the MBeans tab.
 Under that, you have access to all the monitoring information exposed by Neo4j.
