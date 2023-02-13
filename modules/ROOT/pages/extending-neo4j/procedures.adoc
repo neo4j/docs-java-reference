@@ -56,7 +56,7 @@ These can be used to write integration tests for procedures.
 First, decide what the procedure should do, then write a test that proves that it does it right.
 Finally, write a procedure that passes the test.
 
-.An example for testing a procedure that returns relationship types found in the graph.
+.An example for testing a procedure that returns relationship types found in the graph using JUnit 5.
 [source, java]
 ----
 package example;
@@ -131,6 +131,11 @@ public class GetRelationshipTypesTests {
 }
 ----
 
+[NOTE]
+====
+The previous example uses JUnit 5.
+If you want to use JUnit 4 with Neo4j 4.x, an additional dependency on `junit-vintage-engine 5.7.1` needs to be included for JUnit 4 tests to work, as this dependency is no longer included in Neo4j Harness in 4.x.
+====
 
 == Define a procedure
 
