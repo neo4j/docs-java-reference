@@ -133,9 +133,12 @@ public class GetRelationshipTypesTests {
 
 [NOTE]
 ====
-The previous example uses JUnit 5.
-If you want to use JUnit 4 with Neo4j 4.x, an additional dependency on `junit-vintage-engine 5.7.1` needs to be included for JUnit 4 tests to work, as this dependency is no longer included in Neo4j Harness in 4.x.
+The previous example uses JUnit 5, which requires the use of `org.neo4j.harness.junit.extension.Neo4jExtension`.
+If you want to use JUnit 4 with Neo4j 4.x, use `org.neo4j.harness.junit.rule.Neo4jRule` instead.
 ====
+
+If you use junit4 -> 
+If you use junit5 -> org.neo4j.harness.junit.extension.Neo4jExtension
 
 == Define a procedure
 
