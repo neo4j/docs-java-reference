@@ -137,9 +137,6 @@ The previous example uses JUnit 5, which requires the use of `org.neo4j.harness.
 If you want to use JUnit 4 with Neo4j 4.x, use `org.neo4j.harness.junit.rule.Neo4jRule` instead.
 ====
 
-If you use junit4 -> 
-If you use junit5 -> org.neo4j.harness.junit.extension.Neo4jExtension
-
 == Define a procedure
 
 With the test in place, write a procedure that fulfills the expectations of the test.
