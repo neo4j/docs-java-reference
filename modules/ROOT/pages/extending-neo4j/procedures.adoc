@@ -56,7 +56,7 @@ These can be used to write integration tests for procedures.
 First, decide what the procedure should do, then write a test that proves that it does it right.
 Finally, write a procedure that passes the test.
 
-.An example for testing a procedure that returns relationship types found in the graph using JUnit 5.
+.An example using JUnit 5 for testing a procedure that returns relationship types found in the graph.
 [source, java]
 ----
 package example;
