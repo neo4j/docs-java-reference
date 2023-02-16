@@ -134,7 +134,7 @@ public class GetRelationshipTypesTests {
 [NOTE]
 ====
 The previous example uses JUnit 5, which requires the use of `org.neo4j.harness.junit.extension.Neo4jExtension`.
-If you want to use JUnit 4 with Neo4j 4.x, use `org.neo4j.harness.junit.rule.Neo4jRule` instead.
+If you want to use JUnit 4 with Neo4j 4.x or 5, use `org.neo4j.harness.junit.rule.Neo4jRule` instead.
 ====
 
 == Define a procedure
