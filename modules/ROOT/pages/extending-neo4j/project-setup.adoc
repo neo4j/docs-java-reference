@@ -196,6 +196,15 @@ Both credentials and configurations are passed through from options specified in
 
 Build a jar file from Maven and place this onto the Neo4j classpath.
 
+The jar must include a META-INF file to enable discovery of the providers with the path:
+
+[source, none]
+----
+/META_INF/services/com.neo4j.dbms.seeding.SeedProvider
+----
+
+It should be a plain text file with one line for each provider contained within the jar, the line should contain the fully qualified name of the provider class.
+
 [NOTE]
 ====
 If you need assistance with custom seed providers, please contact Professional Services.
