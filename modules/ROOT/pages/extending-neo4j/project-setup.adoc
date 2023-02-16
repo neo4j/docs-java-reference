@@ -196,8 +196,7 @@ Both credentials and configurations are passed through from options specified in
 
 Build a jar file from Maven and place this onto the Neo4j classpath.
 
-The jar must contain a META-INF file to enable discovery of the providers. 
-This file should the path:
+The jar must include a META-INF file to enable discovery of the providers with the path:
 
 [source, none]
 ----
