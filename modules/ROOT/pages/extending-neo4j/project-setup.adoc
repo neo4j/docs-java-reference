@@ -149,7 +149,7 @@ Include this dependency to build against the Neo4j-provided API:
 <dependency>
    <groupId>com.neo4j</groupId>
    <artifactId>neo4j-dbms-api</artifactId>
-   <version>${project.version}</version>
+   <version>${neo4j.version}</version>
    <scope>compile</scope>
 </dependency>
 ----
