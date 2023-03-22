@@ -158,7 +158,7 @@ The existence of the `+SET n._LOCK_+` statement before the read of the `n.prop` 
 [[transactions-locking]]
 == Default locking behavior
 
-* When adding, changing, or removing a property on a node or relationship a write lock is taken on the specific node or relationship.
+* When adding, changing, or removing a property on a node or relationship, a write lock is taken on the specific node or relationship.
 * When creating or deleting a node a write lock is taken for the specific node.
 * When creating or deleting a relationship a write lock is taken on the specific relationship and both its nodes.
 
