@@ -106,8 +106,12 @@ SET n += {prop: n.prop + 1}
 ----
 ====
 
+<<<<<<< HEAD
 Due to the complexity of determining such a dependency in the general case, Cypher does not cover all cases.
 If you run one of the following queries concurrently 100 times, the final value of `n.prop` will most probably be less than 100.
+=======
+Due to the complexity of determining such a dependency in the general case, Cypher does not cover all cases. If we execute one of the following queries conurrently 100 times, the final value of `n.prop` will most probably be less than 100.
+>>>>>>> 36a90a5... Clarify documentation around lost Cypher updates
 
 .Complex Cypher
 ====
