@@ -82,9 +82,7 @@ Due to the limitations of the _read-committed isolation level_, the increments m
 If there is a direct dependency, Cypher automatically acquires a write lock before reading.
 A direct dependency is when the right-hand side of `SET` has a dependent property read in the expression or the value of a key-value pair in a literal map.
 
-For example, if you run the following query by one hundred concurrent clients, it is very likely not to increment the property `n.prop` to 100, unless a write lock is acquired before reading the property value.
-This is because all queries read the value of `n.prop` within their own transaction, and cannot see the incremented value from any other transaction that has not yet been committed.
-In the worst case scenario, the final value would be as low as 1 if all threads perform the read before any has committed their transaction.
+For example, if you run one of the following queries by one hundred concurrent clients, it will increment the property `n.prop` to 100 because Cypher will automatically acquire a write lock.
 
 .Cypher can acquire a write lock
 ====
@@ -108,7 +106,7 @@ SET n += {prop: n.prop + 1}
 ----
 ====
 
-Due to the complexity of determining such a dependency in the general case, Cypher does not cover any of the following example cases:
+Due to the complexity of determining such a dependency in the general case, Cypher does not cover all cases. If we execute one of the following queries conurrently 100 times, the final value of `n.prop` will most probably be less than 100.
 
 .Complex Cypher
 ====
