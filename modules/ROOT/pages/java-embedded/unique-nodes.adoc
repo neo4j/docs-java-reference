@@ -6,7 +6,27 @@
 
 This describes how to ensure the uniqueness of a property when creating nodes.
 
-For an overview of unique nodes, see xref:transaction-management.adoc#transactions-unique-nodes[Transaction management -> Creating unique nodes].
+[[transactions-unique-nodes]]
+== Creating unique nodes
+
+In many use cases, a certain level of uniqueness is desired among entities.
+For example, only one user with a certain email address may exist in a system.
+If multiple concurrent threads naively try to create the user, duplicates will be created.
+
+The following are the main strategies for ensuring uniqueness, and they all work across cluster and single-instance deployments.
+
+
+[[transactions-unique-nodes-singlethread]]
+=== Single thread
+
+By using a single thread, no two threads even try to create a particular entity simultaneously.
+In a cluster, an external single-threaded client can perform the operations.
+
+
+[[transactions-get-or-create]]
+=== Get or create
+
+Defining a uniqueness constraint and using the Cypher `MERGE` clause is the most efficient way to _get or create_ a unique node.
 
 [TIP]
 ====
@@ -61,4 +81,6 @@ Using the _lock node_ pattern is difficult to do correctly and it has worse perf
 You might also be tempted to use Java synchronization for pessimistic locking, but this is dangerous.
 By mixing locks in Neo4j and the Java runtime, it is possible to produce deadlocks that are not detectable by Neo4j.
 As long as all locking is done by Neo4j, all deadlocks will be detected and avoided.
+
+For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/locks-deadlocks.adoc#_locks[Operations Manual -> Locks and deadlocks^].
 
