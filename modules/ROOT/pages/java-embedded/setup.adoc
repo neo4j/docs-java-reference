@@ -172,7 +172,6 @@ var initialMembers = List.of(
 );
 
 var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
-    .setConfig( GraphDatabaseSettings.mode, CORE )
     .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
     .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
     .setConfig( CausalClusteringSettings.discovery_type, DiscoveryType.LIST )
