@@ -174,7 +174,7 @@ var initialMembers = List.of(
 var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
     .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
     .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
-    .setConfig( CausalClusteringSettings.discovery_type, DiscoveryType.LIST )
+    .setConfig( DiscoverySettings.discovery_type, DiscoveryType.LIST )
     .setConfig( CausalClusteringSettings.initial_discovery_members, initialMembers )
     .setConfig( BoltConnector.enabled, true )
     .setConfig( HttpConnector.enabled, true )
