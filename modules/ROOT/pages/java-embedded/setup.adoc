@@ -136,13 +136,12 @@ For maintainability purposes, you can define your embedded DBMS configuration in
 
 [source, properties]
 ----
-dbms.mode=CORE
-dbms.default_advertised_address=core01.example.com
-dbms.default_listen_address=0.0.0.0
-causal_clustering.discovery_type=LIST
-causal_clustering.initial_discovery_members=core01.example.com,core02.example.com,core03.example.com
-dbms.connector.bolt.enabled=true
-dbms.connector.http.enabled=true
+server.default_advertised_address=core01.example.com
+server.default_listen_address=0.0.0.0
+dbms.cluster.discovery.type=LIST
+dbms.cluster.discovery.endpoints=core01.example.com,core02.example.com,core03.example.com
+server.bolt.enabled=true
+server.http.enabled=true
 ----
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingNeo4jConf.java
@@ -172,11 +171,10 @@ var initialMembers = List.of(
 );
 
 var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
-    .setConfig( GraphDatabaseSettings.mode, CORE )
     .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
     .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
-    .setConfig( CausalClusteringSettings.discovery_type, DiscoveryType.LIST )
-    .setConfig( CausalClusteringSettings.initial_discovery_members, initialMembers )
+    .setConfig( DiscoverySettings.discovery_type, DiscoveryType.LIST )
+    .setConfig( DiscoverySettings.discovery_endpoints, initialMembers )
     .setConfig( BoltConnector.enabled, true )
     .setConfig( HttpConnector.enabled, true )
     .build();
