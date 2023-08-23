@@ -154,8 +154,8 @@ Particular things to note:
 *** `DBMS` -- This procedure performs system operations such as user management and query management.
     A procedure with this mode is not able to read or write graph data.
 ** `eager` is a boolean setting defaulting to `false`.
-   If it is set to `true`, the Cypher planner plans an extra `eager` operation before calling the procedure.
-   This is useful in cases where the procedure makes changes to the database in a way that could interact with the operations preceding the procedure.
+   If it is set to `true`, the Cypher planner plans an extra `eager` operation before and after calling the procedure.
+   This is useful in cases where the procedure makes changes to the database in a way that could interact with the operations preceding or following the procedure.
    For example:
 +
 [source, cypher]
