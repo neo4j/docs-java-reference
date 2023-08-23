@@ -11,7 +11,7 @@ To specify the parameters, you must add a line for the additional Java arguments
 
 [source, properties]
 ----
-dbms.jvm.additional=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+server.jvm.additional=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 ----
 
 This configuration starts Neo4j, ready for remote debugging attachment, at `localhost`` and port `5005`.
