@@ -175,6 +175,10 @@ Which will output:
 Hello, brave Neo4j World!
 ----
 
+[TIP]
+====
+For more information on how to view your graph in Neo4j Browser, see https://neo4j.com/docs/browser-manual/current/deployment-modes/dedicated-web-server/[Browser Manual -> Dedicated web server].
+====
 
 == Removing the data
 
