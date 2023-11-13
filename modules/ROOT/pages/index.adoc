@@ -38,3 +38,6 @@ _Who should read this?_
 
 The Java Reference is written for the advanced Java developer who is extending Neo4j's functionality, or embedding Neo4j in their own software.
 
+_Disclaimer_
+
+This guide describes how to make changes to server-sided and deployment functionalities and has no connection with the link:https://neo4j.com/docs/java-manual/current/[Neo4j Java Driver].
