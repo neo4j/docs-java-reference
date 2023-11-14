@@ -3,7 +3,6 @@
 :org-neo4j-dbms-DatabaseManagementService: {neo4j-javadocs-base-uri}/org/neo4j/dbms/api/DatabaseManagementService.html
 :org-neo4j-graphdb-GraphDatabaseService: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/GraphDatabaseService.html
 :com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/EnterpriseDatabaseManagementServiceBuilder.html
-:com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder: {neo4j-javadocs-base-uri}/com/neo4j/dbms/api/ClusterDatabaseManagementServiceBuilder.html
 
 [[java-embedded-setup]]
 = Embedding Neo4j in your Java application
@@ -126,9 +125,8 @@ registerShutdownHook( managementService );
 ----
 
 
-If you are using the Enterprise Edition of Neo4j in embedded standalone mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
-
-If you are intending to operate embedded clusters, then you should use the link:{com-neo4j-dbms-api-ClusterDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.ClusterDatabaseManagementServiceBuilder`^] with the appropriate configuration.
+If you are using the Enterprise Edition of Neo4j in embedded mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
+If you intend to operate embedded clusters, you need to provide the appropriate configuration to the instances you create (for example ports and discovery endpoints).
 For maintainability purposes, you can define your embedded DBMS configuration in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/neo4j-conf[_neo4j.conf_] file as follows:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
@@ -149,8 +147,8 @@ server.http.enabled=true
 
 [source, java]
 ----
-var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
-    .loadPropertiesFromFile( "/path/to/neo4j.conf" )
+var managementService = new EnterpriseDatabaseManagementServiceBuilder( homeDirectory )
+    .loadPropertiesFromFile( Path.of( "/path/to/neo4j.conf" ) )
     .build();
 ----
 
@@ -170,11 +168,12 @@ var initialMembers = List.of(
     new SocketAddress( "core03.example.com" )
 );
 
-var managementService = new ClusterDatabaseManagementServiceBuilder( homeDirectory )
+var managementService = new EnterpriseDatabaseManagementServiceBuilder( homeDirectory )
     .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
     .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
-    .setConfig( DiscoverySettings.discovery_type, DiscoveryType.LIST )
-    .setConfig( DiscoverySettings.discovery_endpoints, initialMembers )
+    .setConfig( ClusterSettings.discovery_type, DiscoveryType.LIST )
+    .setConfig( ClusterSettings.discovery_endpoints, initialMembers )
+    .setConfig( EnterpriseEditionSettings.initial_default_primaries_count, 3 )
     .setConfig( BoltConnector.enabled, true )
     .setConfig( HttpConnector.enabled, true )
     .build();
@@ -234,7 +233,7 @@ To start Neo4j with configuration settings, a Neo4j properties file can be loade
 [source, java]
 ----
 DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( directory )
-    .loadPropertiesFromFile( pathToConfig + "neo4j.conf" ).build();
+    .loadPropertiesFromFile( Path.of( pathToConfig + "neo4j.conf" ) ).build();
 GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
 ----
 
@@ -245,8 +244,8 @@ Configuration settings can also be applied programmatically, as follows:
 
 [source, java]
 ----
-DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( directory)
-    .setConfig( GraphDatabaseSettings.pagecache_memory, "512M" )
+DatabaseManagementService managementService = new DatabaseManagementServiceBuilder( directory )
+    .setConfig( GraphDatabaseSettings.pagecache_memory, ByteUnit.mebiBytes( 512 ) )
     .setConfig( GraphDatabaseSettings.transaction_timeout, Duration.ofSeconds( 60 ) )
     .setConfig( GraphDatabaseSettings.preallocate_logical_logs, true ).build();
 GraphDatabaseService graphDb = managementService.database( DEFAULT_DATABASE_NAME );
