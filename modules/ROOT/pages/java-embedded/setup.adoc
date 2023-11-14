@@ -126,7 +126,7 @@ registerShutdownHook( managementService );
 
 
 If you are using the Enterprise Edition of Neo4j in embedded mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
-If you are intending to operate embedded clusters, you need to provide the appropriate configuration to the instances you create (for example ports and discovery endpoints).
+If you intend to operate embedded clusters, you need to provide the appropriate configuration to the instances you create (for example ports and discovery endpoints).
 For maintainability purposes, you can define your embedded DBMS configuration in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/neo4j-conf[_neo4j.conf_] file as follows:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
