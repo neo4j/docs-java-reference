@@ -118,8 +118,8 @@ With this setup, you can connect to JMX monitoring of the Neo4j server using `<I
 The file-based password authentication stores the password in clear text and is intended only for development use.
 ====
 
-You can set your password for JMX remote access and save it in the _conf/jmx.password_ configuration file.
-Note that on Unix-based systems, the _jmx.password_ file needs to be owned by the user that runs the server, and has permissions set to `0600`.
+You can set your password for JMX remote access and save it in the _conf/jmx.password_ (Unix) and _c:\jmx.password_ (Windows) configuration file. 
+Note that the _jmx.password_ file needs to be owned by the user that runs the server and has permissions set to `0600`.
 
 [source, properties]
 ----
@@ -139,6 +139,14 @@ Finally, configure JMX to use the completed password and access files by adding 
 ----
 server.jvm.additional=-Dcom.sun.management.jmxremote.password.file=/absolute/path/to/conf/jmx.password
 server.jvm.additional=-Dcom.sun.management.jmxremote.access.file=/absolute/path/to/conf/jmx.access
+----
+
+On Windows, you need to change `/` to `\`:
+
+[source, properties]
+----
+dbms.jvm.additional=-Dcom.sun.management.jmxremote.password.file=\absolute\path\to\conf\jmx.password
+dbms.jvm.additional=-Dcom.sun.management.jmxremote.access.file=\absolute\path\to\conf\jmx.access
 ----
 
 With this setup, you can connect to JMX monitoring of the Neo4j server using `<IP-OF-SERVER>:3637`, with the username `monitor`, and the password `password_to_be_changed`.
