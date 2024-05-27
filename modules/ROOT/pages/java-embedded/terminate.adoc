@@ -9,7 +9,7 @@ You can terminate (abort) a long-running transaction from another thread.
 [TIP]
 ====
 The source code for the examples can befound at:
-https://github.com/neo4j/neo4j-documentation/blob/5.0/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java[TerminateTransactions.java^]
+https://github.com/neo4j/neo4j-documentation/blob/{neo4j-version}/embedded-examples/src/main/java/org/neo4j/examples/TerminateTransactions.java[TerminateTransactions.java^]
 ====
 
 First, start the database server:
