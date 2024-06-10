@@ -230,7 +230,7 @@ Keep in mind that breadth-first traversals have a higher memory overhead than de
 
 The following example shows the result of `BranchOrderingPolicy` without any extra filter:
 
-image::traversal_order_example_graph.png[align="center", role="middle", width=200]
+image::traversal-order-example-graph.png[align="center", role="middle", width=200]
 
 [cols="1,1"]
 |===
