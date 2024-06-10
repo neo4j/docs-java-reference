@@ -25,24 +25,24 @@ Images.
 ![](hello-world.png)
 
 
-`jconsole_beans.png`
+`jconsole-beans.png`
 
-![](jconsole_beans.png)
-
-
-`jconsole_beans1.png`
-
-![](jconsole_beans.png)
+![](jconsole-beans.png)
 
 
-`jconsole_connect.png`
+`jconsole-beans1.png`
 
-![](jconsole_beans.png)
+![](jconsole-beans.png)
 
 
-`jconsole_connect1.png`
+`jconsole-connect.png`
 
-![](jconsole_connect1.png)
+![](jconsole-beans.png)
+
+
+`jconsole-connect1.png`
+
+![](jconsole-connect1.png)
 
 
 `play.png`

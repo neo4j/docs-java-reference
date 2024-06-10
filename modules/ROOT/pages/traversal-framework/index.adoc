@@ -29,7 +29,7 @@ image::graphdb-traversal-description.svg[role="middle"]
 
 The Traversal Framework can be used xref:java-embedded/traversal.adoc[embedded in Java applications].
 It can also be used when extending Neo4j with a xref:/extending-neo4j/procedures.adoc[User-defined Procedure].
-For an example, see xref:traversal-framework/traversal_framework_example.adoc#traversal-in-a-procedure-example[User-defined procedure with a Traversal Framework].
+For an example, see xref:traversal-framework/traversal-framework-example.adoc#traversal-in-a-procedure-example[User-defined procedure with a Traversal Framework].
 
 [[traversal-vs-cypher]]
 == Traversal Framework vs Cypher
@@ -41,11 +41,11 @@ Some of the advantages of using the Traversal Framework over Cypher include:
 
 * The Traversal Framework allows the use of any desired Java library to help in the evaluation of the traversal.
 * It allows customized pruning during the traversal of a path, which could potentially improve the performance of a traversal.
-See xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-evaluator[Evaluator] for more information.
+See xref:/traversal-framework/traversal-framework-java-api.adoc#traversal-java-api-evaluator[Evaluator] for more information.
 * With Cypher, it is not possible to specify the order in which paths are expanded (e.g. depth-first).
-However, with the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-branchselector[order of paths traversed].
+However, with the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal-framework-java-api.adoc#traversal-java-api-branchselector[order of paths traversed].
 * With Cypher, relationships are only traversed when `RELATIONSHIP_GLOBAL` uniqueness is specified. 
-By using the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[uniqueness constraints on the path traversed].
+By using the Traversal Framework, it is possible to specify the xref:/traversal-framework/traversal-framework-java-api.adoc#traversal-java-api-uniqueness[uniqueness constraints on the path traversed].
 
 [WARNING]
 ====

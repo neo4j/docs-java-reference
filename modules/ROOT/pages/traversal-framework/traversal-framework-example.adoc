@@ -8,7 +8,7 @@
 The following are some examples of how you can use the Traversal Framework.
 The source code for the examples can be found in link:https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/TraversalExample.java[`TraversalExample.java`^].
 
-image::traversal_framework_example.svg[role="middle"]
+image::traversal-framework-example.svg[role="middle"]
 
 This graph illustrates a small group of friends with the definition of `RelationshipType`:
 
@@ -119,7 +119,7 @@ This gives the following output:
 (0)-[KNOWS,0]->(2)<-[KNOWS,2]-(3)<-[KNOWS,3]-(4)<-[KNOWS,4]-(1)
 ----
 
-For other useful evaluators, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-evaluator[Using Evaluators].
+For other useful evaluators, see xref:traversal-framework/traversal-framework-java-api.adoc#traversal-java-api-evaluator[Using Evaluators].
 
 The `Traverser` also has a `nodes()` method, which returns an `Iterable` of all the nodes in the paths:
 
