@@ -22,7 +22,7 @@ In the accepted path `(1)-[:A]->(2)-[:A]->(3)-[:B]->(4)-[:B]->(5)`, the traverse
 ====
 The `Uniqueness` is shared between both traversals, which means that there will be no results if the `Uniqueness` is set to `Uniqueness.NODE_GLOBAL` (which is the default) as both traversals need to reach the same node to cause a collision.
 Therefore, when using `BidirectionalTraversalDescription`, always set the `Uniqueness` manually.
-For more information on the available options, see xref:traversal-framework/traversal_framework_java_api.adoc#traversal-java-api-uniqueness[`Uniqueness` options].
+For more information on the available options, see xref:traversal-framework/traversal-framework-java-api.adoc#traversal-java-api-uniqueness[`Uniqueness` options].
 ====
 
 == Defining the bidirectional traverser

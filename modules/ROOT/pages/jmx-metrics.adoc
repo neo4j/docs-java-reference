@@ -172,7 +172,7 @@ $JAVA_HOME/bin/jconsole
 Connect to the process running your Neo4j database instance:
 
 .Connecting JConsole to the Neo4j Java process
-image::jconsole_connect1.png[alt="Connecting with JConsole", width=300]
+image::jconsole-connect1.png[alt="Connecting with JConsole", width=300]
 
 [NOTE]
 ====
@@ -187,5 +187,5 @@ Under that, you have access to all the monitoring information exposed by Neo4j.
 For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html#GUID-805517EC-2D33-4D61-81D8-4D0FA770D1B8[the JMX documention^].
 
 .Neo4j MBeans view
-image::jconsole_beans1.png[alt="Neo4j MBeans view", width=600]
+image::jconsole-beans1.png[alt="Neo4j MBeans view", width=600]
 
