@@ -267,7 +267,7 @@ public class MyProcedures {
         final var tracker = memory.newTracker();
 
         // Register the allocation of the long array below
-        tracker.allocateHeap(memory.heapEstimator().sizeOfIntArray(size));
+        tracker.allocateHeap(memory.heapEstimator().sizeOfLongArray(size));
         // The actual allocation
         final var result = new long[size];
 
