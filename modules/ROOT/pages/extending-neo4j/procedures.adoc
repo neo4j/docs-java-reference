@@ -265,10 +265,9 @@ public class MyProcedures {
     @Procedure("org.example.memoryHungryRange")
     public Stream<Output> memoryHungryRange(@Name("size") int size) {
         final var tracker = memory.newTracker();
-        final var shallowSizeOfLong = memory.heapEstimator().shallowSizeOfInstance(long.class);
 
         // Register the allocation of the long array below
-        tracker.allocateHeap(size * shallowSizeOfLong);
+        tracker.allocateHeap(memory.heapEstimator().sizeOfIntArray(size));
         // The actual allocation
         final var result = new long[size];
 
