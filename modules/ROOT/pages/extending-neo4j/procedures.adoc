@@ -221,7 +221,7 @@ For example (see javadocs for a full reference):
 * `HeapEstimator heapEstimator()`,
   used to estimate the heap size of classes and instances.
 * `HeapTrackingCollectionFactory collections()`,
-  lets you create collections that have build-in memory tracking of their internal structure.
+  lets you create collections that have built-in memory tracking of their internal structure.
 
 It's usually difficult and time-consuming to implement memory resource tracking.
 Here's a few considerations and caveats that are worth keeping in mind:
