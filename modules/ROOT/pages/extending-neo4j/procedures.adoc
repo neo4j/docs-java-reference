@@ -222,7 +222,7 @@ It's usually difficult and time-consuming to implement memory resource tracking.
 These are a few considerations and caveats that are worth keeping in mind:
 
 - Limit the scope of the memory management.
-  Focus only on parts that can grow significantly in memory, and ignore minor underestimation.
+  Focus only on parts that can grow significantly in memory and ignore minor underestimation.
 - Beware of overestimation by registering allocations of the same instance multiple times.
   It's up to you to add reference counting or other mechanisms to avoid this if it's an issue for you.
 - It's common to not know the size of an instance before it has been allocated.
