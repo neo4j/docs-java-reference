@@ -206,9 +206,7 @@ The memory resource tracking API for the procedure framework is available for pr
 Future versions of Neo4j might contain breaking changes to this API.
 ====
 
-If your procedure allocates significant amounts of heap memory,
-you can register allocations to count towards the
-link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[configured transaction limits].
+If your procedure allocates significant amounts of heap memory, you can register allocations to count towards the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[configured transaction limits].
 This allows you to avoid `OutOfMemory` errors that cause database restarts.
 Memory allocations will also show up in query profiles.
 
