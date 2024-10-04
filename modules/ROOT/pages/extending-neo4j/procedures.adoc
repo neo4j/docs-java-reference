@@ -232,7 +232,7 @@ Here's a few considerations and caveats that are worth keeping in mind:
   It's up to you to add reference counting or other mechanisms to avoid this if it's an issue for you.
 - It's common to not know the size of an instance before it has been allocated.
   This makes you register allocations after they have already been made.
-  The memory tracker implementation try to guard against this
+  The memory tracker implementation tries to guard against this
   by always pre-registering a certain amount of memory in the internal memory pools.
 - It's cumbersome in Java to know when an instance has been garbage collected.
   Typically, you will register the release of memory at the point when it's possible for that memory to be garbage collected.
