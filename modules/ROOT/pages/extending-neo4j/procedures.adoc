@@ -202,8 +202,8 @@ Read more about this config setting in link:{neo4j-docs-base-uri}/operations-man
 
 [NOTE]
 ====
-The memory resource tracking API for procedure framework is available for preview.
-Future versions of neo4j might contain breaking changes to this API.
+The memory resource tracking API for the procedure framework is available for preview.
+Future versions of Neo4j might contain breaking changes to this API.
 ====
 
 If your procedure allocates significant amounts of heap memory,
