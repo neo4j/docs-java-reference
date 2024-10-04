@@ -231,7 +231,7 @@ You can add reference counting or other mechanisms to avoid overestimation if th
   by always pre-registering a certain amount of memory in the internal memory pools.
 - It's cumbersome in Java to know when an instance has been garbage-collected.
   Typically, you register the release of memory at the point when it's possible for that memory to be garbage-collected.
-  To account for this, memory trackers might internally choose not to register the release of memory instantaneously.
+  To account for this, memory trackers may internally choose not to register the release of memory instantaneously.
 - Testing memory resource tracking is hard.
   One approach is to use a third party library, like jamm (Java Agent for Memory Measurements),
   and assert that the estimates are close enough for some given input.
