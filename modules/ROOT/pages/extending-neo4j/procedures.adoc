@@ -212,7 +212,7 @@ link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-c
 This allows you to avoid `OutOfMemory` errors that cause database restarts.
 Memory allocations will also show up in query profiles.
 
-To do this you need to inject a `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure class.
+To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure class.
 `ProcedureMemory` has various methods to allow you to register allocations.
 For example (see javadocs for a full reference):
 
