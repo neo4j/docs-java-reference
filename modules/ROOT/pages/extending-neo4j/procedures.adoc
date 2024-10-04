@@ -208,7 +208,7 @@ Future versions of Neo4j might contain breaking changes to this API.
 
 If your procedure allocates significant amounts of heap memory, you can register allocations to count towards the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[configured transaction limits].
 This allows you to avoid `OutOfMemory` errors that cause database restarts.
-Memory allocations will also show up in query profiles.
+Memory allocations also show up in query profiles.
 
 To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure class.
 `ProcedureMemory` has various methods to allow you to register allocations.
