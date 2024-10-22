@@ -206,11 +206,11 @@ The memory resource tracking API for the procedure framework is available for pr
 Future versions of Neo4j might contain breaking changes to this API.
 ====
 
-If your procedure allocates significant amounts of heap memory, you can register allocations to count towards the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[configured transaction limits].
+If your procedure or function allocates significant amounts of heap memory, you can register allocations to count towards the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[configured transaction limits].
 This allows you to avoid `OutOfMemory` errors that cause database restarts.
 Memory allocations also show up in query profiles.
 
-To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure class.
+To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure/function class.
 `ProcedureMemory` has various methods to allow you to register allocations.
 For example (see javadocs for a full reference):
 
@@ -224,7 +224,7 @@ These are a few considerations and caveats that are worth keeping in mind:
 - Limit the scope of the memory management.
   Focus only on parts that can grow significantly in memory and ignore minor underestimation.
 - Beware of overestimation by registering allocations of the same instance multiple times.
-You can add reference counting or other mechanisms to avoid overestimation if that is an issue for you.
+  You can add reference counting or other mechanisms to avoid overestimation if that is an issue for you.
 - It's common to not know the size of an instance before it has been allocated.
   This makes you register allocations after they have already been made.
   The memory tracker implementation tries to prevent this by always pre-registering a certain amount of memory in the internal memory pools.
@@ -232,7 +232,7 @@ You can add reference counting or other mechanisms to avoid overestimation if th
   Typically, you register the release of memory at the point when it's possible for that memory to be garbage-collected.
   To account for this, memory trackers may internally choose not to register the release of memory instantaneously.
 - Testing memory resource tracking can be difficult.
-  One approach is to use a third-party library, like JAMM(Java Agent for Memory Measurements), and assert that the estimates are close enough for some given input.
+  One approach is to use a third-party library, like JAMM (Java Agent for Memory Measurements), and assert that the estimates are close enough for some given input.
 
 
 .A basic example of memory resource tracking in user defined procedures.
