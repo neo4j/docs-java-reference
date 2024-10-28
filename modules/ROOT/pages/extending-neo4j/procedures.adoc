@@ -216,7 +216,7 @@ For example (see javadocs for a full reference):
 
 * `ProcedureMemoryTracker newTracker()` creates a new memory resource tracker that is bound to the current transaction.
 * `HeapEstimator heapEstimator()` estimates the heap size of classes and instances.
-* `HeapTrackingCollectionFactory collections()`  lets you create collections that have built-in memory tracking of their internal structure.
+* `HeapTrackingCollectionFactory collections()` lets you create collections that have built-in memory tracking of their internal structure.
 
 It's usually difficult and time-consuming to implement memory resource tracking.
 These are a few considerations and caveats that are worth keeping in mind:
