@@ -190,9 +190,86 @@ The classes that can be injected are:
 * `Transaction`
 //* `SecurityContext`
 //* `ProcedureTransaction`
+//* `ProcedureMemory` Candidate for public API but not stable yet
 
 All of the above classes are considered safe and future-proof and do not compromise the security of the database.
 Several unsupported (restricted) classes can also be injected and can be changed with little or no notice.
 Procedures written to use these restricted APIs are not loaded by default, and you need to use the `dbms.security.procedures.unrestricted` to load unsafe procedures.
 Read more about this config setting in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/security/securing-extensions[Operations Manual -> Securing extensions].
 
+[[memory-resource-tracking]]
+== Memory Resource Tracking
+
+[NOTE]
+====
+The memory resource tracking API for the procedure framework is available for preview.
+Future versions of Neo4j might contain breaking changes to this API.
+====
+
+If your procedure or function allocates significant amounts of heap memory, you can register allocations to count towards the configured transaction limits, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[Operations Manual -> Limit transaction memory usage] for more information.
+This allows you to avoid `OutOfMemory` errors that cause database restarts.
+Memory allocations also show up in query profiles.
+
+To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure/function class.
+`ProcedureMemory` has various methods to allow you to register allocations.
+For example (see javadocs for a full reference):
+
+* `ProcedureMemoryTracker newTracker()` creates a new memory resource tracker that is bound to the current transaction.
+* `HeapEstimator heapEstimator()` estimates the heap size of classes and instances.
+* `HeapTrackingCollectionFactory collections()` lets you create collections that have built-in memory tracking of their internal structure.
+
+It's usually difficult and time-consuming to implement memory resource tracking.
+These are a few considerations and caveats that are worth keeping in mind:
+
+- Limit the scope of the memory management.
+  Focus only on parts that can grow significantly in memory and ignore minor underestimation.
+- Beware of overestimation by registering allocations of the same instance multiple times.
+  You can add reference counting or other mechanisms to avoid overestimation if that is a concern.
+- It's common not to know the size of an instance before it has been allocated, which may lead you to register allocations after they have already been made.
+  The memory tracker implementation tries to prevent this by always pre-registering a certain amount of memory in the internal memory pools.
+- It's cumbersome in Java to know when an instance has been garbage-collected.
+  Typically, you register the release of memory at the point when it's possible for that memory to be garbage-collected.
+  To account for this, memory trackers may internally choose not to register the release of memory instantaneously.
+- Testing memory resource tracking can be difficult.
+  One approach is to use a third-party library, like JAMM (Java Agent for Memory Measurements), and assert that the estimates are close enough for some given input.
+
+
+.A basic example of memory resource tracking in user defined procedures.
+[source, java]
+----
+package org.example;
+
+import org.neo4j.procedure.Context;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.Procedure;
+import org.neo4j.procedure.memory.ProcedureMemory;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+public class MyProcedures {
+
+    @Context
+    public ProcedureMemory memory;
+
+    record Output(Long value) {}
+
+    @Procedure("org.example.memoryHungryRange")
+    public Stream<Output> memoryHungryRange(@Name("size") int size) {
+        final var tracker = memory.newTracker();
+
+        // Register the allocation of the long array below
+        tracker.allocateHeap(memory.heapEstimator().sizeOfLongArray(size));
+        // The actual allocation
+        final var result = new long[size];
+
+        for (int i = 0; i < size; i++) result[i] = i;
+
+        return Arrays.stream(result)
+                .mapToObj(Output::new)
+                // Release all registered allocations when the stream is closed
+                .onClose(tracker::close);
+    }
+}
+
+----
