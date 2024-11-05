@@ -357,20 +357,20 @@ class MaxWeightPathExpander implements PathExpander<Double>
     }
 
     @Override
-    public Iterable<Relationship> expand( Path path, BranchState<Double> branchState )
+    public ResourceIterable<Relationship> expand( Path path, BranchState<Double> branchState )
     {
         if (path.lastRelationship() != null) {
             branchState.setState( branchState.getState() + (double) path.lastRelationship().getProperty( "weight" ) );
         }
 
-        Iterable<Relationship> relationships = path.endNode().getRelationships( Direction.OUTGOING );
+        ResourceIterable<Relationship> relationships = path.endNode().getRelationships( Direction.OUTGOING );
         ArrayList<Relationship> filtered = new ArrayList<>();
         for ( Relationship relationship : relationships ) {
             if ( branchState.getState() + (double) relationship.getProperty( "weight" ) <= maxWeight ) {
                 filtered.add(relationship);
             }
         }
-        return filtered;
+        return Iterables.asResourceIterable(filtered);
     }
 
     @Override
