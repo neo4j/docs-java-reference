@@ -102,7 +102,7 @@ repositories {
    mavenCentral()
 }
 dependencies {
-   compile "org.neo4j:neo4j:$\{neo4jVersion}"
+   implementation "org.neo4j:neo4j:$\{neo4jVersion}"
 }
 ----
 
