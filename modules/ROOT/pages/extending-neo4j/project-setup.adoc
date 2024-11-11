@@ -156,6 +156,59 @@ Include this dependency to build against the Neo4j-provided API:
 
 === Implement Java class
 
+==== `DatabaseSeedProvider` label:new[Introduced in 5.26]
+
+The `DatabaseSeedProvider` was introduced in 5.26 in favour of `SeedProvider` which is now deprecated.
+
+[source, java]
+----
+import com.neo4j.dbms.seeding.DatabaseSeedProvider;
+
+public class CustomDatabaseSeedProvider implements DatabaseSeedProvider {
+
+  @Override
+	public boolean matches(String uri) {
+   		// Return true if uri is supported by this
+      // provider.
+  }
+
+  @Override
+  public InputStream stream(
+          String uri,
+          Map<String, Object> options) throws IOException {
+          // This method should obtain an input stream in an
+          // implementation specific way.
+  }
+
+  @Override
+  public void inject(Dependencies dependencies) {
+      // This method should provide implementation 
+      // specific dependencies to the provider.
+  }
+
+  public static class CustomDependencies implements Dependencies {
+        @Override
+        public <T> T resolveDependency(Class<T> type) {
+            // This method should resolve dependencies 
+            // required by the provider.
+        }
+    }
+}
+----
+
+To implement the custom database seed provider, you must implement three methods on the top-level `DatabaseSeedProvider` interface.
+One method to match the URIs it can manage, one to stream backups or dumps from the given URI, and one to inject dependencies in the provider.
+Additionally you must implement one method on the nested `Dependencies` interface, to resolve any dependencies required by your seed provider implementation.
+
+Typically, the match method uses the URI scheme (the part specified before the first colon) to determine whether it can support the given URI or not.
+For example, `file`, `http`, `https` etc.
+
+The stream method should implement a scheme-specific way to obtain an input stream for the backup or dump.
+
+Implementation specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
+
+==== `SeedProvider` label:deprecated[Deprecated in 5.26]
+
 [source, java]
 ----
 import com.neo4j.dbms.seeding.ParsedSeedProviderConfig;
