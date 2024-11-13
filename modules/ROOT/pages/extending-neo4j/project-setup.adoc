@@ -198,7 +198,10 @@ public class CustomDatabaseSeedProvider implements DatabaseSeedProvider {
 ----
 
 To implement the custom database seed provider, you must implement three methods on the top-level `DatabaseSeedProvider` interface.
-One method to match the URIs it can manage, one to stream backups or dumps from the given URI, and one to inject dependencies in the provider.
+* A method to match the URIs that the provider can manage.
+* A method to stream backups or dumps from a specified URI.
+* A method to inject dependencies in the provider.
+
 Additionally, you must implement a method on the nested `Dependencies` interface to resolve any dependencies required by your seed provider implementation.
 
 Typically, the match method uses the URI scheme (the part specified before the first colon) to determine whether it can support the given URI or not.
