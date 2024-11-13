@@ -206,7 +206,7 @@ For example, `file`, `http`, `https` etc.
 
 The stream method should implement a scheme-specific way to obtain an input stream for the backup or dump.
 
-Implementation specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
+Implementation-specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
 
 [role=label--deprecated-5.26]
 ==== `SeedProvider`
