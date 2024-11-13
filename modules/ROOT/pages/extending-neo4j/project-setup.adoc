@@ -156,7 +156,8 @@ Include this dependency to build against the Neo4j-provided API:
 
 === Implement Java class
 
-==== `DatabaseSeedProvider` label:new[Introduced in 5.26]
+[role=label--new-5.26]
+==== `DatabaseSeedProvider`
 
 The `DatabaseSeedProvider` was introduced in 5.26 in favour of `SeedProvider` which is now deprecated.
 
