@@ -208,7 +208,8 @@ The stream method should implement a scheme-specific way to obtain an input stre
 
 Implementation specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
 
-==== `SeedProvider` label:deprecated[Deprecated in 5.26]
+[role=label--deprecated-5.26]
+==== `SeedProvider`
 
 [source, java]
 ----
