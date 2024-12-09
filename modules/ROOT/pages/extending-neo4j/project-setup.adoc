@@ -156,6 +156,65 @@ Include this dependency to build against the Neo4j-provided API:
 
 === Implement Java class
 
+[role=label--new-5.26]
+==== `DatabaseSeedProvider`
+
+In Neo4j 5.26, the `DatabaseSeedProvider` was introduced to replace the now-deprecated `SeedProvider`.
+
+[source, java]
+----
+import com.neo4j.dbms.seeding.DatabaseSeedProvider;
+
+public class CustomDatabaseSeedProvider implements DatabaseSeedProvider {
+
+  @Override
+	public boolean matches(String uri) {
+   		// Return true if uri is supported by this
+      // provider.
+  }
+
+  @Override
+  public InputStream stream(
+          String uri,
+          Map<String, Object> options) throws IOException {
+          // This method should obtain an input stream in an
+          // implementation specific way.
+  }
+
+  @Override
+  public void inject(Dependencies dependencies) {
+      // This method should provide implementation 
+      // specific dependencies to the provider.
+  }
+
+  public static class CustomDependencies implements Dependencies {
+        @Override
+        public <T> T resolveDependency(Class<T> type) {
+            // This method should resolve dependencies 
+            // required by the provider.
+        }
+    }
+}
+----
+
+To implement the custom database seed provider, you must define three methods on the top-level `DatabaseSeedProvider` interface:
+
+* A method to match the URIs that the provider can manage.
+* A method to stream backups or dumps from a specified URI.
+* A method to inject dependencies in the provider.
+
+Additionally, you must implement a method on the nested `Dependencies` interface to resolve any dependencies required by your seed provider implementation.
+
+Typically, the match method uses the URI scheme (the part specified before the first colon) to determine whether it can support the given URI or not.
+For example, `file`, `http`, `https` etc.
+
+The stream method should implement a scheme-specific way to obtain an input stream for the backup or dump.
+
+Implementation-specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
+
+[role=label--deprecated-5.26]
+==== `SeedProvider`
+
 [source, java]
 ----
 import com.neo4j.dbms.seeding.ParsedSeedProviderConfig;
