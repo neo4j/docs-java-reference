@@ -35,6 +35,7 @@ asciidoc:
   - "@neo4j-antora/antora-add-notes"
   - "@neo4j-antora/antora-listing-roles"
   - "@neo4j-antora/antora-table-footnotes"
+  - "@neo4j-antora/selector-labels"
   attributes:
     page-theme: docs
     page-type: Docs
