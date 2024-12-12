@@ -156,10 +156,7 @@ Include this dependency to build against the Neo4j-provided API:
 
 === Implement Java class
 
-[role=label--new-5.26]
 ==== `DatabaseSeedProvider`
-
-In Neo4j 5.26, the `DatabaseSeedProvider` was introduced to replace the now-deprecated `SeedProvider`.
 
 [source, java]
 ----
@@ -211,45 +208,6 @@ For example, `file`, `http`, `https` etc.
 The stream method should implement a scheme-specific way to obtain an input stream for the backup or dump.
 
 Implementation-specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
-
-[role=label--deprecated-5.26]
-==== `SeedProvider`
-
-[source, java]
-----
-import com.neo4j.dbms.seeding.ParsedSeedProviderConfig;
-import com.neo4j.dbms.seeding.SeedProvider;
-
-public class CustomSeedProvider extends SeedProvider {
-
-	public boolean matches(String uri) {
-   		// return true if uri is supported by this
-      // provider
-  }
-
-public Path download(
-     	String uri,
-      Optional<String> credentials,
-      Optional<String> config,
-      Path destinationFolder ) throws Exception {
-      // This method should obtain the downloaded in an
-      // implementation specific way and copy it to a
-      // file within the destinationFolder directory.
-  }
-}
-----
-
-To implement the custom seed provider, you must implement two methods.
-One method to match the URIs it can manage and one to download backups or dumps from the given URI.
-
-Typically, the match method uses the URI scheme (the part specified before the first colon) to determine whether it can support the given URI or not.
-For example, `file`, `http`, `https` etc.
-
-The download method should implement a scheme-specific way to obtain the backup or dump and place it into a file in the supplied destination folder.
-It should then return the path of the created file.
-
-Both credentials and configurations are passed through from options specified in the `CREATE DATABASE` command.
-`ParsedSeedProviderConfig` provides a convenient way to parse and access the comma-separated configuration string.
 
 === Deploy
 
