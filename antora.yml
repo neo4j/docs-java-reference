@@ -1,6 +1,6 @@
 name: java-reference
 title: Java Reference
-version: '2025.01'
+version: '2025.03'
 start_page: ROOT:index.adoc
 nav:
 - modules/ROOT/content-nav.adoc
