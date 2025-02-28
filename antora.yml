@@ -1,6 +1,7 @@
 name: java-reference
 title: Java Reference
-version: '5.26'
+version: '5'
+display_version: '5.26'
 lts: true
 start_page: ROOT:index.adoc
 nav:
