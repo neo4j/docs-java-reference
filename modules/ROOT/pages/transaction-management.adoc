@@ -12,7 +12,7 @@
 ====
 This page describes only some specific aspects of transaction management when used with the Neo4j Java API and provides some examples of how to avoid deadlocks, and how to register a transaction event listener for a specific database and perform basic operations on top of the transaction change set.
 
-Therefore, it is highly recommended that you read link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/[Operations Manual -> Database internals and transactional behavior] before you continue reading this page.
+Therefore, it is highly recommended that you read link:{neo4j-docs-base-uri}/operations-manual/current/database-internals/[Operations Manual -> Database internals and transactional behavior] before you continue reading this page.
 ====
 
 [[transactions-overview]]
@@ -31,7 +31,7 @@ The interaction cycle of working with transactions follows the steps:
 [NOTE]
 ====
 It is crucial to finish each transaction because the locks or memory acquired by a transaction are only released upon completion.
-For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/locks-deadlocks[Operations Manual -> Locks and deadlocks^].
+For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/current/database-internals/locks-deadlocks[Operations Manual -> Locks and deadlocks^].
 ====
 
 The idiomatic use of transactions in Neo4j is to use a `try-with-resources` statement and declare `transaction` as one of the resources.
