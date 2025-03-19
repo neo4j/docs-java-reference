@@ -9,7 +9,7 @@ Neo4j provides authentication and authorization plugin interfaces to support rea
 
 The SPI (Service Provider Interface) lives in the `com.neo4j.server.security.enterprise.auth.plugin.spi` package.
 
-Customized-built plugins have access to the link:{neo4j-docs-base-uri}/operations-manual/current/configuration/file-locations[_<neo4j-home>_] directory in case you want to load any customized settings from a file located there.
+Customized-built plugins have access to the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[_<neo4j-home>_] directory in case you want to load any customized settings from a file located there.
 Plugins can also write to the security event log.
 
 
