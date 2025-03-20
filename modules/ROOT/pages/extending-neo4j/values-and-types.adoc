@@ -6,7 +6,7 @@
 [[extending-neo4j-procedures-and-functions-values-and-types]]
 = Values and types
 
-The _input_ and _output_ to and from a procedure or a function must be one of the supported types, as described in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/values-and-types/[Cypher Manual -> Values and types].
+The _input_ and _output_ to and from a procedure or a function must be one of the supported types, as described in link:{neo4j-docs-base-uri}/cypher-manual/current/values-and-types/[Cypher Manual -> Values and types].
 
 Composite types are supported via:
 

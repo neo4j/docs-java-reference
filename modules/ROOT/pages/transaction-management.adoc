@@ -31,7 +31,7 @@ The interaction cycle of working with transactions follows the steps:
 [NOTE]
 ====
 It is crucial to finish each transaction because the locks or memory acquired by a transaction are only released upon completion.
-For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/locks-deadlocks[Operations Manual -> Locks and deadlocks^].
+For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/concurrent-data-access/#_locks[Operations Manual -> Locks and deadlocks^].
 ====
 
 The idiomatic use of transactions in Neo4j is to use a `try-with-resources` statement and declare `transaction` as one of the resources.
