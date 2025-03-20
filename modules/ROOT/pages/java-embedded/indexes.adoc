@@ -4,10 +4,10 @@
 [[java-embedded-new-index]]
 = Using indexes
 
-It is possible to create and use all the index types described in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/indexes-for-search-performance[Cypher Manual -> Indexes].
+It is possible to create and use all the index types described in link:{neo4j-docs-base-uri}/cypher-manual/current/indexes-for-search-performance[Cypher Manual -> Indexes].
 
 This section demonstrates how to work with indexes with an example of a user database.
-For information about how to create an index on all `User` nodes that have a `username` property, see link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/indexes-for-search-performance#administration-indexes-create-a-single-property-index-for-nodes[Cypher Manual -> Create a single-property index for nodes].
+For information about how to create an index on all `User` nodes that have a `username` property, see link:{neo4j-docs-base-uri}/cypher-manual/current/indexes-for-search-performance#administration-indexes-create-a-single-property-index-for-nodes[Cypher Manual -> Create a single-property index for nodes].
 
 [TIP]
 ====
