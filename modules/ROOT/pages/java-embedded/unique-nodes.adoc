@@ -82,5 +82,5 @@ You might also be tempted to use Java synchronization for pessimistic locking, b
 By mixing locks in Neo4j and the Java runtime, it is possible to produce deadlocks that are not detectable by Neo4j.
 As long as all locking is done by Neo4j, all deadlocks will be detected and avoided.
 
-For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/locks-deadlocks.adoc#_locks[Operations Manual -> Locks and deadlocks^].
+For more information on locks and deadlocks, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-internals/concurrent-data-access/#_locks[Operations Manual -> Locks and deadlocks^].
 

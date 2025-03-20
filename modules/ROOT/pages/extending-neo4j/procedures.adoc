@@ -28,7 +28,7 @@ CALL org.neo4j.examples.findDenseNodes(1000)
 
 `CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
 Arguments can be supplied directly within the query or taken from the associated parameter set.
-For full details, see the documentation in link:{neo4j-docs-base-uri}/cypher-manual/{page-version}/clauses/call[Cypher Manual -> `CALL` procedure].
+For full details, see the documentation in link:{neo4j-docs-base-uri}/cypher-manual/current/clauses/call[Cypher Manual -> `CALL` procedure].
 
 
 [[user-defined-procedures]]
