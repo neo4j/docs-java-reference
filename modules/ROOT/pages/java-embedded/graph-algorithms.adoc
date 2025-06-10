@@ -11,7 +11,7 @@ For details on the graph algorithm usage, see the link:{org-neo4j-graphalgo-grap
 
 [TIP]
 ====
-The source code used in the example isfound at:
+The source code used in the example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/test/java/org/neo4j/examples/PathFindingDocTest.java[PathFindingDocTest.java^]
 ====
 
