@@ -9,7 +9,7 @@ The same approach can be used with relationships.
 
 [TIP]
 ====
-The source code of the examples isfound at:
+The source code of the examples is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/embedded-examples/src/main/java/org/neo4j/examples/socnet/Person.java[Person.java]
 ====
 

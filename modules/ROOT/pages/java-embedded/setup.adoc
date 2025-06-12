@@ -126,7 +126,7 @@ registerShutdownHook( managementService );
 
 
 If you are using the Enterprise Edition of Neo4j in embedded mode, you have to create your database with the link:{com-neo4j-dbms-api-EnterpriseDatabaseManagementServiceBuilder}[`com.neo4j.dbms.api.EnterpriseDatabaseManagementServiceBuilder`^] to enable the Enterprise Edition features.
-If you intend to operate embedded clusters, you need to provide the appropriate configuration to the instances you create (for example ports and discovery endpoints).
+If you intend to operate embedded clusters, you need to provide the appropriate configuration to the instances you create (for example, ports and discovery endpoints).
 For maintainability purposes, you can define your embedded DBMS configuration in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/neo4j-conf[_neo4j.conf_] file as follows:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/embedded-examples/src/main/java/org/neo4j/examples/EmbeddedNeo4jClusterUsingBuilder.java
@@ -136,8 +136,8 @@ For maintainability purposes, you can define your embedded DBMS configuration in
 ----
 server.default_advertised_address=core01.example.com
 server.default_listen_address=0.0.0.0
-dbms.cluster.discovery.type=LIST
-dbms.cluster.discovery.endpoints=core01.example.com,core02.example.com,core03.example.com
+dbms.cluster.discovery.resolver_type=LIST
+dbms.cluster.endpoints=core01.example.com,core02.example.com,core03.example.com
 server.bolt.enabled=true
 server.http.enabled=true
 ----
@@ -171,8 +171,8 @@ var initialMembers = List.of(
 var managementService = new EnterpriseDatabaseManagementServiceBuilder( homeDirectory )
     .setConfig( GraphDatabaseSettings.default_advertised_address, defaultAdvertised )
     .setConfig( GraphDatabaseSettings.default_listen_address, defaultListen )
-    .setConfig( ClusterSettings.discovery_type, DiscoveryType.LIST )
-    .setConfig( ClusterSettings.discovery_endpoints, initialMembers )
+    .setConfig( DiscoverySettings.discovery.resolver_type, DiscoveryType.LIST )
+    .setConfig( DiscoverySettings.cluster_endpoints, initialMembers )
     .setConfig( EnterpriseEditionSettings.initial_default_primaries_count, 3 )
     .setConfig( BoltConnector.enabled, true )
     .setConfig( HttpConnector.enabled, true )

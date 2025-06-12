@@ -138,7 +138,7 @@ Once the procedure has been deployed to the _plugins_ directory of each Neo4j in
 
 The _Seed from URI_ feature provides the ability to dynamically discover additional seed provider implementations from the class path.
 
-Seed providers should be implemented in Java and this guide provides instructions on how to do this using Maven as the build tool.
+Seed providers should be implemented in Java; and this guide provides instructions on how to do this using Maven as the build tool.
 
 === Set up a Maven project
 
@@ -203,24 +203,27 @@ To implement the custom database seed provider, you must define three methods on
 Additionally, you must implement a method on the nested `Dependencies` interface to resolve any dependencies required by your seed provider implementation.
 
 Typically, the match method uses the URI scheme (the part specified before the first colon) to determine whether it can support the given URI or not.
-For example, `file`, `http`, `https` etc.
+For example, `file`, `http`, `https`, etc.
 
 The stream method should implement a scheme-specific way to obtain an input stream for the backup or dump.
 
-Implementation-specific seed configuration can be passed through from options specified in the `CREATE DATABASE` command using `seedConfig`.
+Implementation-specific seed configuration can be passed through from options specified in the link:{neo4j-docs-base-uri}/operations-manual/{page-version}/database-administration/standard-databases/create-databases[`CREATE DATABASE` command using `seedConfig`].
+
+Keep in mind that the `CREATE DATABASE` command is Enterprise Edition feature.
+
 
 === Deploy
 
-Build a jar file from Maven and place this onto the Neo4j classpath.
+Build a JAR file from Maven and place this onto the Neo4j classpath.
 
-The jar must include a META-INF file to enable discovery of the providers with the path:
+The JAR file must include a META-INF file to enable discovery of the providers with the path:
 
 [source, none]
 ----
 /META_INF/services/com.neo4j.dbms.seeding.SeedProvider
 ----
 
-It should be a plain text file with one line for each provider contained within the jar, the line should contain the fully qualified name of the provider class.
+It should be a plain text file with one line for each provider contained within the JAR file, the line should contain the fully qualified name of the provider class.
 
 [NOTE]
 ====

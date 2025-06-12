@@ -61,7 +61,7 @@ public class HelloWorldResource
 }
 ----
 
-The full source code isfound at:
+The full source code is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/HelloWorldResource.java[HelloWorldResource.java^]
 
 Having built your code, the resulting JAR file (and any customized dependencies) should be placed in the _$NEO4J_SERVER_HOME/plugins_ directory.
@@ -174,7 +174,7 @@ public class ColleaguesResource
 }
 ----
 
-The full source code isfound at:
+The full source code is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java[ColleaguesResource.java^]
 
 As well as depending on JAX-RS API, this example also uses Jackson -- a Java JSON library.
@@ -191,18 +191,9 @@ You need to add the following dependency to your Maven POM file (or equivalent):
 
 [CAUTION]
 ====
-From Neo4j 3.5.15, a breaking change was introduced following an update to the Jackson dependency.
+Neo4j supports Jackson v2.
 
-Jackson v1 is out of support and has accumulated security issues such as:
-
-* link:https://www.cvedetails.com/cve/CVE-2017-7525/[`CVE-2017-7525`]
-* link:https://www.cvedetails.com/cve/CVE-2017-17485/[`CVE-2017-17485`]
-* link:https://www.cvedetails.com/cve/CVE-2017-15095/[`CVE-2017-15095`]
-* link:https://www.cvedetails.com/cve/CVE-2018-11307/[`CVE-2018-11307`]
-* link:https://www.cvedetails.com/cve/CVE-2018-7489/[`CVE-2018-7489`]
-* link:https://www.cvedetails.com/cve/CVE-2018-5968/[`CVE-2018-5968`]
-
-For further information about Jackson v2, please see the link:https://github.com/FasterXML/jackson[Jackson Project on GitHub].
+For more information about Jackson v2, see the link:https://github.com/FasterXML/jackson[Jackson Project on GitHub].
 ====
 
 Your `findColleagues` method now responds to `GET` requests at the URI:
@@ -295,7 +286,7 @@ public class ColleaguesCypherExecutionResource
 }
 ----
 
-The full source code isfound at:
+The full source code is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java[ColleaguesCypherExecutionResource.java^]
 
 Your `findColleagues` method now responds to `GET` requests at the URI:
@@ -336,7 +327,7 @@ You can access this toolkit by adding the following test dependency to your proj
 </dependency>
 --------
 
-The test toolkit provides a mechanism to start a Neo4j instance with a customized configuration and with extensions of your choice.
+The test toolkit provides a mechanism to start a Neo4j instance with a customized configuration and extensions of your choice.
 It also provides mechanisms to specify data fixtures to include when starting Neo4j, as you can see in the following example:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/neo4j-harness-enterprise-test/src/test/java/org/neo4j/harness/enterprise/doc/ExtensionTestingDocIT.java
@@ -380,7 +371,7 @@ public void testMyExtensionWithFunctionFixture()
 }
 ----
 
-The full source code of the example isfound at:
+The full source code of the example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/ExtensionTestingDocIT.java[ExtensionTestingDocIT.java^]
 
 
@@ -426,6 +417,6 @@ public void shouldWorkWithServer()
 }
 ----
 
-The full source code of the example isfound at:
+The full source code of the example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/JUnitDocIT.java[JUnitDocIT.java^]
 
