@@ -14,6 +14,6 @@ To specify the parameters, you must add a line for the additional Java arguments
 server.jvm.additional=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 ----
 
-This configuration starts Neo4j, ready for remote debugging attachment, at `localhost`` and port `5005`.
+This configuration starts Neo4j, ready for remote debugging attachment, at `localhost` and port `5005`.
 Use these parameters to attach to the process from Eclipse, IntelliJ, or your remote debugger of choice after starting the server.
 
