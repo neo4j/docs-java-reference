@@ -12,4 +12,4 @@ asciidoc:
     java-driver-version: '5.28.7'
     neo4j-documentation-branch: 'dev'
     page-origin-private: false
-    neo4j-javadocs-base-uri: "https://neo4j.com/docs/java-reference/5/javadocs"
+    neo4j-javadocs-base-uri: "https://neo4j.com/docs/java-reference/{neo4j-version}/javadocs"
