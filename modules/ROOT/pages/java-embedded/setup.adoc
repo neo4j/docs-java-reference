@@ -17,9 +17,9 @@ The following examples use the top-level artifact approach.
 
 
 [NOTE]
-.[enterprise-edition]
 ====
 The examples are only valid for Neo4j Community Edition.
+
 To add Neo4j Enterprise Edition as a dependency, please get in contact with link:https://neo4j.com/contact-us/[Neo4j Professional Services^].
 See link:{neo4j-docs-base-uri}/operations-manual/{page-version}/introduction[Operations Manual -> Introduction] for details about the Community and Enterprise Editions.
 ====
@@ -51,7 +51,7 @@ Where the `artifactId` is found in the <<editions>> table.
 
 === Eclipse and Maven
 
-For development in link:http://www.eclipse.org[Eclipse^], it is recommended to install the link:http://www.eclipse.org/m2e/[m2e plugin^] and let Maven manage the project build classpath instead.
+For development in link:https://www.eclipse.org[Eclipse^], it is recommended to install the link:https://www.eclipse.org/m2e/[m2e plugin^] and let Maven manage the project build classpath instead.
 This also adds the possibility to build your project both via the command line with Maven and have a working Eclipse setup for development.
 
 
