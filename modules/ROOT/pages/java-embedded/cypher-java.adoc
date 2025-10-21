@@ -68,7 +68,7 @@ Failing to do so will not properly clean up resources used by the `Result` objec
 In case you do not want to iterate over all of the results, make sure you invoke `close()` as soon as you are done, to release the resources tied to the result.
 ====
 
-The recommended way to handle results is to use a link:http://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html[try-with-resources statement^].
+The recommended way to handle results is to use the link:https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html[try-with-resources statement^].
 This ensures that the result is closed at the end of the statement.
 
 You can also get a list of the columns in the result:

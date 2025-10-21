@@ -43,7 +43,7 @@ server.jvm.additional=-Dcom.sun.management.jmxremote.ssl=false
 
 [IMPORTANT]
 ====
-Although SSL for JMX Remote Management is disabled throughout this document, to configure it based on your requirements, you can follow the instructions in the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^].
+Although SSL for JMX Remote Management is disabled throughout this document, to configure it based on your requirements, you can follow the instructions in the link:https://docs.oracle.com/en/java/javase/17/management/monitoring-and-management-using-jmx-technology.html[Java SE 17 Monitoring and Management Guide^].
 ====
 
 
@@ -53,7 +53,7 @@ Although SSL for JMX Remote Management is disabled throughout this document, to 
 Password authentication is enabled by default in JMX Remote Management.
 You can find information about setting up authentication with LDAP and file-based approach in the following sections.
 
-Refer to the link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html[Java SE 11 Monitoring and Management Guide^] for more options, including configuration steps for SSL client authentication.
+Refer to the link:https://docs.oracle.com/en/java/javase/17/management/monitoring-and-management-using-jmx-technology.html[Java SE 17 Monitoring and Management Guide^] for more options, including configuration steps for SSL client authentication.
 
 
 [[ldap]]
@@ -184,7 +184,7 @@ The `<port>` value is configured by the `com.sun.management.jmxremote.port` prop
 Besides the MBeans, exposed by the JVM, you also see be default `neo4j.metrics` section in the MBeans tab.
 Under that, you have access to all the monitoring information exposed by Neo4j.
 
-For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:https://docs.oracle.com/en/java/javase/11/management/monitoring-and-management-using-jmx-technology.html#GUID-805517EC-2D33-4D61-81D8-4D0FA770D1B8[the JMX documention^].
+For opening JMX to remote monitoring access, please see <<jmx-remote>> and link:https://docs.oracle.com/en/java/javase/17/management/monitoring-and-management-using-jmx-technology.html#GUID-805517EC-2D33-4D61-81D8-4D0FA770D1B8[the JMX documentation^].
 
 .Neo4j MBeans view
 image::jconsole-beans1.png[alt="Neo4j MBeans view", width=600]
