@@ -102,7 +102,7 @@ When writing unmanaged extensions, you have greater control over the amount of m
 If you keep too much state around, it can lead to more frequent full Garbage Collection and subsequent unresponsiveness by the Neo4j server.
 
 A common way that state can increase, is the creation of JSON objects to represent the result of a query, which is then sent back to your application.
-Neo4j's Transactional Cypher HTTP endpoint (see link:{neo4j-docs-base-uri}/http-api/{page-version}/actions[HTTP API Docs -> transactional Cypher endpoint]) streams responses back to the client.
+Neo4j's HTTP endpoint (see link:{neo4j-docs-base-uri}/http-api/current/transactions[HTTP API Docs -> Run transactions]) streams responses back to the client.
 For example, the following unmanaged extension streams an array of a person's colleagues:
 
 //https://github.com/neo4j/neo4j-documentation/blob/dev/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java
@@ -174,7 +174,7 @@ public class ColleaguesResource
 }
 ----
 
-The full source code isfound at:
+The full source code is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesResource.java[ColleaguesResource.java^]
 
 As well as depending on JAX-RS API, this example also uses Jackson -- a Java JSON library.
@@ -295,7 +295,7 @@ public class ColleaguesCypherExecutionResource
 }
 ----
 
-The full source code isfound at:
+The full source code is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/server-examples/src/main/java/org/neo4j/examples/server/unmanaged/ColleaguesCypherExecutionResource.java[ColleaguesCypherExecutionResource.java^]
 
 Your `findColleagues` method now responds to `GET` requests at the URI:
@@ -380,7 +380,7 @@ public void testMyExtensionWithFunctionFixture()
 }
 ----
 
-The full source code of the example isfound at:
+The full source code of the example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/ExtensionTestingDocIT.java[ExtensionTestingDocIT.java^]
 
 
@@ -426,6 +426,6 @@ public void shouldWorkWithServer()
 }
 ----
 
-The full source code of the example isfound at:
+The full source code of the example is found at:
 link:https://github.com/neo4j/neo4j-documentation/blob/{neo4j-documentation-branch}/neo4j-harness-test/src/test/java/org/neo4j/harness/doc/JUnitDocIT.java[JUnitDocIT.java^]
 

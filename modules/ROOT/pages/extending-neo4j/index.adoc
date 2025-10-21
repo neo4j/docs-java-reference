@@ -13,16 +13,13 @@ Neo4j provides the following methods to extend the standard functionality:
 * *Authentication and authorization plugins* extend the Neo4j security framework.
 * *Server extensions* enable new surfaces to be created in the HTTP API.
 
+[NOTE]
+====
+The HTTP API is deprecated since Neo4j 5.26.
+Instead, the Query API is introduced.
+For details, refer to the link:neo4j-docs-base-uri/query-api/current[Query API documentation].
+====
+
 Writing extensions requires the user to be familiar with Java or other JVM programming languages, and to have an environment set up for compiling such code.
-
-//The following topics are:
-//
-//How to develop and deploy user-defined procedures and functions.
-//How to develop and deploy customized authentication and authorization plugins.
-//How to customize the analyzer used in a full-text index.
-//How to build extensions for the Neo4j HTTP server.
-//How to configure the Neo4j server for remote debugging sessions.
-
-
 
 

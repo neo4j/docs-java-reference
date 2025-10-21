@@ -17,7 +17,6 @@ The following examples use the top-level artifact approach.
 
 
 [NOTE]
-.[enterprise-edition]
 ====
 The examples are only valid for Neo4j Community Edition.
 To add Neo4j Enterprise Edition as a dependency, please get in contact with link:https://neo4j.com/contact-us/[Neo4j Professional Services^].
@@ -51,7 +50,7 @@ Where the `artifactId` is found in the <<editions>> table.
 
 === Eclipse and Maven
 
-For development in link:http://www.eclipse.org[Eclipse^], it is recommended to install the link:http://www.eclipse.org/m2e/[m2e plugin^] and let Maven manage the project build classpath instead.
+For development in link:https://www.eclipse.org[Eclipse^], it is recommended to install the link:https://www.eclipse.org/m2e/[m2e plugin^] and let Maven manage the project build classpath instead.
 This also adds the possibility to build your project both via the command line with Maven and have a working Eclipse setup for development.
 
 
@@ -287,39 +286,31 @@ JDK tools::
 Eclipse::
  * Right-click on the project and then go to _Build Path -> Configure Build Path_.
    In the dialog, select _Add External JARs_, browse the Neo4j _lib/_ directory, and select all the JAR files.
- * Another option is to use link:http://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/buildpath/ref-preferences-user-libraries.htm[User Libraries^].
+ * Another option is to use link:https://help.eclipse.org/indigo/index.jsp?topic=/org.eclipse.jdt.doc.user/reference/preferences/java/buildpath/ref-preferences-user-libraries.htm[User Libraries^].
 IntelliJ IDEA::
- See link:http://www.jetbrains.com/help/idea/2016.1/configuring-project-and-global-libraries.html[Libraries, Global Libraries, and the Configure Library dialog^].
+ See link:https://www.jetbrains.com/help/idea/library.html[Libraries^].
 NetBeans::
- * Right-click on the _Libraries_ node of the project, select _Add JAR/Folder_, browse the Neo4j _lib/_ directory and select all the JAR files.
- * You can also handle libraries from the project node, see link:http://netbeans.org/kb/docs/java/project-setup.html#projects-classpath[Managing a Project's Classpath^].
+ * Right-click the _Libraries_ node of the project, select _Properties_, and then _JAR/Folder_, browse the Neo4j _lib/_ directory and select all the JAR files.
+ * You can also handle libraries from the project node, see link:https://docs.oracle.com/cd/E50453_01/doc.80/e50452/create_japps.htm#CHDFBFAD[Managing the Classpath^].
 
 
 [[editions]]
-== Editions
+== Neo4j editions
 
-The following table outlines the available editions and their names for use with dependency management tools.
+The Neo4j Community Edition is available on the Maven Central Repository.
+Follow the link below for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, and Scala SBT.
 
-[TIP]
-====
-Follow the links in the table for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, and Scala SBT.
-====
-
-.Neo4j editions
+.Neo4j edition
 [cols="<20,<30,<50", options="header"]
 |===
 
-| Neo4j Edition
+| Neo4j edition
 | Dependency
 | Description
 
 | Community
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
+| link:https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
 | A high-performance, fully ACID transactional graph database.
-
-| Enterprise
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j-enterprise%22[org.neo4j:neo4j-enterprise^]
-| Adding advanced monitoring, online backup, and clustering.
 
 |===
 

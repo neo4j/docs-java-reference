@@ -1,13 +1,10 @@
 :description: How to open a Bolt connector to your embedded instance to get GUI administration and other benefits.
 
-:org-neo4j-graphdb-factory-GraphDatabaseFactory: {neo4j-javadocs-base-uri}/org/neo4j/graphdb/factory/GraphDatabaseFactory.html
-
-
 [[java-embedded-bolt]]
 = Bolt connector
 
 This describes how to open a Bolt connector to your embedded instance to get GUI administration and other benefits.
-Accessing Neo4j embedded via the Bolt protocol.
+Accessing Neo4j embedded via the link:https://neo4j.com/docs/bolt/current/[Bolt protocol].
 
 The Neo4j Browser and the official Neo4j Drivers use the Bolt database protocol to communicate with Neo4j.
 By default, Neo4j embedded does not expose a Bolt connector, but you can enable one.

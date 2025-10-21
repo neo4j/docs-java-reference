@@ -40,7 +40,7 @@ Setting a property to `NULL` is equivalent to deleting the property.
 | java.time.temporal.TemporalAmount | A temporal amount. This captures the difference in time between two instants.
 |===
 
-For further details on float/double values, see link:http://docs.oracle.com/javase/specs/jls/se8/html/jls-4.html#jls-4.2.3[Java Language Specification].
+For further details on float/double values, see link:https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.2.3[Java Language Specification].
 
 Note that there are two cases where more than one Java type is mapped to a single Cypher type.
 When this happens, type information is lost.
