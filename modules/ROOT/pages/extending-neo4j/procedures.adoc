@@ -143,6 +143,8 @@ Particular things to note:
 * The procedure annotation can take three optional arguments: `name`, `mode`, and `eager`.
 ** `name` is used to specify a different name for the procedure than the default generated, which is `class.path.nameOfMethod`.
    If `mode` is specified, `name` must be specified as well.
+** `name` is required to be namespaced and is not allowed in one of the reserved namespaces.
+** If a procedure is registered with the same name as a built-in procedure in a deprecated namespace the built-in procedure will be shadowed.
 ** `mode` is used to declare the types of interactions that the procedure performs.
    A procedure fails if it attempts to execute database operations that violate its mode.
    The default `mode` is `READ`.
@@ -163,7 +165,7 @@ Particular things to note:
 MATCH (n)
 WHERE n.key = 'value'
 WITH n
-CALL deleteNeighbours(n, 'FOLLOWS')
+CALL example.deleteNeighbours(n, 'FOLLOWS')
 ----
 This query can delete some of the nodes that are matched by the Cypher query, and the `n.key` lookup will fail.
 Marking this procedure as `eager` prevents this from causing an error in Cypher code.
@@ -273,3 +275,53 @@ public class MyProcedures {
 }
 
 ----
+[[reserved-and-deprecated-namespaces]]
+== Reserved and deprecated function namespaces
+
+[[reserved-and-deprecated-function-namespaces]]
+.Overview of reserved and deprecated function namespaces and names
+[options="header", cols="m,m"]
+|===
+| Reserved                      | Deprecated
+| date                          |abac.*
+| date.realtime                 |aura.*
+| date.statement                |builtin.*
+| date.transaction              |cdc.*
+| date.truncate                 |coll.*
+| datetime                      |date.*
+| datetime.fromepoch            |datetime.*
+| datetime.fromepochmillis      |db.*
+| datetime.realtime             |dbms.*
+| datetime.statement            |duration.*
+| datetime.transaction          |graph.*
+| datetime.truncate             |internal.*
+| db.nameFromElementId          |localdatetime.*
+| duration                      |localtime.*
+| duration.between              |math.*
+| duration.inDays               |plugin.*
+| duration.inMonths             |point.*
+| duration.inSeconds            |stored.*
+| graph.byElementId             |string.*
+| graph.byName                  |time.*
+| graph.names                   |tx.*
+| graph.propertiesByName        |unsupported.*
+| localdatetime                 |vector.*
+| localdatetime.realtime        |
+| localdatetime.statement       |
+| localdatetime.transaction     |
+| localdatetime.truncate        |
+| localtime                     |
+| localtime.realtime            |
+| localtime.statement           |
+| localtime.transaction         |
+| localtime.truncate            |
+| point.distance                |
+| point.withinBBox              |
+| time                          |
+| time.realtime                 |
+| time.statement                |
+| time.transaction              |
+| time.truncate                 |
+| vector.similarity.cosine      |
+| vector.similarity.euclidean   |
+|===

@@ -30,6 +30,12 @@ RETURN org.neo4j.examples.join(collect(p.names))
 User-defined functions are created similarly to how procedures are created.
 But unlike procedures, they are annotated with `@UserFunction` and return a single value instead of a stream of values.
 
+Particular things to note:
+
+* All functions are annotated with `@UserFunction`.
+* The function name is required to be namespaced and is not allowed in one of the reserved namespaces.
+* If a function is registered with the same name as a built-in function in a deprecated namespace the built-in function will be shadowed.
+
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
 For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs for `org.neo4j.procedure.UserFunction`^].
@@ -119,4 +125,36 @@ public class JoinTest {
     }
 }
 ----
+
+[[reserved-and-deprecated-namespaces]]
+== Reserved and deprecated function namespaces
+
+[[reserved-and-deprecated-function-namespaces]]
+.Overview of reserved and deprecated function namespaces and names
+[options="header", cols="m,m"]
+|===
+| Reserved          | Deprecated
+| cdc.*             | abac.*
+| date.*            | aura.*
+| datetime.*        | builtin.*
+| db.*              | coll.*
+| dbms.*            | math.*
+| duration.*        | plugin.*
+| graph.*           | point.*
+| internal.*        | stored.*
+| localdatetime.*   | string.*
+| localtime.*       | vector.*
+| time.*            |
+| tx.*              |
+| unsupported.*     |
+|===
+
+
+
+
+
+
+
+
+
 

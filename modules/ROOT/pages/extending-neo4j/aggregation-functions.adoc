@@ -32,6 +32,13 @@ An aggregator class contains one method annotated with `@UserAggregationUpdate` 
 The method annotated with `@UserAggregationUpdate` will be called multiple times and enables the class to aggregate data.
 When the aggregation is done, the method annotated with `@UserAggregationResult` will be called once and the result of the aggregation will be returned.
 
+Particular things to note:
+
+* All functions are annotated with `@UserAggregationFunction`.
+* The aggregation function name is required to be namespaced and is not allowed in one of the reserved namespaces.
+* If a user defined aggregation function is registered with the same name as a built-in function in a deprecated namespace the built-in function will be shadowed.
+
+
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
 For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggregationFunction}[`org.neo4j.procedure.UserAggregationFunction`^].
@@ -131,4 +138,55 @@ public class LongestStringTest
     }
 }
 ----
+
+[[reserved-and-deprecated-namespaces]]
+== Reserved and deprecated function namespaces
+
+[[reserved-and-deprecated-function-namespaces]]
+.Overview of reserved and deprecated function namespaces and names
+[options="header", cols="m,m"]
+|===
+| Reserved                      | Deprecated
+| date                          |abac.*
+| date.realtime                 |aura.*
+| date.statement                |builtin.*
+| date.transaction              |cdc.*
+| date.truncate                 |coll.*
+| datetime                      |date.*
+| datetime.fromepoch            |datetime.*
+| datetime.fromepochmillis      |db.*
+| datetime.realtime             |dbms.*
+| datetime.statement            |duration.*
+| datetime.transaction          |graph.*
+| datetime.truncate             |internal.*
+| db.nameFromElementId          |localdatetime.*
+| duration                      |localtime.*
+| duration.between              |math.*
+| duration.inDays               |plugin.*
+| duration.inMonths             |point.*
+| duration.inSeconds            |stored.*
+| graph.byElementId             |string.*
+| graph.byName                  |time.*
+| graph.names                   |tx.*
+| graph.propertiesByName        |unsupported.*
+| localdatetime                 |vector.*
+| localdatetime.realtime        |
+| localdatetime.statement       |
+| localdatetime.transaction     |
+| localdatetime.truncate        |
+| localtime                     |
+| localtime.realtime            |
+| localtime.statement           |
+| localtime.transaction         |
+| localtime.truncate            |
+| point.distance                |
+| point.withinBBox              |
+| time                          |
+| time.realtime                 |
+| time.statement                |
+| time.transaction              |
+| time.truncate                 |
+| vector.similarity.cosine      |
+| vector.similarity.euclidean   |
+|===
 
