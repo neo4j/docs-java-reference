@@ -35,8 +35,8 @@ When the aggregation is done, the method annotated with `@UserAggregationResult`
 Particular things to note:
 
 * All functions are annotated with `@UserAggregationFunction`.
-* The aggregation function name is required to be namespaced and is not allowed in one of the reserved namespaces.
-* If a user defined aggregation function is registered with the same name as a built-in function in a deprecated namespace the built-in function will be shadowed.
+* The aggregation function name must be namespaced and is not allowed in reserved namespaces.
+* If a user-defined aggregation function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
 
 
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
