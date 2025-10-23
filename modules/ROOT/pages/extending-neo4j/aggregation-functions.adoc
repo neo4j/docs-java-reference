@@ -146,30 +146,31 @@ public class LongestStringTest
 .Overview of reserved and deprecated function namespaces and names
 [options="header", cols="m,m"]
 |===
-| Reserved                      | Deprecated
-| date                          |abac.*
-| date.realtime                 |aura.*
-| date.statement                |builtin.*
-| date.transaction              |cdc.*
-| date.truncate                 |coll.*
-| datetime                      |date.*
-| datetime.fromepoch            |datetime.*
-| datetime.fromepochmillis      |db.*
-| datetime.realtime             |dbms.*
-| datetime.statement            |duration.*
-| datetime.transaction          |graph.*
-| datetime.truncate             |internal.*
-| db.nameFromElementId          |localdatetime.*
-| duration                      |localtime.*
-| duration.between              |math.*
-| duration.inDays               |plugin.*
-| duration.inMonths             |point.*
-| duration.inSeconds            |stored.*
-| graph.byElementId             |string.*
-| graph.byName                  |time.*
-| graph.names                   |tx.*
-| graph.propertiesByName        |unsupported.*
-| localdatetime                 |vector.*
+| Reserved                      | Deprecated since Neo4j 2025.11
+| *                             | abac.*
+| date                          | aura.*
+| date.realtime                 | builtin.*
+| date.statement                | cdc.*
+| date.transaction              | coll.*
+| date.truncate                 | date.*
+| datetime                      | datetime.*
+| datetime.fromepoch            | db.*
+| datetime.fromepochmillis      | dbms.*
+| datetime.realtime             | duration.*
+| datetime.statement            | graph.*
+| datetime.transaction          | internal.*
+| datetime.truncate             | localdatetime.*
+| db.nameFromElementId          | localtime.*
+| duration                      | math.*
+| duration.between              | plugin.*
+| duration.inDays               | point.*
+| duration.inMonths             | stored.*
+| duration.inSeconds            | string.*
+| graph.byElementId             | time.*
+| graph.byName                  | tx.*
+| graph.names                   | unsupported.*
+| graph.propertiesByName        | vector.*
+| localdatetime                 |
 | localdatetime.realtime        |
 | localdatetime.statement       |
 | localdatetime.transaction     |

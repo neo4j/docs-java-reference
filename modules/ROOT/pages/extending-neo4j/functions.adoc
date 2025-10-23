@@ -133,28 +133,47 @@ public class JoinTest {
 .Overview of reserved and deprecated function namespaces and names
 [options="header", cols="m,m"]
 |===
-| Reserved          | Deprecated
-| cdc.*             | abac.*
-| date.*            | aura.*
-| datetime.*        | builtin.*
-| db.*              | coll.*
-| dbms.*            | math.*
-| duration.*        | plugin.*
-| graph.*           | point.*
-| internal.*        | stored.*
-| localdatetime.*   | string.*
-| localtime.*       | vector.*
-| time.*            |
-| tx.*              |
-| unsupported.*     |
+| Reserved                      | Deprecated since Neo4j 2025.11
+| *                             | abac.*
+| date                          | aura.*
+| date.realtime                 | builtin.*
+| date.statement                | cdc.*
+| date.transaction              | coll.*
+| date.truncate                 | date.*
+| datetime                      | datetime.*
+| datetime.fromepoch            | db.*
+| datetime.fromepochmillis      | dbms.*
+| datetime.realtime             | duration.*
+| datetime.statement            | graph.*
+| datetime.transaction          | internal.*
+| datetime.truncate             | localdatetime.*
+| db.nameFromElementId          | localtime.*
+| duration                      | math.*
+| duration.between              | plugin.*
+| duration.inDays               | point.*
+| duration.inMonths             | stored.*
+| duration.inSeconds            | string.*
+| graph.byElementId             | time.*
+| graph.byName                  | tx.*
+| graph.names                   | unsupported.*
+| graph.propertiesByName        | vector.*
+| localdatetime                 |
+| localdatetime.realtime        |
+| localdatetime.statement       |
+| localdatetime.transaction     |
+| localdatetime.truncate        |
+| localtime                     |
+| localtime.realtime            |
+| localtime.statement           |
+| localtime.transaction         |
+| localtime.truncate            |
+| point.distance                |
+| point.withinBBox              |
+| time                          |
+| time.realtime                 |
+| time.statement                |
+| time.transaction              |
+| time.truncate                 |
+| vector.similarity.cosine      |
+| vector.similarity.euclidean   |
 |===
-
-
-
-
-
-
-
-
-
-
