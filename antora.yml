@@ -9,7 +9,7 @@ asciidoc:
     neo4j-version: '2025.10'
     neo4j-version-exact: '2025.10.1'
     neo4j-buildnumber: '2025.10'
-    java-driver-version: '5.28.10'
+    java-driver-version: '6.0.2'
     neo4j-documentation-branch: 'dev'
     page-origin-private: false
     neo4j-javadocs-base-uri: "{neo4j-docs-base-uri}/java-reference/{neo4j-version}/javadocs"
