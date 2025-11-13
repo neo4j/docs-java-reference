@@ -17,7 +17,7 @@ Neo4j provides the following methods to extend the standard functionality:
 ====
 The HTTP API is deprecated since Neo4j 5.26.
 Instead, the Query API is introduced.
-For details, refer to the link:neo4j-docs-base-uri/query-api/current[Query API documentation].
+For details, refer to the link:{neo4j-docs-base-uri}/query-api/current[Query API documentation].
 ====
 
 Writing extensions requires the user to be familiar with Java or other JVM programming languages, and to have an environment set up for compiling such code.
