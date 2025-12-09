@@ -279,11 +279,13 @@ public class MyProcedures {
 [[reserved-and-deprecated-namespaces]]
 == Reserved and deprecated procedure namespaces
 
+Note that deprecated procedure namespaces will be moved to reserved in the next major Cypher version.
+For more information about Neo4j and Cypher versioning, see link:https://neo4j.com/docs/operations-manual/current/introduction/#_cypher_versions[Operations manual -> Introduction].
 [[reserved-and-deprecated-procedure-namespaces]]
 .Overview of reserved and deprecated procedure namespaces
 [options="header", cols="m,m"]
 |===
-| Reserved          | Deprecated since Neo4j 2025.11
+| Reserved          | Deprecated in Cypher 25 since Neo4j 2025.11
 | cdc.*             | *
 | date.*            | abac.*
 | datetime.*        | aura.*

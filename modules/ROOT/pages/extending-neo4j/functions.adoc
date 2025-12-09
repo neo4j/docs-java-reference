@@ -129,11 +129,13 @@ public class JoinTest {
 [[reserved-and-deprecated-namespaces]]
 == Reserved and deprecated function namespaces
 
+Note that deprecated function namespaces will be moved to reserved in the next major Cypher version.
+For more information about Neo4j and Cypher versioning, see link:https://neo4j.com/docs/operations-manual/current/introduction/#_cypher_versions[Operations manual -> Introduction].
 [[reserved-and-deprecated-function-namespaces]]
 .Overview of reserved and deprecated function namespaces and names
 [options="header", cols="m,m"]
 |===
-| Reserved                      | Deprecated since Neo4j 2025.11
+| Reserved                      | Deprecated in Cypher 25 since Neo4j 2025.11
 | *                             | abac.*
 | date                          | aura.*
 | date.realtime                 | builtin.*
