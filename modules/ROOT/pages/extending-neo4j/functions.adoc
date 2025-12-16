@@ -30,6 +30,12 @@ RETURN org.neo4j.examples.join(collect(p.names))
 User-defined functions are created similarly to how procedures are created.
 But unlike procedures, they are annotated with `@UserFunction` and return a single value instead of a stream of values.
 
+Particular things to note:
+
+* All functions are annotated with `@UserFunction`.
+* The function name must be namespaced and is not allowed in reserved namespaces.
+* If a function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
+
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
 For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs for `org.neo4j.procedure.UserFunction`^].
@@ -119,4 +125,53 @@ public class JoinTest {
     }
 }
 ----
+
+
+[[reserved-function-namespaces]]
+== Reserved function namespaces
+
+List of reserved function namespaces::
+
+* *
+* date
+* date.realtime
+* date.statement
+* date.transaction
+* date.truncate
+* datetime
+* datetime.fromepoch
+* datetime.fromepochmillis
+* datetime.realtime
+* datetime.statement
+* datetime.transaction
+* datetime.truncate
+* db.nameFromElementId
+* duration
+* duration.between
+* duration.inDays
+* duration.inMonths
+* duration.inSeconds
+* graph.byElementId
+* graph.byName
+* graph.names
+* graph.propertiesByName
+* localdatetime
+* localdatetime.realtime
+* localdatetime.statement
+* localdatetime.transaction
+* localdatetime.truncate
+* localtime
+* localtime.realtime
+* localtime.statement
+* localtime.transaction
+* localtime.truncate
+* point.distance
+* point.withinBBox
+* time
+* time.realtime
+* time.statement
+* time.transaction
+* time.truncate
+* vector.similarity.cosine
+* vector.similarity.euclidean
 
