@@ -32,6 +32,12 @@ An aggregator class contains one method annotated with `@UserAggregationUpdate` 
 The method annotated with `@UserAggregationUpdate` will be called multiple times and enables the class to aggregate data.
 When the aggregation is done, the method annotated with `@UserAggregationResult` will be called once and the result of the aggregation will be returned.
 
+Particular things to note:
+
+* All functions are annotated with `@UserAggregationFunction`.
+* The aggregation function name must be namespaced and is not allowed in reserved namespaces.
+* If a user-defined aggregation function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
+
 See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
 
 For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggregationFunction}[`org.neo4j.procedure.UserAggregationFunction`^].
@@ -131,4 +137,54 @@ public class LongestStringTest
     }
 }
 ----
+
+
+[[reserved-function-namespaces]]
+== Reserved function namespaces
+
+
+List of reserved function namespaces and names::
+
+* *                          
+* date
+* date.realtime
+* date.statement
+* date.transaction
+* date.truncate
+* datetime
+* datetime.fromepoch
+* datetime.fromepochmillis
+* datetime.realtime
+* datetime.statement
+* datetime.transaction
+* datetime.truncate
+* db.nameFromElementId
+* duration
+* duration.between
+* duration.inDays
+* duration.inMonths
+* duration.inSeconds
+* graph.byElementId
+* graph.byName
+* graph.names
+* graph.propertiesByName
+* localdatetime
+* localdatetime.realtime
+* localdatetime.statement
+* localdatetime.transaction
+* localdatetime.truncate
+* localtime
+* localtime.realtime
+* localtime.statement
+* localtime.transaction
+* localtime.truncate
+* point.distance
+* point.withinBBox
+* time
+* time.realtime
+* time.statement
+* time.transaction
+* time.truncate
+* vector.similarity.cosine
+* vector.similarity.euclidean
 
