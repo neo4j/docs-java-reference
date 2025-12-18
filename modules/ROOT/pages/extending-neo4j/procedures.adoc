@@ -288,15 +288,15 @@ For more information about Neo4j and Cypher versioning, see link:https://neo4j.c
 | Reserved          | Deprecated in Cypher 25 since Neo4j 2025.11
 | cdc.*             | *
 | date.*            | abac.*
-| datetime.*        | aura.*
-| db.*              | builtin.*
-| dbms.*            | coll.*
-| duration.*        | math.*
-| graph.*           | plugin.*
-| internal.*        | point.*
-| localdatetime.*   | stored.*
-| localtime.*       | string.*
-| time.*            | vector.*
+| datetime.*        | builtin.*
+| db.*              | coll.*
+| dbms.*            | math.*
+| duration.*        | plugin.*
+| graph.*           | point.*
+| internal.*        | stored.*
+| localdatetime.*   | string.*
+| localtime.*       | vector.*
+| time.*            |
 | tx.*              |
 | unsupported.*     |
 |===
