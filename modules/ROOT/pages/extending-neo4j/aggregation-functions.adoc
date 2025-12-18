@@ -150,28 +150,28 @@ For more information about Neo4j and Cypher versioning, see link:https://neo4j.c
 |===
 | Reserved                      | Deprecated in Cypher 25 since Neo4j 2025.11
 | *                             | abac.*
-| date                          | aura.*
-| date.realtime                 | builtin.*
-| date.statement                | cdc.*
-| date.transaction              | coll.*
-| date.truncate                 | date.*
-| datetime                      | datetime.*
-| datetime.fromepoch            | db.*
-| datetime.fromepochmillis      | dbms.*
-| datetime.realtime             | duration.*
-| datetime.statement            | graph.*
-| datetime.transaction          | internal.*
-| datetime.truncate             | localdatetime.*
-| db.nameFromElementId          | localtime.*
-| duration                      | math.*
-| duration.between              | plugin.*
-| duration.inDays               | point.*
-| duration.inMonths             | stored.*
-| duration.inSeconds            | string.*
-| graph.byElementId             | time.*
-| graph.byName                  | tx.*
-| graph.names                   | unsupported.*
-| graph.propertiesByName        | vector.*
+| date                          | builtin.*
+| date.realtime                 | cdc.*
+| date.statement                | coll.*
+| date.transaction              | date.*
+| date.truncate                 | datetime.*
+| datetime                      | db.*
+| datetime.fromepoch            | dbms.*
+| datetime.fromepochmillis      | duration.*
+| datetime.realtime             | graph.*
+| datetime.statement            | internal.*
+| datetime.transaction          | localdatetime.*
+| datetime.truncate             | localtime.*
+| db.nameFromElementId          | math.*
+| duration                      | plugin.*
+| duration.between              | point.*
+| duration.inDays               | stored.*
+| duration.inMonths             | string.*
+| duration.inSeconds            | time.*
+| graph.byElementId             | tx.*
+| graph.byName                  | unsupported.*
+| graph.names                   | vector.*
+| graph.propertiesByName        |
 | localdatetime                 |
 | localdatetime.realtime        |
 | localdatetime.statement       |
