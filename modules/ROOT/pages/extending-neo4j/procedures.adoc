@@ -143,6 +143,8 @@ Particular things to note:
 * The procedure annotation can take three optional arguments: `name`, `mode`, and `eager`.
 ** `name` is used to specify a different name for the procedure than the default generated, which is `class.path.nameOfMethod`.
    If `mode` is specified, `name` must be specified as well.
+** `name` is not allowed in a reserved namespace, and having a `name` without a namespace is deprecated behavior.
+** If a procedure is registered with the same name as a built-in procedure in a deprecated namespace, the built-in procedure is shadowed.
 ** `mode` is used to declare the types of interactions that the procedure performs.
    A procedure fails if it attempts to execute database operations that violate its mode.
    The default `mode` is `READ`.
@@ -163,7 +165,7 @@ Particular things to note:
 MATCH (n)
 WHERE n.key = 'value'
 WITH n
-CALL deleteNeighbours(n, 'FOLLOWS')
+CALL example.deleteNeighbours(n, 'FOLLOWS')
 ----
 This query can delete some of the nodes that are matched by the Cypher query, and the `n.key` lookup will fail.
 Marking this procedure as `eager` prevents this from causing an error in Cypher code.
@@ -273,3 +275,28 @@ public class MyProcedures {
 }
 
 ----
+
+[[reserved-and-deprecated-namespaces]]
+== Reserved and deprecated procedure namespaces
+
+Note that deprecated procedure namespaces will be moved to reserved in the next major Cypher version.
+For more information about Neo4j and Cypher versioning, see link:https://neo4j.com/docs/operations-manual/current/introduction/#_cypher_versions[Operations manual -> Introduction].
+[[reserved-and-deprecated-procedure-namespaces]]
+.Overview of reserved and deprecated procedure namespaces
+[options="header", cols="m,m"]
+|===
+| Reserved          | Deprecated in Cypher 25 since Neo4j 2025.11
+| cdc.*             | *
+| date.*            | abac.*
+| datetime.*        | builtin.*
+| db.*              | coll.*
+| dbms.*            | math.*
+| duration.*        | plugin.*
+| graph.*           | point.*
+| internal.*        | stored.*
+| localdatetime.*   | string.*
+| localtime.*       | vector.*
+| time.*            |
+| tx.*              |
+| unsupported.*     |
+|===
