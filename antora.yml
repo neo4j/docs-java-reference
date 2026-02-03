@@ -9,6 +9,6 @@ asciidoc:
     page-origin-private: false
     neo4j-javadocs-base-uri: "https://neo4j.com/docs/java-reference/4.4/javadocs"
     neo4j-version: '4.4'
-    neo4j-version-exact: '4.4.46'
+    neo4j-version-exact: '4.4.47'
     neo4j-buildnumber: '4.4'
     java-driver-version: '4.4.21'
