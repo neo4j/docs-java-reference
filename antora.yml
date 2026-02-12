@@ -7,7 +7,7 @@ nav:
 asciidoc:
   attributes:
     neo4j-version: '2026.01'
-    neo4j-version-exact: '2026.01.3'
+    neo4j-version-exact: '2026.01.4'
     neo4j-buildnumber: '2026.01'
     java-driver-version: '6.0.2'
     neo4j-documentation-branch: 'dev'
