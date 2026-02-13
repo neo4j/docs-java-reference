@@ -370,7 +370,7 @@ class MaxWeightPathExpander implements PathExpander<Double>
                 filtered.add(relationship);
             }
         }
-        return Iterables.asResourceIterable(filtered);
+        return ResourceIterable.of(filtered);
     }
 
     @Override
