@@ -381,6 +381,8 @@ class MaxWeightPathExpander implements PathExpander<Double>
 }
 ----
 
+`ResourceIterable.of` is available starting from Neo4j 2026.03.
+
 Here is an example of how to use the custom `PathExpander` and set the initial state:
 
 [source, java, role="nocopy"]
