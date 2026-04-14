@@ -4,7 +4,7 @@
 [[java-embedded-traversal]]
 = Traversing a graph
 
-This page describes how to traverse a graph using the <<traversal, Traversal Framework>>.
+This page describes how to traverse a graph using the xref:traversal-framework.adoc[Traversal Framework].
 
 == The Matrix example
 
