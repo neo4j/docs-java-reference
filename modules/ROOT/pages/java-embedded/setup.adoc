@@ -297,10 +297,13 @@ NetBeans::
 [[editions]]
 == Neo4j editions
 
-The Neo4j Community Edition is available on the Maven Central Repository.
-Follow the link below for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, and Scala SBT.
+You can choose between the Neo4j Community and Neo4j Enterprise edition artifacts.
+The listed dependencies do not contain the implementation, but pull it transitively.
 
-.Neo4j edition
+The following table contains links to the available editions for use with dependency management tools.
+There you can find details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, and Scala SBT.
+
+.Neo4j editions
 [cols="<20,<30,<50", options="header"]
 |===
 
@@ -309,13 +312,17 @@ Follow the link below for details on dependency configuration with Apache Maven,
 | Description
 
 | Community
-| link:https://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
+| link:https://central.sonatype.com/artifact/org.neo4j/neo4j/overview[`org.neo4j:neo4j`]
 | A high-performance, fully ACID transactional graph database.
 
+| Enterprise
+| `com.neo4j:neo4j-enterprise`
+| Adding advanced monitoring, online backup, and clustering.
 |===
 
-Note that the listed dependencies do not contain the implementation, but pull it transitively.
 
-For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
-
-Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
+[TIP]
+====
+Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs].
+For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide].
+====
