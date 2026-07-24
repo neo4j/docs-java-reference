@@ -298,33 +298,13 @@ NetBeans::
 [[editions]]
 == Editions
 
-The following table outlines the available editions and their names for use with dependency management tools.
+You can choose between the link:link:https://central.sonatype.com/artifact/org.neo4j/neo4j/overview[Neo4j Community Edition] and the link:link:https://central.sonatype.com/artifact/org.neo4j/neo4j-enterprise/overview[Neo4j Enterprise Edition] artifacts.
+The listed dependencies do not contain the implementation, but pull it transitively.
 
 [TIP]
 ====
-Follow the links in the table for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, and Scala SBT.
+Follow the links for details on dependency configuration with Apache Maven, Apache Buildr, Apache Ivy, Groovy Grape, Grails, and Scala SBT.
+
+Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs].
+For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide].
 ====
-
-.Neo4j editions
-[cols="<20,<30,<50", options="header"]
-|===
-
-| Neo4j Edition
-| Dependency
-| Description
-
-| Community
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j%22[org.neo4j:neo4j^]
-| A high-performance, fully ACID transactional graph database.
-
-| Enterprise
-| link:http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22org.neo4j%22%20AND%20a%3A%22neo4j-enterprise%22[org.neo4j:neo4j-enterprise^]
-| Adding advanced monitoring, online backup, and clustering.
-
-|===
-
-Note that the listed dependencies do not contain the implementation, but pull it transitively.
-
-For information regarding licensing, see the link:https://neo4j.com/licensing[Licensing Guide^].
-
-Javadocs can be downloaded in JAR files from Maven Central or read in link:{neo4j-javadocs-base-uri}/[Neo4j Javadocs^].
