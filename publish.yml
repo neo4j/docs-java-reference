@@ -29,6 +29,9 @@ asciidoc:
   - "@neo4j-antora/antora-listing-roles"
   - "@neo4j-antora/antora-table-footnotes"
   attributes:
+    page-tabs: reference@
+    page-tabs-index: 20
+    page-tabs-group: dbms
     page-theme: docs
     page-type: Docs
     page-search-type: Docs
