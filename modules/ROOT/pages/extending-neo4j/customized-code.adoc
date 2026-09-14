@@ -4,8 +4,8 @@
 [[neo4j-customized-code]]
 = Neo4j customized code
 
-_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
-This is the preferred means for extending Neo4j.
+Neo4j allows you to extend its functionality by writing your own code using _user-defined_ procedures and functions.
+These mechanisms can be invoked directly from Cypher and are the preferred way of extending Neo4j.
 
 Examples of use cases for procedures and functions are:
 
@@ -14,10 +14,16 @@ Examples of use cases for procedures and functions are:
 * To perform graph-global operations, such as counting connected components or finding dense nodes.
 * To express a procedural operation that is difficult to express declaratively with Cypher.
 
-Procedures and functions are written in Java and compiled into JAR files.
-They are deployed to the database by dropping that JAR file into the _plugins_ directory on each standalone or clustered server.
+To write these procedures and functions, you must use Java and compile them into JAR files. Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server and loaded during start-up.
 For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
-The database must be restarted on each server to pick up new procedures and functions.
+
+label:enterprise-only[] From Neo4j 5.14 onwards, you can use the built-in procedure `CALL dbms.reloadProcedure()` to reload procedures and functions without restarting the DBMS.
+Keep in mind that in a cluster deployment, you need to call this procedure on each cluster member.
+
+[NOTE]
+====
+The reload process is isolated so that the operation only affects new transactions. Currently, running transactions continue to execute with a snapshot of the available procedures at their respective initialization.
+====
 
 Procedures and functions can take arguments and return results.
 In addition, procedures can perform write operations on the database.
