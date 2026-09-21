@@ -178,7 +178,7 @@ public class JoinTest {
 ----
 
 ======
-[.include-with-function-integration-tests]
+[.include-with-aggregation-function-integration-tests]
 ======
 
 The following is an example template for testing a user-defined aggregation function that finds the longest string:
