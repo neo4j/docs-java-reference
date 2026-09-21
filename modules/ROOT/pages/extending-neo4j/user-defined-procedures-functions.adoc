@@ -507,7 +507,7 @@ RETURN org.neo4j.examples.longestString(p.name)
 ======
 =====
 
-[role=label--new-2026.09 label--enterprise-only label--admin-only]
+[role=label--new-2026.09 label--enterprise-only label--admin-only label--cypher-25]
 == Reload procedures and functions
 
 You can use the built-in procedure `dbms.reloadProcedures()` to reload the user supplied procedure or function JAR files from the _plugins_ directory into a running Neo4j, without restarting it.
