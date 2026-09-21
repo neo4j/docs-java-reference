@@ -549,7 +549,9 @@ include::partial$user-procedures-functions.adoc[]
 
 You can use the following example to test the `dbms.reloadProcedures()` procedure to reload a user-defined procedure or function without restarting the server, as well as withdraw a procedure or function.
 
-. Confirm the procedure is available:
+The example assumes you have a Neo4j server running with the `example-v1.jar` plugin in the _plugins_ directory, which contains a procedure `com.example.someProcedure()`.
+
+. Confirm that reload procedure is available by running the following query:
 +
 [source, cypher]
 ----
@@ -570,16 +572,8 @@ RETURN name, description, admin;
 ready to start consuming query after 111 ms, results consumed after another 8 ms
 ----
 
-. Call the plugin currently in service:
-+
-[source, cypher]
-----
-CALL com.example.version();
-----
-+
-The query returns the version of the plugin currently in service, which is "v1".
-
-. Replace the JAR while the server keeps running:
+. Replace the `example-v1.jar` with `example-v2.jar` while the server keeps running.
+The new JAR file contains the `com.example.someProcedure` as well as some new procedures and functions:
 +
 [source, bash]
 ----
@@ -596,55 +590,16 @@ CALL dbms.reloadProcedures('com.example.*');
 +
 [queryresult]
 ----
-name                        type
-"com.example.version"       "PROCEDURE"
-"com.example.newProcedure"  "PROCEDURE"
-"com.example.greet"         "FUNCTION"
-"com.example.joinAll"       "AGGREGATION FUNCTION"
-----
-
-. Confirm the new version is serving:
-+
-[source, cypher]
-----
-CALL com.example.version();
+name                                       type
+"com.example.someProcedure"                "PROCEDURE"
+"com.example.newProcedure"                 "PROCEDURE"
+"com.example.newFunction"                  "FUNCTION"
+"com.example.newAggregationFunction"       "AGGREGATION FUNCTION"
 ----
 +
-The query returns the version of the plugin currently in service, which is now "v2".
-+
-[source, cypher]
-----
-CALL com.example.newProcedure();
-----
-+
-The query returns a procedure that did not exist a moment ago.
+The procedure returns all the entry points in that namespace, including the new ones.
 
-=== Withdraw a procedure or function
-
-Remove a JAR and reload its namespace unregisters everything that JAR provided, so that it is no longer available to Cypher.
-For example, to withdraw the `com.example.greet` function, remove the JAR, and reload the namespace:
-
-.Remove the JAR and add a new one that does not contain the `com.example.greet` function:
-[source, bash]
-----
-rm  plugins/example-v2.jar
-cp  example-v3.jar plugins/
-----
-
-.Reload the namespace
-[source, cypher]
-----
-CALL dbms.reloadProcedures('com.example.*');
-----
-The query returns the remaining entry points in that namespace:
-
-[queryresult]
-----
-name                        type
-"com.example.version"       "PROCEDURE"
-"com.example.newProcedure"  "PROCEDURE"
-"com.example.joinAll"       "AGGREGATION FUNCTION"
-----
+Similarly, you can withdraw a procedure or function by removing its JAR file and reloading the namespace.
 
 === Confirm that no restart happened
 
