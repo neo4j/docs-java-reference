@@ -1,0 +1,8 @@
+[CAUTION]
+====
+Keep in mind that in a cluster deployment, you need to deploy the JAR files and run the `dbms.reloadProcedures()` procedure on each cluster member.
+Otherwise, the cluster members will be out of sync, leading to unexpected behavior.
+
+The reload process is isolated so that the operation only affects new transactions.
+Currently running transactions continue to execute with a snapshot of the available procedures or functions at their respective initialization.
+====
