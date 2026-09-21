@@ -5,7 +5,7 @@
 = Neo4j customized code
 
 Neo4j allows you to extend its functionality by writing your own code using _user-defined_ procedures and functions.
-These mechanisms can be invoked directly from Cypher and are the preferred way of extending Neo4j.
+They can be invoked directly from Cypher and are the preferred way of extending Neo4j.
 
 Examples of use cases for procedures and functions are:
 
@@ -16,12 +16,12 @@ Examples of use cases for procedures and functions are:
 
 == Writing user-defined procedures and functions
 
-To write these procedures and functions, you must use Java and compile them into JAR files.
+Procedures and functions should be implemented in a language within the JVM ecosystem and packaged into a JAR file.
 See xref:extending-neo4j/user-defined-procedures-functions.adoc#create-user-defined-procedure-or-function[Create a procedure or function] for details.
 
 == Deploying user-defined procedures and functions
 
-Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server and loaded during start-up.
+Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server.
 For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
 
 label:new[Introduced in 2026.09] label:enterprise-only[] You can use the built-in procedure `dbms.reloadProcedures()` to reload procedures and functions without restarting the DBMS.
@@ -74,7 +74,7 @@ Future versions of Neo4j might contain breaking changes to this API.
 ====
 
 If your procedure or function allocates significant amounts of heap memory, you can register allocations to count towards the configured transaction limits, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[Operations Manual -> Limit transaction memory usage] for more information.
-This allows you to avoid `OutOfMemory` errors that cause database restarts.
+This allows you to avoid `OutOfMemory` errors and terminate queries instead of causing uncontrollable memory consumption.
 Memory allocations also show up in query profiles.
 
 To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure/function class.

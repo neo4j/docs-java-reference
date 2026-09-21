@@ -19,7 +19,7 @@ For a comparison between user-defined procedures, functions, and aggregation fun
 
 [NOTE]
 ====
-User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classed as a user database procedure.
+User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classified as standard database procedures.
 ====
 
 [[create-user-defined-procedure-or-function]]
@@ -40,7 +40,7 @@ Finally, write a procedure, function, or aggregation function that passes the te
 
 The test dependencies include _Neo4j Harness_ and _JUnit_.
 These can be used to write integration tests for procedures and functions.
-The tests should start a Neo4j instance, load the procedure, and execute queries against it.
+The tests should start a Neo4j server, load the procedure, and execute queries against it.
 
 [.tabbed-example]
 =====
@@ -512,7 +512,7 @@ RETURN org.neo4j.examples.longestString(p.name)
 == Reload procedures and functions
 
 You can use the built-in procedure `dbms.reloadProcedures()` to reload the user supplied procedure or function JAR files from the _plugins_ directory into a running Neo4j, without restarting it.
-This procedure is available only on `block` format.
+This procedure is not supported on Windows.
 
 For more information about plugins, see link:https://neo4j.com/docs/operations-manual/current/configuration/plugins/[Operations Manual -> Configure plugins].
 
@@ -540,7 +540,7 @@ An empty result means nothing matched the pattern.
 The namespace argument genuinely limits the operation.
 It is not advisory.
 A plugin whose namespace does not match the pattern is left untouched, even if its JAR file changed on disk.
-Three namespaces are permanently excluded and cannot be reloaded: `apoc.*`, `gds.*`, and `aura.*`.
+Three namespaces `apoc.*`, `gds.*`, and `aura.*` are not reloadable by default.
 ====
 
 === Example
