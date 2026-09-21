@@ -522,14 +522,14 @@ The syntax for the `dbms.reloadProcedures()` procedure is as follows:
 
 .Details
 |===
-| Syntax 3+m| dbms.reloadProcedures(namespaces = * :: STRING) :: (name :: STRING, type :: STRING)
-| Description 3+a| Reload procedures from disk.
-.2+| Input arguments | Name | Type | Description
+| *Syntax* 3+m| dbms.reloadProcedures(namespaces = * :: STRING) :: (name :: STRING, type :: STRING)
+| *Description* 3+a| Reload procedures from disk.
+.2+| *Input arguments* | *Name* | *Type* | *Description*
 | namespaces | STRING | Optional. A glob pattern selecting which namespaces to reload. Defaults to '\*', meaning everything. Example: 'com.example.*'.
-.3+| Input arguments | Name | Type | Description
+.3+| *Returned arguments* | *Name* | *Type* | *Description*
 | name | STRING | The fully qualified name of each entry point that was reloaded.
 | type | STRING | The type of each entry point that was reloaded. Possible values are: PROCEDURE, FUNCTION or AGGREGATION FUNCTION.
-| Mode 3+| DBMS
+| *Mode* 3+| DBMS
 |===
 
 A successful call returns one row for every entry point it brought back into service.
@@ -560,8 +560,14 @@ RETURN name, description, admin;
 +
 [queryresult]
 ----
-name                     description                     admin
-"dbms.reloadProcedures"  "Reload procedures from disk."  TRUE
++------------------------------------------------------------------+
+| name                    | description                    | admin |
++------------------------------------------------------------------+
+| "dbms.reloadProcedures" | "Reload procedures from disk." | TRUE  |
++------------------------------------------------------------------+
+
+1 row
+ready to start consuming query after 111 ms, results consumed after another 8 ms
 ----
 
 . Call the plugin currently in service:
