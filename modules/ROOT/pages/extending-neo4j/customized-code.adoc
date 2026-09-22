@@ -4,8 +4,8 @@
 [[neo4j-customized-code]]
 = Neo4j customized code
 
-_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
-This is the preferred means for extending Neo4j.
+Neo4j allows you to extend its functionality by writing your own code using _user-defined_ procedures and functions.
+They can be invoked directly from Cypher and are the preferred way of extending Neo4j.
 
 Examples of use cases for procedures and functions are:
 
@@ -14,10 +14,19 @@ Examples of use cases for procedures and functions are:
 * To perform graph-global operations, such as counting connected components or finding dense nodes.
 * To express a procedural operation that is difficult to express declaratively with Cypher.
 
-Procedures and functions are written in Java and compiled into _jar_ files.
-They are deployed to the database by dropping that _jar_ file into the _plugins_ directory on each standalone or clustered server.
-For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/configuration/file-locations/[Operations Manual -> File locations].
-The database must be re-started on each server to pick up new procedures and functions.
+== Writing user-defined procedures and functions
+
+Procedures and functions should be implemented in a language within the JVM ecosystem and packaged into a JAR file.
+See xref:extending-neo4j/user-defined-procedures-functions.adoc#create-user-defined-procedure-or-function[Create a procedure or function] for details.
+
+== Deploying user-defined procedures and functions
+
+Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server.
+For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
+
+
+[[comparison-of-procedures-and-functions]]
+== Comparison of procedures and functions
 
 Procedures and functions can take arguments and return results.
 In addition, procedures can perform write operations on the database.
@@ -50,6 +59,85 @@ In addition, procedures can perform write operations on the database.
 | Reduces cardinality, many down to one.
 
 |===
+
+[[memory-resource-tracking]]
+== Memory resource tracking
+
+[NOTE]
+====
+The memory resource tracking API for the procedure framework is available for preview.
+Future versions of Neo4j might contain breaking changes to this API.
+====
+
+If your procedure or function allocates significant amounts of heap memory, you can register allocations to count towards the configured transaction limits, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/performance/memory-configuration/#memory-configuration-limit-transaction-memory[Operations Manual -> Limit transaction memory usage] for more information.
+This allows you to avoid `OutOfMemory` errors and terminate queries instead of causing uncontrollable memory consumption.
+Memory allocations also show up in query profiles.
+
+To do this you need to inject `org.neo4j.procedure.memory.ProcedureMemory` as a field in your procedure/function class.
+`ProcedureMemory` has various methods to allow you to register allocations.
+For example (see javadocs for a full reference):
+
+* `ProcedureMemoryTracker newTracker()` creates a new memory resource tracker that is bound to the current transaction.
+* `HeapEstimator heapEstimator()` estimates the heap size of classes and instances.
+* `HeapTrackingCollectionFactory collections()` lets you create collections that have built-in memory tracking of their internal structure.
+
+It's usually difficult and time-consuming to implement memory resource tracking.
+These are a few considerations and caveats that are worth keeping in mind:
+
+- Limit the scope of the memory management.
+  Focus only on parts that can grow significantly in memory and ignore minor underestimation.
+- Beware of overestimation by registering allocations of the same instance multiple times.
+  You can add reference counting or other mechanisms to avoid overestimation if that is a concern.
+- It's common not to know the size of an instance before it has been allocated, which may lead you to register allocations after they have already been made.
+  The memory tracker implementation tries to prevent this by always pre-registering a certain amount of memory in the internal memory pools.
+- It's cumbersome in Java to know when an instance has been garbage-collected.
+  Typically, you register the release of memory at the point when it's possible for that memory to be garbage-collected.
+  To account for this, memory trackers may internally choose not to register the release of memory instantaneously.
+- Testing memory resource tracking can be difficult.
+  One approach is to use a third-party library, like JAMM (Java Agent for Memory Measurements), and assert that the estimates are close enough for some given input.
+
+
+.A basic example of memory resource tracking in user defined procedures
+[source, java]
+----
+package org.example;
+
+import org.neo4j.procedure.Context;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.Procedure;
+import org.neo4j.procedure.memory.ProcedureMemory;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+public class MyProcedures {
+
+    @Context
+    public ProcedureMemory memory;
+
+    record Output(Long value) {}
+
+    @Procedure("org.example.memoryHungryRange")
+    public Stream<Output> memoryHungryRange(@Name("size") int size) {
+        final var tracker = memory.newTracker();
+
+        // Register the allocation of the long array below
+        tracker.allocateHeap(memory.heapEstimator().sizeOfLongArray(size));
+        // The actual allocation
+        final var result = new long[size];
+
+        for (int i = 0; i < size; i++) result[i] = i;
+
+        return Arrays.stream(result)
+                .mapToObj(Output::new)
+                // Release all registered allocations when the stream is closed
+                .onClose(tracker::close);
+    }
+}
+
+----
+
+== Built-in procedures and functions
 
 Neo4j also comes bundled with a number of _built-in_ procedures and functions.
 
