@@ -4,8 +4,8 @@
 [[neo4j-customized-code]]
 = Neo4j customized code
 
-_User-defined procedures_ and _user-defined functions_ are mechanisms that enable you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
-This is the preferred means for extending Neo4j.
+Neo4j allows you to extend its functionality by writing your own code using _user-defined_ procedures and functions.
+They can be invoked directly from Cypher and are the preferred way of extending Neo4j.
 
 Examples of use cases for procedures and functions are:
 
@@ -14,10 +14,19 @@ Examples of use cases for procedures and functions are:
 * To perform graph-global operations, such as counting connected components or finding dense nodes.
 * To express a procedural operation that is difficult to express declaratively with Cypher.
 
-Procedures and functions are written in Java and compiled into _jar_ files.
-They are deployed to the database by dropping that _jar_ file into the _plugins_ directory on each standalone or clustered server.
-For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{neo4j-version}/configuration/file-locations/[Operations Manual -> File locations].
-The database must be re-started on each server to pick up new procedures and functions.
+== Writing user-defined procedures and functions
+
+Procedures and functions should be implemented in a language within the JVM ecosystem and packaged into a JAR file.
+See xref:extending-neo4j/user-defined-procedures-functions.adoc#create-user-defined-procedure-or-function[Create a procedure or function] for details.
+
+== Deploying user-defined procedures and functions
+
+Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server.
+For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
+
+
+[[comparison-of-procedures-and-functions]]
+== Comparison of procedures and functions
 
 Procedures and functions can take arguments and return results.
 In addition, procedures can perform write operations on the database.
@@ -50,6 +59,8 @@ In addition, procedures can perform write operations on the database.
 | Reduces cardinality, many down to one.
 
 |===
+
+== Built-in procedures and functions
 
 Neo4j also comes bundled with a number of _built-in_ procedures and functions.
 

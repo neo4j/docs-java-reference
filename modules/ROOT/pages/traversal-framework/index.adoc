@@ -60,7 +60,7 @@ image::graphdb-traversal-description.svg[role="middle"]
 == Using the Traversal Framework
 
 The Traversal Framework can be used xref:java-embedded/index.adoc[embedded in Java applications].
-It can also be used when extending Neo4j with a xref:extending-neo4j/procedures.adoc[User-defined Procedure].
+It can also be used when extending Neo4j with a xref:extending-neo4j/user-defined-procedures-functions.adoc[User-defined procedures and functions].
 See an example xref:traversal-framework/traversal-framework-example.adoc#traversal-in-a-procedure-example[here].
 
 To read more about the traversals, see:
