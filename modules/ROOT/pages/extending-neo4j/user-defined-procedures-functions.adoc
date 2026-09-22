@@ -342,11 +342,6 @@ import org.neo4j.procedure.Description;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.Procedure;
 
-/**
- * This is an example showing how you could expose Neo4j's full text indexes as
- * two procedures - one for updating indexes, and one for querying by label and
- * the lucene query language.
- */
 public class GetRelationshipTypes {
     // This gives us a log instance that outputs messages to the
     // standard log, normally found under `data/log/console.log`
