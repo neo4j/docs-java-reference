@@ -315,41 +315,51 @@ The following examples show how to write a user-defined procedure, function, and
 [.include-with-procedure-example]
 ======
 
-The following is an example of a user-defined procedure that returns all nodes in the graph:
+The following is an example of a user-defined procedure that returns the relationship types going in and out of a given node:
 
 [source, java]
 ----
 package example;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.Node;
-import org.neo4j.graphdb.ResourceIterator;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.graphdb.Relationship;
+import org.neo4j.logging.Log;
 import org.neo4j.procedure.Context;
-import org.neo4j.procedure.Mode;
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
 import org.neo4j.procedure.Procedure;
 
-/**
- * This is an example returning {@link org.neo4j.graphdb.Entity Entities} from stored procedures.
- * {@link Node Nodes} and {@link org.neo4j.graphdb.Relationship relationships} are both entities
- * and can only be accessed in their transaction. So it is important that you use the injected one
- * and not open a new one; otherwise you can access them from the outside.
- */
-public class EntityResultExample {
+public class GetRelationshipTypes {
+    // This gives us a log instance that outputs messages to the
+    // standard log, normally found under `data/log/console.log`
+    @Context
+    public Log log;
 
-	@Context
-	public Transaction tx;
+    /**
+     * This procedure takes a Node and gets the relationships going in and out of it
+     *
+     * @param node  The node to get the relationships for
+     * @return  A RelationshipTypes instance with the relations (incoming and outgoing) for a given node.
+     */
+    @Procedure(name = "example.getRelationshipTypes")
+    @Description("Get the different relationships going in and out of a node.")
+    public Stream<RelationshipTypes> getRelationshipTypes(@Name("node") Node node) {
+        List<String> outgoing = new ArrayList<>();
+        node.getRelationships(Direction.OUTGOING).iterator()
+            .forEachRemaining(rel -> AddDistinct(outgoing, rel));
 
-	public record EntityContainer(Node node) {
-	}
+        List<String> incoming = new ArrayList<>();
+        node.getRelationships(Direction.INCOMING).iterator()
+                .forEachRemaining(rel -> AddDistinct(incoming, rel));
 
-	@Procedure(name = "example.allnodes", mode = Mode.READ)
-	public Stream<EntityContainer> allnodes() {
-		ResourceIterator<Node> nodes = tx.execute("MATCH (n) RETURN n").columnAs("n");
-		return nodes.stream().map(EntityContainer::new);
-	}
-}
+        return Stream.of(new RelationshipTypes(incoming, outgoing));
+    }
 ----
 
 ======
