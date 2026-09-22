@@ -1,6 +1,6 @@
 :description: How to write, test, and deploy a user-defined procedure, function, or aggregation function for Neo4j.
 
-:procedure-template-url: https://github.com/neo4j-examples/neo4j-procedure-template/tree/5.x
+:procedure-template-url: https://github.com/neo4j-examples/neo4j-procedure-template/tree/4.4
 :org-neo4j-procedure-UserFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserFunction.html
 :org-neo4j-procedure-UserAggregationFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserAggregationFunction.html
 
@@ -285,10 +285,7 @@ It is the responsibility of the procedure author to handle that case.
 [.include-with-functions]
 ======
 
-* All functions are annotated with `@UserFunction`.
-* The function name must be namespaced and is not allowed in reserved namespaces.
-* If a function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
-
+All functions are annotated with `@UserFunction` and return a single value.
 For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs for `org.neo4j.procedure.UserFunction`^].
 
 ======
@@ -300,8 +297,6 @@ For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs
 * An aggregator class contains one method annotated with `@UserAggregationUpdate` and one method annotated with `@UserAggregationResult`.
 The method annotated with `@UserAggregationUpdate` is called multiple times and enables the class to aggregate data.
 When the aggregation is done, the method annotated with `@UserAggregationResult` is called once and the result of the aggregation is returned.
-* The aggregation function name must be namespaced and is not allowed in reserved namespaces.
-* If a user-defined aggregation function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
 
 For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggregationFunction}[`org.neo4j.procedure.UserAggregationFunction`^].
 
@@ -520,89 +515,5 @@ The function name must be fully qualified, so a function named `longestString` d
 MATCH (p: Person) WHERE p.age = 36
 RETURN org.neo4j.examples.longestString(p.name)
 ----
-======
-=====
-
-[[reserved-and-deprecated-namespaces]]
-== Reserved and deprecated procedure namespaces
-
-[NOTE]
-====
-Note that deprecated procedure and function namespaces will be moved to reserved in the next major Cypher version.
-For more information about Neo4j and Cypher versioning, see link:https://neo4j.com/docs/operations-manual/5/introduction/#_cypher_versions[Operations manual -> Introduction].
-====
-
-[.tabbed-example]
-=====
-[.include-with-procedure-namespaces]
-======
-
-The following table shows the reserved procedure namespaces:
-
-* cdc.*
-* date.*
-* datetime.*
-* db.*
-* dbms.*
-* duration.*
-* graph.*
-* internal.*
-* localdatetime.*
-* localtime.*
-* time.*
-* tx.*
-* unsupported.*
-
-
-======
-
-[.include-with-function-namespaces]
-======
-
-The following table shows the reserved function namespaces:
-
-* *
-* date
-* date.realtime
-* date.statement
-* date.transaction
-* date.truncate
-* datetime
-* datetime.fromepoch
-* datetime.fromepochmillis
-* datetime.realtime
-* datetime.statement
-* datetime.transaction
-* datetime.truncate
-* db.nameFromElementId
-* duration
-* duration.between
-* duration.inDays
-* duration.inMonths
-* duration.inSeconds
-* graph.byElementId
-* graph.byName
-* graph.names
-* graph.propertiesByName
-* localdatetime
-* localdatetime.realtime
-* localdatetime.statement
-* localdatetime.transaction
-* localdatetime.truncate
-* localtime
-* localtime.realtime
-* localtime.statement
-* localtime.transaction
-* localtime.truncate
-* point.distance
-* point.withinBBox
-* time
-* time.realtime
-* time.statement
-* time.transaction
-* time.truncate
-* vector.similarity.cosine
-* vector.similarity.euclidean
-
 ======
 =====
