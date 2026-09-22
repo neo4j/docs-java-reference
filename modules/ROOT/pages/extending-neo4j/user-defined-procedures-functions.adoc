@@ -539,7 +539,7 @@ An empty result means nothing matched the pattern.
 The namespace argument genuinely limits the operation.
 It is not advisory.
 A plugin whose namespace does not match the pattern is left untouched, even if its JAR file changed on disk.
-Three namespaces `apoc.*`, `gds.*`, and `aura.*` are not reloadable by default.
+Three namespaces `apoc.{asterisk}`, `gds.{asterisk}`, and `aura.{asterisk}` are not reloadable by default.
 ====
 
 === Example
