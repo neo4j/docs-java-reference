@@ -38,15 +38,14 @@ Finally, write a procedure, function, or aggregation function that passes the te
 
 === Create integration tests
 
-The test dependencies include _Neo4j Harness_ and _JUnit_.
-These can be used to write integration tests for procedures and functions.
+You can use the test dependencies _Neo4j Harness_ and _JUnit_ to write integration tests for your procedure, function, or aggregation function.
 The tests should start a Neo4j server, load the procedure, and execute queries against it.
 
 [.tabbed-example]
 =====
 [.include-with-procedure-integration-tests]
 ======
-The following is an example using JUnit 5 for testing a procedure that returns relationship types found in the graph:
+The following is an example using Neo4j Harness and JUnit 5 for testing a procedure that returns relationship types found in the graph:
 
 [source, java]
 ----
@@ -125,7 +124,7 @@ public class GetRelationshipTypesTests {
 [.include-with-function-integration-tests]
 ======
 
-The following is an example template for testing a user-defined function that joins a list of strings:
+The following is an example that uses Neo4j Harness for testing a user-defined function that joins a list of strings:
 
 [source, java]
 ----
@@ -181,7 +180,7 @@ public class JoinTest {
 [.include-with-aggregation-function-integration-tests]
 ======
 
-The following is an example template for testing a user-defined aggregation function that finds the longest string:
+The following is an example that uses Neo4j Harness and JUnit 5 for testing a user-defined aggregation function that finds the longest string:
 
 [source, java]
 ----
