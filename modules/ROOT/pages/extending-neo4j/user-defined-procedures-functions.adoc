@@ -322,7 +322,7 @@ The following examples show how to write a user-defined procedure, function, and
 [.include-with-procedure-example]
 ======
 
-The following is an example of a user-defined procedure that returns all nodes in the graph:
+The following is an example of a user-defined procedure that returns the relationship types going in and out of a node:
 
 [source, java]
 ----
