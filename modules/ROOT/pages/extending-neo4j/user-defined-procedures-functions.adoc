@@ -1,0 +1,731 @@
+:description: How to write, test, and deploy a user-defined procedure, function, or aggregation function for Neo4j.
+
+:procedure-template-url: https://github.com/neo4j-examples/neo4j-procedure-template/
+:org-neo4j-procedure-UserFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserFunction.html
+:org-neo4j-procedure-UserAggregationFunction: {neo4j-javadocs-base-uri}/org/neo4j/procedure/UserAggregationFunction.html
+
+[[extending-neo4j-procedures-and-functions]]
+= User-defined procedures and functions
+
+Defining procedures and functions enables you to extend Neo4j by writing customized code, which can be invoked directly from Cypher.
+Procedures and functions can take arguments, perform operations on the database, and return results.
+
+* _User-defined procedures_ are the most powerful form of customization, allowing you to perform complex operations and return multiple results.
+* _User-defined functions_ are simpler forms of procedures that return a single value and are read-only.
+Although they are less powerful in capability, they are often easier to use and more efficient than procedures for many common tasks.
+* _User-defined aggregation functions_ are functions that aggregate data and return a single result.
+
+For a comparison between user-defined procedures, functions, and aggregation functions, see xref:extending-neo4j/customized-code.adoc#comparison-of-procedures-and-functions[Comparison of procedures and functions].
+
+[NOTE]
+====
+User-defined procedures requiring execution on the system database need to include the annotation `@SystemProcedure` or they will be classified as standard database procedures.
+====
+
+[[create-user-defined-procedure-or-function]]
+== Create a procedure or function
+
+Make sure you have read and followed the preparatory setup instructions in xref:extending-neo4j/project-setup.adoc[].
+
+[TIP]
+====
+The example discussed below is available as link:{procedure-template-url}[a repository on GitHub^].
+To get started quickly you can fork the repository and work with the code as you follow along in the guide below.
+====
+
+First, decide what the procedure, function, or aggregation function should do, then write a test that proves that it does it right.
+Finally, write a procedure, function, or aggregation function that passes the test.
+
+=== Create integration tests
+
+You can use the test dependencies _Neo4j Harness_ and _JUnit_ to write integration tests for your procedure, function, or aggregation function.
+The tests should start a Neo4j server, load the procedure, and execute queries against it.
+
+[.tabbed-example]
+=====
+[.include-with-procedure-integration-tests]
+======
+The following is an example using Neo4j Harness and JUnit 5 for testing a procedure that returns relationship types found in the graph:
+
+[source, java]
+----
+package example;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.Value;
+import org.neo4j.harness.Neo4j;
+import org.neo4j.harness.Neo4jBuilders;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class GetRelationshipTypesTests {
+
+    private Driver driver;
+    private Neo4j embeddedDatabaseServer;
+
+    @BeforeAll
+    void initializeNeo4j() {
+        this.embeddedDatabaseServer = Neo4jBuilders.newInProcessBuilder()
+                .withDisabledServer()
+                .withProcedure(GetRelationshipTypes.class)
+                .build();
+
+        this.driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());
+    }
+
+    @AfterAll
+    void closeDriver(){
+        this.driver.close();
+        this.embeddedDatabaseServer.close();
+    }
+
+    @AfterEach
+    void cleanDb(){
+        try(Session session = driver.session()) {
+            session.run("MATCH (n) DETACH DELETE n");
+        }
+    }
+
+    /**
+     * We should be getting the correct values when there is only one type in each direction
+     */
+    @Test
+    public void shouldReturnTheTypesWhenThereIsOneEachWay() {
+        final String expectedIncoming = "INCOMING";
+        final String expectedOutgoing = "OUTGOING";
+
+        // In a try-block, to make sure we close the session after the test
+        try(Session session = driver.session()) {
+
+            //Create our data in the database.
+            session.run(String.format("CREATE (:Person)-[:%s]->(:Movie {id:1})-[:%s]->(:Person)", expectedIncoming, expectedOutgoing));
+
+            //Execute our procedure against it.
+            Record record = session.run("MATCH (u:Movie {id:1}) CALL example.getRelationshipTypes(u) YIELD outgoing, incoming RETURN outgoing, incoming").single();
+
+            //Get the incoming / outgoing relationships from the result
+            assertThat(record.get("incoming").asList(Value::asString)).containsOnly(expectedIncoming);
+            assertThat(record.get("outgoing").asList(Value::asString)).containsOnly(expectedOutgoing);
+        }
+    }
+}
+----
+======
+[.include-with-function-integration-tests]
+======
+
+The following is an example that uses Neo4j Harness for testing a user-defined function that joins a list of strings:
+
+[source, java]
+----
+package example;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.Session;
+import org.neo4j.harness.Neo4j;
+import org.neo4j.harness.Neo4jBuilders;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+public class JoinTest {
+
+    private Neo4j embeddedDatabaseServer;
+
+    @BeforeAll
+    void initializeNeo4j() {
+        this.embeddedDatabaseServer = Neo4jBuilders.newInProcessBuilder()
+                .withDisabledServer()
+                .withFunction(Join.class)
+                .build();
+    }
+
+    @AfterAll
+    void closeNeo4j() {
+        this.embeddedDatabaseServer.close();
+    }
+
+    @Test
+    void joinsStrings() {
+        // This is in a try-block, to make sure we close the driver after the test
+        try(Driver driver = GraphDatabase.driver(embeddedDatabaseServer.boltURI());
+            Session session = driver.session()) {
+
+            // When
+            String result = session.run( "RETURN example.join(['Hello', 'World']) AS result").single().get("result").asString();
+
+            // Then
+            assertThat( result).isEqualTo(( "Hello,World" ));
+        }
+    }
+}
+----
+
+======
+[.include-with-aggregation-function-integration-tests]
+======
+
+The following is an example that uses Neo4j Harness and JUnit 5 for testing a user-defined aggregation function that finds the longest string:
+
+[source, java]
+----
+package example;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.neo4j.driver.v1.*;
+import org.neo4j.harness.junit.Neo4jRule;
+
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
+
+public class LongestStringTest
+{
+    // This rule starts a Neo4j instance
+    @Rule
+    public Neo4jRule neo4j = new Neo4jRule()
+
+            // This is the function to test
+            .withAggregationFunction( LongestString.class );
+
+    @Test
+    public void shouldAllowIndexingAndFindingANode() throws Throwable
+    {
+        // This is in a try-block, to make sure you close the driver after the test
+        try( Driver driver = GraphDatabase.driver( neo4j.boltURI() , Config.build().withEncryptionLevel( Config.EncryptionLevel.NONE ).toConfig() ) )
+        {
+            // Given
+            Session session = driver.session();
+
+            // When
+            String result = session.run( "UNWIND ["abc", "abcd", "ab"] AS string RETURN example.longestString(string) AS result").single().get("result").asString();
+
+            // Then
+            assertThat( result, equalTo( "abcd" ) );
+        }
+    }
+}
+----
+
+======
+=====
+
+
+=== Define your procedure, function, or aggregation function
+
+With the test in place, write a procedure, function, or aggregation function that fulfills the expectations of the test.
+The full example is available in the link:{procedure-template-url}[Neo4j Procedure Template^] repository.
+
+See xref:extending-neo4j/values-and-types.adoc[] for details on values and types.
+
+Particular things to note:
+
+[.tabbed-example]
+=====
+[.include-with-procedures]
+======
+
+* All procedures are annotated `@Procedure`.
+* The procedure annotation can take three optional arguments: `name`, `mode`, and `eager`.
+** `name` is used to specify a different name for the procedure than the default generated, which is `class.path.nameOfMethod`.
+   If `mode` is specified, `name` must be specified as well.
+** `name` is not allowed in a reserved namespace, and having a `name` without a namespace is deprecated behavior.
+** If a procedure is registered with the same name as a built-in procedure in a deprecated namespace, the built-in procedure is shadowed.
+** `mode` is used to declare the types of interactions that the procedure performs.
+   A procedure fails if it attempts to execute database operations that violate its mode.
+   The default `mode` is `READ`.
+   The following modes are available:
+*** `READ` -- This procedure only performs read operations against the graph.
+*** `WRITE` -- This procedure performs read and write operations against the graph.
+*** `SCHEMA` -- This procedure performs operations against the schema, i.e. create and drop indexes and constraints.
+    A procedure with this mode can read graph data, but not write.
+*** `DBMS` -- This procedure performs system operations such as user management and query management.
+    A procedure with this mode is not able to read or write graph data.
+** `eager` is a boolean setting defaulting to `false`.
+   If it is set to `true`, the Cypher planner plans an extra `eager` operation before and after calling the procedure.
+   This is useful in cases where the procedure makes changes to the database in a way that could interact with the operations preceding or following the procedure.
+   For example:
++
+[source, cypher]
+----
+MATCH (n)
+WHERE n.key = 'value'
+WITH n
+CALL example.deleteNeighbours(n, 'FOLLOWS')
+----
+This query can delete some of the nodes that are matched by the Cypher query, and the `n.key` lookup will fail.
+Marking this procedure as `eager` prevents this from causing an error in Cypher code.
+However, it is still possible for the procedure to interfere with itself by trying to read entities it has previously deleted.
+It is the responsibility of the procedure author to handle that case.
+* The _context_ of the procedure, which is the same as each resource that the procedure wants to use, is annotated `@Context`.
+
+======
+[.include-with-functions]
+======
+
+* All functions are annotated with `@UserFunction`.
+* The function name must be namespaced and is not allowed in reserved namespaces.
+* If a function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
+
+For more details, see the link:{org-neo4j-procedure-UserFunction}[Neo4j Javadocs for `org.neo4j.procedure.UserFunction`^].
+
+======
+[.include-with-aggregation-functions]
+======
+
+* All functions are annotated with `@UserAggregationFunction`.
+* The annotated function must return an instance of an aggregator class.
+* An aggregator class contains one method annotated with `@UserAggregationUpdate` and one method annotated with `@UserAggregationResult`.
+The method annotated with `@UserAggregationUpdate` is called multiple times and enables the class to aggregate data.
+When the aggregation is done, the method annotated with `@UserAggregationResult` is called once and the result of the aggregation is returned.
+* The aggregation function name must be namespaced and is not allowed in reserved namespaces.
+* If a user-defined aggregation function is registered with the same name as a built-in function in a deprecated namespace, the built-in function is shadowed.
+
+For more details, see the Neo4j Javadocs for link:{org-neo4j-procedure-UserAggregationFunction}[`org.neo4j.procedure.UserAggregationFunction`^].
+
+======
+=====
+
+[NOTE]
+====
+The correct way to signal an error from within an aggregation function is to throw `RuntimeException`.
+====
+
+=== Write your user-defined procedure, function, and aggregation function
+
+The following examples show how to write a user-defined procedure, function, and aggregation function.
+
+[.tabbed-example]
+=====
+[.include-with-procedure-example]
+======
+
+The following is an example of a user-defined procedure that returns all nodes in the graph:
+
+[source, java]
+----
+package example;
+
+import java.util.stream.Stream;
+
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.ResourceIterator;
+import org.neo4j.graphdb.Transaction;
+import org.neo4j.procedure.Context;
+import org.neo4j.procedure.Mode;
+import org.neo4j.procedure.Procedure;
+
+/**
+ * This is an example returning {@link org.neo4j.graphdb.Entity Entities} from stored procedures.
+ * {@link Node Nodes} and {@link org.neo4j.graphdb.Relationship relationships} are both entities
+ * and can only be accessed in their transaction. So it is important that you use the injected one
+ * and not open a new one; otherwise you can access them from the outside.
+ */
+public class EntityResultExample {
+
+	@Context
+	public Transaction tx;
+
+	public record EntityContainer(Node node) {
+	}
+
+	@Procedure(name = "example.allnodes", mode = Mode.READ)
+	public Stream<EntityContainer> allnodes() {
+		ResourceIterator<Node> nodes = tx.execute("MATCH (n) RETURN n").columnAs("n");
+		return nodes.stream().map(EntityContainer::new);
+	}
+}
+----
+
+======
+[.include-with-function-example]
+======
+
+The following is an example of a user-defined function that joins a list of strings with a given delimiter:
+
+[source, java]
+----
+package example;
+
+import java.util.List;
+
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.UserFunction;
+
+/**
+ * This is an example how you can create a simple user-defined function for Neo4j.
+ */
+public class Join {
+
+    @UserFunction
+    @Description("example.join(['s1','s2',...], delimiter) - join the given strings with the given delimiter.")
+    public String join(
+            @Name("strings") List<String> strings,
+            @Name(value = "delimiter", defaultValue = ",") String delimiter) {
+        if (strings == null || delimiter == null) {
+            return null;
+        }
+        return String.join(delimiter, strings);
+    }
+}
+----
+
+======
+[.include-with-aggregation-function-example]
+======
+The following is an example of a user-defined aggregation function that finds the longest string:
+
+[source, java]
+----
+package example;
+
+import org.neo4j.procedure.Description;
+import org.neo4j.procedure.Name;
+import org.neo4j.procedure.UserAggregationFunction;
+import org.neo4j.procedure.UserAggregationResult;
+import org.neo4j.procedure.UserAggregationUpdate;
+
+public class LongestString
+{
+    @UserAggregationFunction
+    @Description( "org.neo4j.function.example.longestString(string) - aggregates the longest string found" )
+    public LongStringAggregator longestString()
+    {
+        return new LongStringAggregator();
+    }
+
+    public static class LongStringAggregator
+    {
+        private int longest;
+        private String longestString;
+
+        @UserAggregationUpdate
+        public void findLongest(
+                @Name( "string" ) String string )
+        {
+            if ( string != null && string.length() > longest)
+            {
+                longest = string.length();
+                longestString = string;
+            }
+        }
+
+        @UserAggregationResult
+        public String result()
+        {
+            return longestString;
+        }
+    }
+}
+----
+======
+=====
+
+[[injectable-resources]]
+=== Injectable resources
+
+When writing procedures, functions, or aggregation functions, some resources can be injected into the procedure from the database.
+To inject these, use the `@Context` annotation.
+The classes that can be injected are:
+
+* `Log`
+* `TerminationGuard`
+* `GraphDatabaseService`
+* `Transaction`
+//* `SecurityContext`
+//* `ProcedureTransaction`
+//* `ProcedureMemory` Candidate for public API but not stable yet
+
+All of the above classes are considered safe and future-proof and do not compromise the security of the database.
+Several unsupported (restricted) classes can also be injected and can be changed with little or no notice.
+Procedure, functions, and aggregation functions written to use these restricted APIs are not loaded by default, and you need to use the `dbms.security.procedures.unrestricted` to load them.
+Read more about this config setting in link:{neo4j-docs-base-uri}/operations-manual/{page-version}/security/securing-extensions[Operations Manual -> Securing extensions].
+
+[[call-procedure-or-function]]
+== Call user-defined procedures or functions
+
+You can call user-defined procedures and functions from Cypher queries in the same way as built-in procedures and functions.
+
+[.tabbed-example]
+=====
+[.include-with-call-procedures]
+======
+To call a user-defined procedure, use a Cypher `CALL` clause.
+The procedure name must be fully qualified, so a procedure named `findDenseNodes` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+CALL org.neo4j.examples.findDenseNodes(1000)
+----
+
+`CALL` may be the only clause within a Cypher statement or may be combined with other clauses.
+Arguments can be supplied directly within the query or taken from the associated parameter set.
+For full details, see the documentation in link:{neo4j-docs-base-uri}/cypher-manual/current/clauses/call[Cypher Manual -> `CALL` procedure].
+
+======
+
+[.include-with-call-functions]
+======
+User-defined functions are called in the same way as any other Cypher function.
+The function name must be fully qualified, so a function named `join` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+MATCH (p: Person) WHERE p.age = 36
+RETURN org.neo4j.examples.join(collect(p.names))
+----
+
+======
+[.include-with-call-aggregation-functions]
+======
+
+User-defined aggregation functions are called in the same way as any other Cypher aggregation function.
+The function name must be fully qualified, so a function named `longestString` defined in the package `org.neo4j.examples` could be called using:
+
+[source, cypher, role="noplay"]
+----
+MATCH (p: Person) WHERE p.age = 36
+RETURN org.neo4j.examples.longestString(p.name)
+----
+======
+=====
+
+[role=label--new-2026.09 label--enterprise-only label--admin-only label--cypher-25]
+[[reload-procedures-functions]]
+== Reload procedures and functions
+
+You can use the built-in procedure `dbms.reloadProcedures()` to reload the user supplied procedure or function JAR files from the _plugins_ directory into a running Neo4j, without restarting it.
+This procedure is not supported on Windows.
+
+For more information about plugins, see link:https://neo4j.com/docs/operations-manual/current/configuration/plugins/[Operations Manual -> Configure plugins].
+
+=== Syntax
+
+The syntax for the `dbms.reloadProcedures()` procedure is as follows:
+
+.Details
+|===
+| *Syntax* 3+m| dbms.reloadProcedures(namespaces = * :: STRING) :: (name :: STRING, type :: STRING)
+| *Description* 3+a| Reload procedures from disk.
+.2+| *Input arguments* | *Name* | *Type* | *Description*
+| namespaces | STRING | Optional. A glob pattern selecting which namespaces to reload. Defaults to '\*', meaning everything. Example: 'com.example.*'.
+.3+| *Returned arguments* | *Name* | *Type* | *Description*
+| name | STRING | The fully qualified name of each entry point that was reloaded.
+| type | STRING | The type of each entry point that was reloaded. Possible values are: PROCEDURE, FUNCTION or AGGREGATION FUNCTION.
+| *Mode* 3+| DBMS
+|===
+
+A successful call returns one row for every entry point it brought back into service.
+An empty result means nothing matched the pattern.
+
+[NOTE]
+====
+The namespace argument genuinely limits the operation.
+It is not advisory.
+A plugin whose namespace does not match the pattern is left untouched, even if its JAR file changed on disk.
+Three namespaces `apoc.{asterisk}`, `gds.{asterisk}`, and `aura.{asterisk}` are not reloadable by default.
+====
+
+=== Example
+
+include::partial$user-procedures-functions.adoc[]
+
+You can use the following example to test the `dbms.reloadProcedures()` procedure to reload a user-defined procedure or function without restarting the server, as well as withdraw a procedure or function.
+
+The example assumes you have a Neo4j server running with the `example-v1.jar` plugin in the _plugins_ directory, which contains a procedure `com.example.someProcedure()`.
+
+. Confirm that reload procedure is available by running the following query:
++
+[source, cypher]
+----
+SHOW PROCEDURES YIELD name, description, admin
+WHERE name = 'dbms.reloadProcedures'
+RETURN name, description, admin;
+----
++
+[queryresult]
+----
++------------------------------------------------------------------+
+| name                    | description                    | admin |
++------------------------------------------------------------------+
+| "dbms.reloadProcedures" | "Reload procedures from disk." | TRUE  |
++------------------------------------------------------------------+
+
+1 row
+ready to start consuming query after 111 ms, results consumed after another 8 ms
+----
+
+. Replace the `example-v1.jar` with `example-v2.jar` while the server keeps running.
+The new JAR file contains the `com.example.someProcedure` as well as some new procedures and functions:
++
+[source, bash]
+----
+rm  plugins/example-v1.jar
+cp  example-v2.jar plugins/
+----
+
+. Reload that namespace:
++
+[source, cypher]
+----
+CALL dbms.reloadProcedures('com.example.*');
+----
++
+[queryresult]
+----
+name                                       type
+"com.example.someProcedure"                "PROCEDURE"
+"com.example.newProcedure"                 "PROCEDURE"
+"com.example.newFunction"                  "FUNCTION"
+"com.example.newAggregationFunction"       "AGGREGATION FUNCTION"
+----
++
+The procedure returns all the entry points in that namespace, including the new ones.
+
+Similarly, you can withdraw a procedure or function by removing its JAR file and reloading the namespace.
+
+=== Confirm that no restart happened
+
+You can check that the server did not restart by checking the server start time and uptime.
+The server start time can be read from Cypher and should be unchanged across a reload.
+
+[source, cypher]
+----
+CALL dbms.queryJmx('java.lang:type=Runtime') YIELD attributes
+RETURN datetime({epochMillis: attributes.StartTime.value}) AS serverStarted,
+       duration({milliseconds: attributes.Uptime.value})   AS uptime;
+----
+
+=== Troubleshooting
+
+A reload builds an intermediate registry and only swaps it into service if the whole load succeeds.
+If any JAR in the directory is invalid, the reload fails and the previously loaded plugins keep serving, unchanged.
+When a corrupt file is in the plugins directory, the reload will return https://neo4j.com/docs/status-codes/current/errors/gql-errors/52N24/[52N24] and the plugin that was already in service will continue to answer correctly.
+Removing the invalid file and reloading again restores normal operation with no restart.
+
+==== Logging
+
+Every reload writes a matched pair of entries to _debug.log_, giving operators an audit trail of what was reloaded and when.
+For example:
+[source, log]
+----
+INFO c.n.d.p.ReloadProcedure "Reloading procedure namespace `com.example.*`."
+INFO c.n.d.p.ReloadProcedure "Reloaded 2 procedures, 1 functions, and 1 aggregation functions."
+----
+
+==== Query cache invalidation
+
+Cached Cypher plans that reference a changed signature are discarded automatically, so a client does not continue to run a stale plan against the old plugin.
+For example, if a procedure signature changes, the following log entry is written to _debug.log_:
+[source, log]
+----
+INFO o.n.c.i.c.CypherQueryCaches "Discarded stale query from the query cache after 5 seconds.
+Reason: Procedure or function signature have been modified. Query id: 79."
+----
+
+[[reserved-and-deprecated-namespaces]]
+== Reserved and deprecated procedure namespaces
+
+[NOTE]
+====
+Note that deprecated procedure and function namespaces will be moved to reserved in the next major Cypher version.
+For more information about Neo4j and Cypher versioning, see link:https://neo4j.com/docs/operations-manual/current/introduction/#_cypher_versions[Operations manual -> Introduction].
+====
+
+[.tabbed-example]
+=====
+[.include-with-procedure-namespaces]
+======
+
+The following table shows the reserved and deprecated procedure namespaces:
+
+[options="header", cols="m,m"]
+|===
+| Reserved          | Deprecated in Cypher 25 since Neo4j 2025.11
+| cdc.*             | *
+| date.*            | abac.*
+| datetime.*        | builtin.*
+| db.*              | coll.*
+| dbms.*            | math.*
+| duration.*        | plugin.*
+| graph.*           | point.*
+| internal.*        | stored.*
+| localdatetime.*   | string.*
+| localtime.*       | vector.*
+| time.*            |
+| tx.*              |
+| unsupported.*     |
+|===
+
+======
+
+[.include-with-function-namespaces]
+======
+
+The following table shows the reserved and deprecated function namespaces:
+
+[options="header", cols="m,m"]
+|===
+| Reserved                      | Deprecated in Cypher 25 since Neo4j 2025.11
+| *                             | abac.*
+| date                          | builtin.*
+| date.realtime                 | cdc.*
+| date.statement                | coll.*
+| date.transaction              | date.*
+| date.truncate                 | datetime.*
+| datetime                      | db.*
+| datetime.fromepoch            | dbms.*
+| datetime.fromepochmillis      | duration.*
+| datetime.realtime             | graph.*
+| datetime.statement            | internal.*
+| datetime.transaction          | localdatetime.*
+| datetime.truncate             | localtime.*
+| db.nameFromElementId          | math.*
+| duration                      | plugin.*
+| duration.between              | point.*
+| duration.inDays               | stored.*
+| duration.inMonths             | string.*
+| duration.inSeconds            | time.*
+| graph.byElementId             | tx.*
+| graph.byName                  | unsupported.*
+| graph.names                   | vector.*
+| graph.propertiesByName        |
+| localdatetime                 |
+| localdatetime.realtime        |
+| localdatetime.statement       |
+| localdatetime.transaction     |
+| localdatetime.truncate        |
+| localtime                     |
+| localtime.realtime            |
+| localtime.statement           |
+| localtime.transaction         |
+| localtime.truncate            |
+| point.distance                |
+| point.withinBBox              |
+| time                          |
+| time.realtime                 |
+| time.statement                |
+| time.transaction              |
+| time.truncate                 |
+| vector.similarity.cosine      |
+| vector.similarity.euclidean   |
+|===
+
+======
+=====
