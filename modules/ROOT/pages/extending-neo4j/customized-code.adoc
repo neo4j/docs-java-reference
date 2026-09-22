@@ -24,10 +24,6 @@ See xref:extending-neo4j/user-defined-procedures-functions.adoc#create-user-defi
 Once compiled, these JAR files are deployed to the _NEO4J_HOME/plugins_ directory on each standalone or clustered server.
 For the location of the _plugins_ directory, refer to link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/file-locations[Operations Manual -> Default file locations].
 
-label:new[Introduced in 2026.09] label:enterprise-only[] You can use the built-in procedure `dbms.reloadProcedures()` to reload procedures and functions without restarting the DBMS.
-See xref:extending-neo4j/user-defined-procedures-functions.adoc#reload-procedures-functions[Reloading procedures and functions] for details.
-
-include::partial$user-procedures-functions.adoc[]
 
 [[comparison-of-procedures-and-functions]]
 == Comparison of procedures and functions
