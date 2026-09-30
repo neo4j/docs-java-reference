@@ -11,7 +11,10 @@ Defining procedures and functions enables you to extend Neo4j by writing customi
 Procedures and functions can take arguments, perform operations on the database, and return results.
 
 [NOTE]
-As of Neo4j yyyy.mm and Cypher 25, query local functions and procedures can be defined with the `DEFINE` clause.
+====
+Starting with Neo4j yyyy.mm, in Cypher 25, you can define procedures and functions within a query using the Cypher clause `DEFINE`.
+You can only call them locally and within the scope of the query in which they are defined.
+====
 For more information, see the link:{neo4j-docs-base-uri}/cypher-manual/current/clauses/define/[Cypher Manual -> `DEFINE`]. 
 
 * _User-defined procedures_ are the most powerful form of customization, allowing you to perform complex operations and return multiple results.
