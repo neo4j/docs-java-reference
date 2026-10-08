@@ -1,13 +1,16 @@
-name: "Generate HTML"
-run-name: "Generate ${{ inputs.publish-env != '' && inputs.publish-env || (inputs.build-ref == vars.DOCS_PROD_BRANCH && 'prod' || 'dev') }} HTML from ${{ inputs.build-ref }}"
+name: "Generate PDF"
+run-name: "Generate ${{ inputs.publish-env != '' && inputs.publish-env || (inputs.build-ref == vars.DOCS_PROD_BRANCH && 'prod' || 'dev') }} PDF from ${{ inputs.build-ref }}"
 
 permissions:
   contents: read
 
-# Builds, verifies, and publishes docs for ONE environment, as a run entirely independent
-# of any other environment's run. Triggered (via the API, not a workflow_call) by
-# docs-trigger-builds.yml, once per environment that applies to a given push (dev, prod, or both) -
-# so if dev's run fails, prod's run is completely unaffected, and vice versa.
+# Mirrors docs-generate-html.yml's shape (workflow_dispatch with build-ref and
+# publish-env inputs, resolve-env -> build -> publish) and its own reusable-workflow
+# reference convention (a pinned neo4j/docs-tools/...@v2 tag, not a relative path -
+# this repo doesn't contain reusable-docs-pdf-build.yml itself). Still simpler than
+# docs-generate-html.yml in one way: there's no docs-verify step (no equivalent check
+# exists yet for a PDF), and build/publish are two plain jobs rather than a
+# reusable-workflow call plus a verify call.
 on:
   workflow_dispatch:
     inputs:
@@ -23,8 +26,8 @@ on:
 
 jobs:
 
-  # Resolves publish-env (dev/prod) once, so neither docs-build nor publish-html
-  # duplicates the override-or-derive logic.
+  # Resolves publish-env (dev/prod) once, so publish-pdf doesn't duplicate the
+  # override-or-derive logic - same job as docs-generate-html.yml's own resolve-env.
   resolve-env:
     name: Resolve environment
     runs-on: ubuntu-latest
@@ -48,26 +51,21 @@ jobs:
 
           echo "publish-env=${publish_env}" >> $GITHUB_OUTPUT
 
-  docs-build:
-    name: Generate HTML
-    needs: resolve-env
-    uses: neo4j/docs-tools/.github/workflows/reusable-docs-build.yml@v2
+  docs-build-pdf:
+    name: Generate PDF
+    uses: neo4j/docs-tools/.github/workflows/reusable-docs-pdf-build.yml@v2
     with:
-      package-script: 'verify:publish'
       build-ref: ${{ inputs.build-ref }}
       fetch-depth: 0
-      publish-env: ${{ needs.resolve-env.outputs.publish-env }}
 
-  docs-verify:
-    name: Verify HTML
-    needs: docs-build
-    uses: neo4j/docs-tools/.github/workflows/reusable-docs-verify.yml@v2
-    with:
-      failOnWarnings: true
-
-  publish-html:
-    name: Publish HTML
-    needs: [docs-verify, resolve-env]
+  # Hand off to docs-publish (a separate repo) to actually publish this run's "pdf"
+  # artifact - same mechanism docs-generate-html.yml already uses for its "docs"
+  # artifact. docset/version come from docs-build-pdf itself (read back out of the
+  # PDF's own build path - see reusable-docs-pdf-build.yml), since there's no HTML
+  # directory tree here for docs-publish to infer them from the way it does for HTML.
+  publish-pdf:
+    name: Publish PDF
+    needs: [docs-build-pdf, resolve-env]
     runs-on: ubuntu-latest
     steps:
       - name: Publish to ${{ needs.resolve-env.outputs.publish-env }}
@@ -75,11 +73,13 @@ jobs:
         with:
           token: ${{ secrets.DOCS_DISPATCH_TOKEN }}
           repository: neo4j/docs-publish
-          event-type: publish-html
+          event-type: publish-pdf
           client-payload: |-
             {
               "org": "${{ github.repository_owner }}",
               "repo": "${{ github.event.repository.name }}",
               "run_id": "${{ github.run_id }}",
-              "publish_env": "${{ needs.resolve-env.outputs.publish-env }}"
+              "publish_env": "${{ needs.resolve-env.outputs.publish-env }}",
+              "docset": "${{ needs.docs-build-pdf.outputs.docset }}",
+              "version": "${{ needs.docs-build-pdf.outputs.version }}"
             }
