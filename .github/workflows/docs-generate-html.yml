@@ -1,59 +1,69 @@
-
 name: "Generate HTML"
+run-name: "Generate ${{ inputs.publish-env != '' && inputs.publish-env || (github.ref_name == vars.DOCS_PROD_BRANCH && 'prod' || 'dev') }} HTML from ${{ github.ref_name }}"
 
-# edit the list of branches according to your repository
-# the list of branches should contain all the branches in your Antora publish playbooks
+permissions:
+  contents: read
+
+# Builds, verifies, and publishes docs for ONE environment, as a run entirely independent
+# of any other environment's run. Triggered (via the API, not a workflow_call) by
+# docs-trigger-builds.yml, once per environment that applies to a given push (dev, prod, or both) -
+# so if dev's run fails, prod's run is completely unaffected, and vice versa.
+#
+# No build-ref input: the git ref to build from is always whatever ref this run was
+# itself dispatched against (the "Use workflow from" branch when triggered manually, or
+# docs-trigger-builds.yml's own `ref:` when triggered automatically - which it always sets
+# to the same value it also used to pass as a build-ref input here, so that separate input
+# never actually carried any information github.ref_name didn't already have). Reading
+# github.ref_name directly instead removes a second, redundant "which branch" box from
+# manual dispatch.
 on:
-  push:
-    branches:
-    - "main"
-    - "dev"
-    - "5.x"
-    - "4.4"
   workflow_dispatch:
-
-# change `dev` and `main` according to your repository's branch names
-# `dev` is the branch you use to build and publish to staging
-# `main` is the branch you use to build and publish to neo4j.com/docs
-# in some cases, PROD_BRANCH and DEV_BRANCH may be the same branch
-env:
-  DEV_BRANCH: 'dev'
-  PROD_BRANCH: 'main'
+    inputs:
+      publish-env:
+        description: "The environment to publish to. Provide a value when the same branch publishes to both 'dev' and 'prod' environments. Otherwise, leave blank."
+        type: choice
+        required: false
+        default: ''
+        options:
+        - ''
+        - 'dev'
+        - 'prod'
 
 jobs:
 
-  prepare-ref-env:
-    name: Set build branch and environments
+  # Resolves publish-env (dev/prod) once, so neither docs-build nor publish-html
+  # duplicates the override-or-derive logic.
+  resolve-env:
+    name: Resolve environment
     runs-on: ubuntu-latest
     outputs:
-      build-ref: ${{ steps.set-ref-env.outputs.build-ref }}
-      environments: ${{ steps.set-ref-env.outputs.environments }}
+      publish-env: ${{ steps.resolve.outputs.publish-env }}
     steps:
-      - name: Set Build Ref
-        id: set-ref-env
+      - name: Resolve publish-env
+        id: resolve
+        env:
+          PUBLISH_ENV_OVERRIDE: ${{ inputs.publish-env }}
+          PROD_BRANCH: ${{ vars.DOCS_PROD_BRANCH }}
         run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/${{ env.DEV_BRANCH }}" ]]; then
-            build_from=${{ env.DEV_BRANCH }}
-            environments='["dev"]'
+          if [[ -n "${PUBLISH_ENV_OVERRIDE}" ]]; then
+            publish_env="${PUBLISH_ENV_OVERRIDE}"
+          elif [[ "${GITHUB_REF_NAME}" == "${PROD_BRANCH}" ]]; then
+            publish_env="prod"
           else
-            build_from=${{ env.PROD_BRANCH }}
-            environments='["prod"]'
+            publish_env="dev"
           fi
-          # if dev branch = prod branch publish to both
-          if [[ "${{ env.DEV_BRANCH }}" == "${{ env.PROD_BRANCH }}" ]]; then
-            environments='["dev","prod"]'
-          fi
-          echo "build-ref=${build_from}" >> $GITHUB_OUTPUT
-          echo "environments=${environments[@]}" >> $GITHUB_OUTPUT
+
+          echo "publish-env=${publish_env}" >> $GITHUB_OUTPUT
 
   docs-build:
     name: Generate HTML
-    needs: prepare-ref-env
+    needs: resolve-env
     uses: neo4j/docs-tools/.github/workflows/reusable-docs-build.yml@v2
     with:
       package-script: 'verify:publish'
-      build-ref: ${{needs.prepare-ref-env.outputs.build-ref}}
+      build-ref: ${{ github.ref_name }}
       fetch-depth: 0
+      publish-env: ${{ needs.resolve-env.outputs.publish-env }}
 
   docs-verify:
     name: Verify HTML
@@ -64,15 +74,10 @@ jobs:
 
   publish-html:
     name: Publish HTML
-    needs: [docs-verify, prepare-ref-env]
+    needs: [docs-verify, resolve-env]
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        environments: ${{ fromJson(needs.prepare-ref-env.outputs.environments) }}
-
     steps:
-      - name: Publish to ${{ matrix.environments }}
+      - name: Publish to ${{ needs.resolve-env.outputs.publish-env }}
         uses: peter-evans/repository-dispatch@28959ce8df70de7be546dd1250a005dd32156697 #v4
         with:
           token: ${{ secrets.DOCS_DISPATCH_TOKEN }}
@@ -83,10 +88,5 @@ jobs:
               "org": "${{ github.repository_owner }}",
               "repo": "${{ github.event.repository.name }}",
               "run_id": "${{ github.run_id }}",
-              "publish_env": "${{ matrix.environments }}"
+              "publish_env": "${{ needs.resolve-env.outputs.publish-env }}"
             }
-
-      - name: Echo
-        if: ${{ matrix.environments == 'prod' }}
-        run: |
-          echo "If this step runs then approval has been granted" >> $GITHUB_STEP_SUMMARY
