@@ -60,6 +60,41 @@ public AuthorizationInfo authorize( Collection<PrincipalAndProvider> principals 
 Note the usage of the helper class `PredefinedRole`.
 
 
+[role=label--new-2026.11]
+[[extending-neo4j-plugin-user-tags]]
+=== Supplying user tags
+
+In addition to roles, an authorization plugin can supply a set of string tags for a user.
+These tags can be evaluated by attribute-based access control (ABAC) auth rules using the security function `abac.plugin.user_tags()`.
+See link:{neo4j-docs-base-uri}/operations-manual/{page-version}/authentication-authorization/attribute-based-access-control[Operations Manual -> Attribute-based access control] and link:{neo4j-docs-base-uri}/cypher-manual/current/functions/security/#functions-security-plugin-user-tags[Cypher Manual -> `abac.plugin.user_tags()`] for details.
+
+The following example extends the previous example to also assign the tags `engineering` and `internal` to the user named `neo4j`, using the `AuthorizationInfo.of()` factory method:
+
+[source, java]
+----
+@Override
+public AuthorizationInfo authorize( Collection<PrincipalAndProvider> principals )
+{
+    if ( principals.stream().anyMatch( p -> "neo4j".equals( p.principal() ) ) )
+    {
+        Set<String> roles = Collections.singleton( PredefinedRoles.READER );
+        return AuthorizationInfo.of( roles, List.of( "engineering", "internal" ) );
+    }
+    return null;
+}
+----
+
+The plugin is invoked with the principal(s) the user was authenticated with. 
+For example, the OIDC `sub` claim is used for authentication, so tags are assigned by matching those principals.
+See link:{neo4j-docs-base-uri}/operations-manual/{page-version}/authentication-authorization/sso-integration[Operations Manual -> Configure Neo4j to use an OpenID Connect identity provider] for reference.
+Tags are fetched each time `authorize()` is invoked.
+Authorization caching is enabled by default, so tags are cached alongside the rest of the authorization result and are only fetched again when the cached entry expires.
+See link:{neo4j-docs-base-uri}/operations-manual/{page-version}/configuration/configuration-settings#config_dbms.security.auth_cache_ttl[Operations Manual -> `dbms.security.auth_cache_ttl`].
+
+Tags supplied by a plugin are only evaluated by auth rules when the plugin is also listed in `dbms.security.abac.authorization_providers` in the _neo4j.conf_ file.
+For configuration details, see link:{neo4j-docs-base-uri}/operations-manual/{page-version}/authentication-authorization/attribute-based-access-control[Operations Manual -> Attribute-based access control].
+
+
 [[extending-neo4j-simplified-combined-plugin]]
 == Simplified combined plugin
 
@@ -82,6 +117,18 @@ public AuthInfo authenticateAndAuthorize( AuthToken authToken )
     return null;
 }
 ----
+
+[role=label--new-2026.11]
+=== Supplying user tags
+
+A combined plugin supplies user tags similarly to authorization plugins, through the `AuthInfo.of()` factory method:
+
+[source, java]
+----
+return AuthInfo.of( username, roles, List.of( "engineering", "internal" ) );
+----
+
+As authentication and authorization are performed together when the user logs in, the tags are captured at login and do not change for the rest of the session.
 
 
 [[extending-neo4j-extendable-platform]]
